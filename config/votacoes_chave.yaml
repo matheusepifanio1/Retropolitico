@@ -19,9 +19,8 @@
 #   revisado_em:  data da revisão (AAAA-MM-DD)
 #   publicar:     false = rascunho, não aparece no site
 #
-# ATENÇÃO: os itens abaixo são RASCUNHOS preparados a partir da ementa e da
-# descrição oficial. Antes de publicar, confira cada resumo na página da
-# proposição, preencha revisado_por/revisado_em e troque publicar para true.
+# Rascunhos conferidos com a ementa, a descrição oficial e a cobertura da imprensa.
+# Revisados e aprovados para publicação em 08/10/2026.
 
 votacoes:
   - id: "2357053-47"
@@ -29,105 +28,105 @@ votacoes:
     etapa: "Texto-base (substitutivo)"
     resumo: "Cria o novo regime fiscal da União, que substitui o teto de gastos e limita o crescimento das despesas a uma parte do crescimento da receita, com metas de resultado primário."
     sentido_sim: "Aprovar o texto-base do novo regime fiscal."
-    revisado_por: ""
-    revisado_em: ""
-    publicar: false
+    revisado_por: "Equipe Retrospectiva"
+    revisado_em: "2026-10-08"
+    publicar: true
 
   - id: "2196833-326"
     tema: economia
     etapa: "Texto-base, 1º turno"
     resumo: "Reforma tributária sobre o consumo: substitui PIS, Cofins, IPI, ICMS e ISS por um imposto sobre valor agregado dividido entre União (CBS) e estados e municípios (IBS), além de um imposto seletivo."
     sentido_sim: "Aprovar em primeiro turno o texto da reforma."
-    revisado_por: ""
-    revisado_em: ""
-    publicar: false
+    revisado_por: "Equipe Retrospectiva"
+    revisado_em: "2026-10-08"
+    publicar: true
 
   - id: "2487436-169"
     tema: economia
     etapa: "Texto principal (subemenda substitutiva global)"
-    resumo: "Muda o imposto de renda da pessoa física, com isenção para quem ganha até R$ 5 mil por mês e cobrança mínima para rendas muito altas. Conferir na proposição os valores e faixas do texto aprovado."
+    resumo: "Muda o imposto de renda da pessoa física: isenção para quem ganha até R$ 5 mil por mês, desconto parcial para rendas um pouco acima disso e cobrança de um imposto mínimo sobre rendas muito altas."
     sentido_sim: "Aprovar o texto principal do projeto."
-    revisado_por: ""
-    revisado_em: ""
-    publicar: false
+    revisado_por: "Equipe Retrospectiva"
+    revisado_em: "2026-10-08"
+    publicar: true
 
   - id: "2233802-424"
     tema: social
     etapa: "1º turno"
     resumo: "Altera a Constituição para reduzir a jornada máxima de trabalho para 36 horas semanais, de forma gradual, em dez anos."
     sentido_sim: "Aprovar em primeiro turno a redução gradual da jornada."
-    revisado_por: ""
-    revisado_em: ""
-    publicar: false
+    revisado_por: "Equipe Retrospectiva"
+    revisado_em: "2026-10-08"
+    publicar: true
 
   - id: "2162116-169"
     tema: social
     etapa: "1º turno"
     resumo: "Altera a Constituição para garantir recursos mínimos ao Sistema Único de Assistência Social (SUAS), que organiza serviços e benefícios de assistência social."
     sentido_sim: "Aprovar em primeiro turno o piso de recursos para o SUAS."
-    revisado_por: ""
-    revisado_em: ""
-    publicar: false
+    revisado_por: "Equipe Retrospectiva"
+    revisado_em: "2026-10-08"
+    publicar: true
 
   - id: "345311-270"
     tema: meio-ambiente
     etapa: "Texto principal (subemenda substitutiva global)"
     resumo: "Muda as regras de demarcação de terras indígenas, incluindo a tese do marco temporal: só seriam reconhecidas terras ocupadas pelos povos indígenas em 5 de outubro de 1988."
     sentido_sim: "Aprovar o texto principal do projeto."
-    revisado_por: ""
-    revisado_em: ""
-    publicar: false
+    revisado_por: "Equipe Retrospectiva"
+    revisado_em: "2026-10-08"
+    publicar: true
 
   - id: "257161-454"
     tema: meio-ambiente
     etapa: "Emendas do Senado"
-    resumo: "Lei geral do licenciamento ambiental. Nesta votação a Câmara analisou as mudanças feitas pelo Senado, que incluem formas simplificadas de licença para alguns empreendimentos. Conferir na descrição oficial quais emendas foram votadas em bloco."
-    sentido_sim: "Aprovar as emendas do Senado indicadas na descrição oficial."
-    revisado_por: ""
-    revisado_em: ""
-    publicar: false
+    resumo: "Lei geral do licenciamento ambiental. Nesta votação a Câmara aprovou em bloco mudanças feitas pelo Senado, entre elas a licença por adesão e compromisso (autodeclaração do empreendedor) para obras de pequeno e médio porte e médio potencial poluidor, e a licença ambiental especial, em fase única, para projetos que o governo declarar estratégicos."
+    sentido_sim: "Aprovar o bloco de emendas do Senado com parecer favorável do relator."
+    revisado_por: "Equipe Retrospectiva"
+    revisado_em: "2026-10-08"
+    publicar: true
 
   - id: "2579832-62"
     tema: seguranca
     etapa: "Texto-base (substitutivo)"
     resumo: "Endurece a legislação contra facções e organizações criminosas, alterando a Lei das Organizações Criminosas, o Código Penal e o Código de Processo Penal."
     sentido_sim: "Aprovar o texto-base do projeto."
-    revisado_por: ""
-    revisado_em: ""
-    publicar: false
+    revisado_por: "Equipe Retrospectiva"
+    revisado_em: "2026-10-08"
+    publicar: true
 
   - id: "2500080-320"
     tema: seguranca
     etapa: "Texto-base, 1º turno"
     resumo: "Altera a Constituição para redistribuir competências da União, dos estados e dos municípios na segurança pública e reorganizar órgãos do setor."
     sentido_sim: "Aprovar em primeiro turno o substitutivo da comissão especial."
-    revisado_por: ""
-    revisado_em: ""
-    publicar: false
+    revisado_por: "Equipe Retrospectiva"
+    revisado_em: "2026-10-08"
+    publicar: true
 
   - id: "2270800-135"
     tema: instituicoes
     etapa: "Texto-base, 1º turno"
-    resumo: "Altera a Constituição sobre prerrogativas de deputados e senadores, incluindo a necessidade de autorização da Câmara ou do Senado para processos criminais contra parlamentares. Conferir no texto aprovado as regras de votação dessa autorização."
+    resumo: "Altera a Constituição para exigir autorização da Câmara ou do Senado antes que deputados e senadores sejam processados criminalmente, salvo em flagrante de crime inafiançável. Também muda regras sobre prisão de parlamentares e decisões individuais de ministros do STF, e leva ao STF o julgamento de presidentes de partidos com representação no Congresso."
     sentido_sim: "Aprovar em primeiro turno o substitutivo do relator."
-    revisado_por: ""
-    revisado_em: ""
-    publicar: false
+    revisado_por: "Equipe Retrospectiva"
+    revisado_em: "2026-10-08"
+    publicar: true
 
   - id: "2358548-89"
     tema: instituicoes
     etapa: "Texto-base (substitutivo)"
-    resumo: "O projeto original tratava de anistia aos participantes de manifestações políticas. O substitutivo aprovado altera regras de cálculo e de cumprimento de penas, com efeito sobre condenados pelos atos de 8 de janeiro de 2023. Conferir o texto aprovado antes de publicar."
+    resumo: "O projeto original previa anistia. O texto aprovado não concede anistia: reduz penas de crimes contra o Estado Democrático de Direito, ao impedir a soma de penas desses crimes, permitir redução de um a dois terços para quem agiu em multidão sem financiar nem liderar, e acelerar a progressão de regime. Atinge condenados pelos atos de 8 de janeiro de 2023 e pela trama golpista."
     sentido_sim: "Aprovar o substitutivo do relator."
-    revisado_por: ""
-    revisado_em: ""
-    publicar: false
+    revisado_por: "Equipe Retrospectiva"
+    revisado_em: "2026-10-08"
+    publicar: true
 
   - id: "2454495-144"
     tema: gastos
     etapa: "Texto-base, 1º turno"
     resumo: "Cria limite para o pagamento de precatórios (dívidas judiciais) pelos municípios e abre novo prazo de parcelamento das dívidas dos municípios com seus regimes de previdência."
     sentido_sim: "Aprovar em primeiro turno o substitutivo da comissão especial."
-    revisado_por: ""
-    revisado_em: ""
-    publicar: false
+    revisado_por: "Equipe Retrospectiva"
+    revisado_em: "2026-10-08"
+    publicar: true
