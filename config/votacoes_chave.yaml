@@ -1,31 +1,133 @@
 # Votações-chave exibidas em destaque nos perfis.
 #
-# Regras (publicadas em docs/METODOLOGIA.md):
+# Regras (publicadas na página Metodologia):
 #   - Só votações nominais de mérito do Plenário (texto-base, turno ou destaque
-#     relevante). Requerimentos procedimentais ficam de fora.
+#     relevante). Requerimentos de procedimento ficam de fora.
 #   - Equilíbrio entre temas: economia, social, segurança, meio ambiente,
 #     costumes, gastos públicos, instituições.
 #   - O resumo é escrito por uma pessoa, descreve o que estava em votação e
-#     nunca avalia se foi bom ou ruim. Nenhum resumo é gerado por IA.
-#   - Toda inclusão ou alteração passa por pull request revisado.
+#     nunca avalia se foi bom ou ruim. Nenhum resumo publicado é gerado por IA.
+#   - Toda inclusão ou alteração passa por revisão humana.
 #
 # Campos:
-#   id:          id oficial da votação na Câmara (ex.: "2438265-73")
-#   tema:        economia | social | seguranca | meio-ambiente | costumes | gastos | instituicoes
-#   etapa:       o que foi votado (ex.: "Texto-base, 1º turno", "Destaque supressivo do art. 12")
-#   resumo:      descrição neutra do conteúdo
-#   sentido_sim: o que significava votar SIM (obrigatório para destaques)
-#   revisado_por: nome de quem escreveu/revisou o resumo
+#   id:           id oficial da votação na Câmara
+#   tema:         economia | social | seguranca | meio-ambiente | costumes | gastos | instituicoes
+#   etapa:        o que foi votado
+#   resumo:       descrição neutra do conteúdo
+#   sentido_sim:  o que significava votar SIM (obrigatório para destaques)
+#   revisado_por: nome de quem revisou o resumo
 #   revisado_em:  data da revisão (AAAA-MM-DD)
+#   publicar:     false = rascunho, não aparece no site
+#
+# ATENÇÃO: os itens abaixo são RASCUNHOS preparados a partir da ementa e da
+# descrição oficial. Antes de publicar, confira cada resumo na página da
+# proposição, preencha revisado_por/revisado_em e troque publicar para true.
 
-votacoes: []
+votacoes:
+  - id: "2357053-47"
+    tema: economia
+    etapa: "Texto-base (substitutivo)"
+    resumo: "Cria o novo regime fiscal da União, que substitui o teto de gastos e limita o crescimento das despesas a uma parte do crescimento da receita, com metas de resultado primário."
+    sentido_sim: "Aprovar o texto-base do novo regime fiscal."
+    revisado_por: ""
+    revisado_em: ""
+    publicar: false
 
-# Exemplo (descomente e preencha com uma votação real conferida na fonte):
-# votacoes:
-#   - id: "0000000-00"
-#     tema: social
-#     etapa: "Texto-base, 1º turno"
-#     resumo: "A proposta ..."
-#     sentido_sim: "Aprovar o texto-base."
-#     revisado_por: "Nome Sobrenome"
-#     revisado_em: "2026-10-08"
+  - id: "2196833-326"
+    tema: economia
+    etapa: "Texto-base, 1º turno"
+    resumo: "Reforma tributária sobre o consumo: substitui PIS, Cofins, IPI, ICMS e ISS por um imposto sobre valor agregado dividido entre União (CBS) e estados e municípios (IBS), além de um imposto seletivo."
+    sentido_sim: "Aprovar em primeiro turno o texto da reforma."
+    revisado_por: ""
+    revisado_em: ""
+    publicar: false
+
+  - id: "2487436-169"
+    tema: economia
+    etapa: "Texto principal (subemenda substitutiva global)"
+    resumo: "Muda o imposto de renda da pessoa física, com isenção para quem ganha até R$ 5 mil por mês e cobrança mínima para rendas muito altas. Conferir na proposição os valores e faixas do texto aprovado."
+    sentido_sim: "Aprovar o texto principal do projeto."
+    revisado_por: ""
+    revisado_em: ""
+    publicar: false
+
+  - id: "2233802-424"
+    tema: social
+    etapa: "1º turno"
+    resumo: "Altera a Constituição para reduzir a jornada máxima de trabalho para 36 horas semanais, de forma gradual, em dez anos."
+    sentido_sim: "Aprovar em primeiro turno a redução gradual da jornada."
+    revisado_por: ""
+    revisado_em: ""
+    publicar: false
+
+  - id: "2162116-169"
+    tema: social
+    etapa: "1º turno"
+    resumo: "Altera a Constituição para garantir recursos mínimos ao Sistema Único de Assistência Social (SUAS), que organiza serviços e benefícios de assistência social."
+    sentido_sim: "Aprovar em primeiro turno o piso de recursos para o SUAS."
+    revisado_por: ""
+    revisado_em: ""
+    publicar: false
+
+  - id: "345311-270"
+    tema: meio-ambiente
+    etapa: "Texto principal (subemenda substitutiva global)"
+    resumo: "Muda as regras de demarcação de terras indígenas, incluindo a tese do marco temporal: só seriam reconhecidas terras ocupadas pelos povos indígenas em 5 de outubro de 1988."
+    sentido_sim: "Aprovar o texto principal do projeto."
+    revisado_por: ""
+    revisado_em: ""
+    publicar: false
+
+  - id: "257161-454"
+    tema: meio-ambiente
+    etapa: "Emendas do Senado"
+    resumo: "Lei geral do licenciamento ambiental. Nesta votação a Câmara analisou as mudanças feitas pelo Senado, que incluem formas simplificadas de licença para alguns empreendimentos. Conferir na descrição oficial quais emendas foram votadas em bloco."
+    sentido_sim: "Aprovar as emendas do Senado indicadas na descrição oficial."
+    revisado_por: ""
+    revisado_em: ""
+    publicar: false
+
+  - id: "2579832-62"
+    tema: seguranca
+    etapa: "Texto-base (substitutivo)"
+    resumo: "Endurece a legislação contra facções e organizações criminosas, alterando a Lei das Organizações Criminosas, o Código Penal e o Código de Processo Penal."
+    sentido_sim: "Aprovar o texto-base do projeto."
+    revisado_por: ""
+    revisado_em: ""
+    publicar: false
+
+  - id: "2500080-320"
+    tema: seguranca
+    etapa: "Texto-base, 1º turno"
+    resumo: "Altera a Constituição para redistribuir competências da União, dos estados e dos municípios na segurança pública e reorganizar órgãos do setor."
+    sentido_sim: "Aprovar em primeiro turno o substitutivo da comissão especial."
+    revisado_por: ""
+    revisado_em: ""
+    publicar: false
+
+  - id: "2270800-135"
+    tema: instituicoes
+    etapa: "Texto-base, 1º turno"
+    resumo: "Altera a Constituição sobre prerrogativas de deputados e senadores, incluindo a necessidade de autorização da Câmara ou do Senado para processos criminais contra parlamentares. Conferir no texto aprovado as regras de votação dessa autorização."
+    sentido_sim: "Aprovar em primeiro turno o substitutivo do relator."
+    revisado_por: ""
+    revisado_em: ""
+    publicar: false
+
+  - id: "2358548-89"
+    tema: instituicoes
+    etapa: "Texto-base (substitutivo)"
+    resumo: "O projeto original tratava de anistia aos participantes de manifestações políticas. O substitutivo aprovado altera regras de cálculo e de cumprimento de penas, com efeito sobre condenados pelos atos de 8 de janeiro de 2023. Conferir o texto aprovado antes de publicar."
+    sentido_sim: "Aprovar o substitutivo do relator."
+    revisado_por: ""
+    revisado_em: ""
+    publicar: false
+
+  - id: "2454495-144"
+    tema: gastos
+    etapa: "Texto-base, 1º turno"
+    resumo: "Cria limite para o pagamento de precatórios (dívidas judiciais) pelos municípios e abre novo prazo de parcelamento das dívidas dos municípios com seus regimes de previdência."
+    sentido_sim: "Aprovar em primeiro turno o substitutivo da comissão especial."
+    revisado_por: ""
+    revisado_em: ""
+    publicar: false

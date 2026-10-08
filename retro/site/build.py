@@ -46,6 +46,8 @@ def load_chave(path: Path, conn: sqlite3.Connection) -> list[dict]:
     obrig = ["id", "tema", "etapa", "resumo", "revisado_por", "revisado_em"]
     out = []
     for item in itens:
+        if item.get("publicar") is False:
+            continue  # rascunho aguardando revisão humana
         faltando = [c for c in obrig if not item.get(c)]
         if faltando:
             raise CuradoriaError(f"votação-chave {item.get('id')}: campos faltando {faltando}")
