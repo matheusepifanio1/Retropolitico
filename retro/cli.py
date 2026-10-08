@@ -73,6 +73,10 @@ def sanidade(conn) -> None:
         v = compute.resumo_votos(conn, d["id"], periodos)
         if p:
             pres.append(p.pct)
+            if p.pct < 50:
+                hs = "; ".join(f"{h['data_hora'][:10]} {h['situacao']}" for h in hist if h["situacao"])
+                print(f"  ATENÇÃO presença {p.pct}%: id={d['id']} {d['nome']} "
+                      f"({p.presentes}/{p.sessoes}) histórico: {hs}")
         if v and v.votacoes_no_periodo:
             part.append(round(100 * v.com_registro / v.votacoes_no_periodo))
     print(f"  deputados em exercício sem período de exercício no histórico: {sem_periodo}")
