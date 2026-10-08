@@ -57,6 +57,9 @@ def periodos_exercicio(historico: list[sqlite3.Row | dict], ate: str) -> list[Pe
     periodos: list[Periodo] = []
     aberto: str | None = None
     for h in sorted(historico, key=lambda h: h["data_hora"]):
+        # Registros de troca de nome/partido vêm com situação vazia: não mudam o exercício.
+        if not (h["situacao"] or "").strip():
+            continue
         em_exercicio = norm(h["situacao"]) == "exercicio"
         if em_exercicio and aberto is None:
             aberto = h["data_hora"]

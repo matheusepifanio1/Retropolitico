@@ -160,13 +160,19 @@ def _load_deputados(conn, store, src, leg: int) -> None:
     historicos = json.loads(store.path(hnome).read_text(encoding="utf-8"))
     hid = src(hnome)
     for dep_id, eventos in historicos.items():
+        eventos = sorted((h for h in eventos if str(h.get("idLegislatura")) == str(leg)),
+                         key=lambda h: h.get("dataHora") or "")
         for h in eventos:
-            if str(h.get("idLegislatura")) != str(leg):
-                continue
             conn.execute(
                 "INSERT OR IGNORE INTO situacao_historico VALUES (?,?,?,?,?)",
                 (int(dep_id), h["dataHora"], h.get("situacao"), h.get("descricaoStatus"), hid),
             )
+        # Quem não está em exercício hoje: partido/UF do registro mais recente do histórico.
+        if eventos and dep_id not in em_exercicio:
+            ultimo = eventos[-1]
+            if ultimo.get("siglaPartido"):
+                conn.execute("UPDATE parlamentar SET partido=?, uf=COALESCE(?, uf) WHERE id=?",
+                             (ultimo["siglaPartido"], ultimo.get("siglaUf"), int(dep_id)))
 
 
 def _int(v: str | None) -> int | None:
@@ -207,6 +213,11 @@ def _load_votacoes(conn, store, src, ano: int, inicio: str) -> None:
     for vid, votos in votos_por_votacao.items():
         if votos and all(not v.strip() for v in votos):
             conn.execute("UPDATE votacao SET secreta=1 WHERE id=?", (vid,))
+    # O arquivo de votações também traz votações simbólicas e encaminhamentos sem
+    # registro individual. Só fica o que é nominal (tem ao menos um registro de voto).
+    simbolicas = plen - set(votos_por_votacao)
+    conn.executemany("DELETE FROM votacao WHERE id=?", [(v,) for v in simbolicas])
+    plen -= simbolicas
 
     for r in read_csv(store.path(files["votacoesOrientacoes"]), CSV_FILES["votacoesOrientacoes"]):
         if r["idVotacao"] in plen:

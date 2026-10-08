@@ -51,7 +51,14 @@ def write_raw(root: Path, *, drop_column: str | None = None) -> RawStore:
     _json(d / "deputados-legislatura.json", deps)
     _json(d / "deputados-em-exercicio.json", deps[:2])
     historico = {
-        "101": [{"dataHora": "2023-02-01T00:00", "situacao": "Exercício", "descricaoStatus": "Posse", "idLegislatura": 57}],
+        # Formato real: registros de troca de nome/partido vêm com situacao null.
+        "101": [
+            {"dataHora": "2023-02-01T00:00", "situacao": None, "siglaPartido": "PXX", "siglaUf": "SP",
+             "descricaoStatus": "Nome no início da legislatura / Partido no início da legislatura", "idLegislatura": 57},
+            {"dataHora": "2023-02-01T00:00", "situacao": "Exercício", "descricaoStatus": "Posse", "idLegislatura": 57},
+            {"dataHora": "2024-01-15T00:00", "situacao": None, "siglaPartido": "PAA", "siglaUf": "SP",
+             "descricaoStatus": "Alteração de partido", "idLegislatura": 57},
+        ],
         # Bruno se licencia entre jan e jun/2024; Carla (suplente) assume nesse intervalo.
         "102": [
             {"dataHora": "2023-02-01T00:00", "situacao": "Exercício", "descricaoStatus": "Posse", "idLegislatura": 57},
@@ -77,6 +84,10 @@ def write_raw(root: Path, *, drop_column: str | None = None) -> RawStore:
          "descricao": "Aprovado o Substitutivo ao Projeto de Lei nº 1, de 2024."},
         {"id": "900-2", "data": "2024-08-01", "dataHoraRegistro": "2024-08-01T19:00:00", "siglaOrgao": "PLEN",
          "aprovacao": "0", "votosSim": "", "votosNao": "", "votosOutros": "", "descricao": "Votação secreta de autoridade."},
+        # Votação simbólica / encaminhamento: está no arquivo, mas sem votos individuais.
+        {"id": "900-3", "data": "2024-05-01", "dataHoraRegistro": "2024-05-01T18:00:00", "siglaOrgao": "PLEN",
+         "aprovacao": "1", "votosSim": "0", "votosNao": "0", "votosOutros": "0",
+         "descricao": "Aprovado o requerimento (votação simbólica)."},
         {"id": "800-1", "data": "2024-04-01", "dataHoraRegistro": "2024-04-01T10:00:00", "siglaOrgao": "CCJC",
          "aprovacao": "1", "votosSim": "10", "votosNao": "2", "votosOutros": "0", "descricao": "Votação em comissão."},
     ])

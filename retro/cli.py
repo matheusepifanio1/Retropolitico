@@ -51,6 +51,45 @@ def inspecionar(pasta: Path) -> None:
             print(f"    exemplo={json.dumps(first, ensure_ascii=False)[:600]}")
 
 
+def sanidade(conn) -> None:
+    """Estatísticas para conferir se os números fazem sentido (vão para o relatório da execução)."""
+    from statistics import median
+    from . import compute
+
+    print("Checagem de sanidade:")
+    for r in conn.execute("SELECT substr(data,1,4) ano, COUNT(*) n, SUM(secreta) s FROM votacao GROUP BY ano"):
+        print(f"  votações nominais {r['ano']}: {r['n']} (secretas: {r['s']})")
+    for r in conn.execute("SELECT substr(data_hora,1,4) ano, COUNT(*) n FROM sessao GROUP BY ano"):
+        print(f"  sessões deliberativas {r['ano']}: {r['n']}")
+    ate = compute.agora_iso()
+    pres, part, sem_periodo = [], [], 0
+    for d in conn.execute("SELECT id, nome FROM parlamentar WHERE em_exercicio=1"):
+        hist = conn.execute("SELECT * FROM situacao_historico WHERE parlamentar_id=?", (d["id"],)).fetchall()
+        periodos = compute.periodos_exercicio(hist, ate)
+        if not periodos:
+            sem_periodo += 1
+            continue
+        p = compute.presenca(conn, d["id"], periodos)
+        v = compute.resumo_votos(conn, d["id"], periodos)
+        if p:
+            pres.append(p.pct)
+        if v and v.votacoes_no_periodo:
+            part.append(round(100 * v.com_registro / v.votacoes_no_periodo))
+    print(f"  deputados em exercício sem período de exercício no histórico: {sem_periodo}")
+    for nome, xs in (("presença %", pres), ("participação em votações %", part)):
+        if xs:
+            xs.sort()
+            faixas = {f: sum(1 for x in xs if lo <= x < hi) for f, (lo, hi) in
+                      {"<50": (0, 50), "50-79": (50, 80), "80-94": (80, 95), "95+": (95, 101)}.items()}
+            print(f"  {nome}: n={len(xs)} min={xs[0]} mediana={median(xs)} max={xs[-1]} faixas={faixas}")
+    leis = sum(1 for r in conn.execute("SELECT situacao FROM proposicao") if compute.is_lei(r[0]))
+    print(f"  proposições de deputados que viraram lei: {leis}")
+    for r in conn.execute("SELECT situacao, COUNT(*) n FROM proposicao GROUP BY situacao ORDER BY n DESC LIMIT 12"):
+        print(f"    situação '{r['situacao']}': {r['n']}")
+    for r in conn.execute("SELECT situacao, COUNT(*) n FROM situacao_historico GROUP BY situacao ORDER BY n DESC"):
+        print(f"    histórico situação '{r['situacao']}': {r['n']}")
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="retro", description="Retrospectiva Política")
     p.add_argument("etapa", choices=["baixar", "carregar", "site", "tudo", "inspecionar"])
@@ -77,6 +116,7 @@ def main(argv: list[str] | None = None) -> int:
             args.db.unlink(missing_ok=True)  # o banco é sempre reconstruído dos arquivos brutos
             conn = db.connect(args.db)
             camara.load(conn, store, settings["camara"])
+            sanidade(conn)
             conn.execute("VACUUM")
             conn.close()
         if args.etapa in ("site", "tudo"):

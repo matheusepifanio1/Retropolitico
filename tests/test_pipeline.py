@@ -28,9 +28,9 @@ class TestCarga(unittest.TestCase):
         self.conn.close()
         self._tmp.cleanup()
 
-    def test_so_votacoes_do_plenario(self):
+    def test_so_votacoes_nominais_do_plenario(self):
         ids = {r[0] for r in self.conn.execute("SELECT id FROM votacao")}
-        self.assertEqual(ids, {"900-1", "900-2"})
+        self.assertEqual(ids, {"900-1", "900-2"}, "exclui comissão e votação simbólica (900-3)")
         self.assertEqual(self.conn.execute("SELECT COUNT(*) FROM voto WHERE votacao_id='800-1'").fetchone()[0], 0)
 
     def test_votacao_secreta(self):
@@ -48,6 +48,16 @@ class TestCarga(unittest.TestCase):
         p = compute.presenca(self.conn, 102, periodos)
         # Sessões 1 (fev/2024) e 2 (mar/2024) foram durante a licença: não contam.
         self.assertEqual((p.sessoes, p.presentes, p.sem_registro), (1, 1, 0))
+
+    def test_troca_de_partido_nao_interrompe_exercicio(self):
+        hist = self.conn.execute("SELECT * FROM situacao_historico WHERE parlamentar_id=101").fetchall()
+        periodos = compute.periodos_exercicio(hist, "2026-12-31T00:00:00")
+        self.assertEqual(len(periodos), 1)
+        self.assertEqual(periodos[0].inicio, "2023-02-01T00:00")
+
+    def test_partido_de_quem_saiu_vem_do_historico(self):
+        partido = self.conn.execute("SELECT partido FROM parlamentar WHERE id=103").fetchone()[0]
+        self.assertEqual(partido, "PBB")
 
     def test_suplente(self):
         hist = self.conn.execute("SELECT * FROM situacao_historico WHERE parlamentar_id=103").fetchall()
