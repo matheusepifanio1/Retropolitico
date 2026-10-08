@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -32,6 +33,8 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
 
     settings = yaml.safe_load((args.config / "settings.yaml").read_text(encoding="utf-8"))
+    if "RETRO_URL_BASE" in os.environ:
+        settings["site"]["url_base"] = os.environ["RETRO_URL_BASE"]
     store = RawStore(args.raw, "camara")
     try:
         if args.etapa in ("baixar", "tudo"):

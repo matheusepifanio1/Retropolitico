@@ -28,9 +28,7 @@ O GitHub Actions (`.github/workflows/atualizar.yml`) roda tudo isso diariamente 
 
 1. Crie um repositório no GitHub e envie este código.
 2. Em **Settings → Pages**, escolha **Source: GitHub Actions**.
-3. Ajuste `config/settings.yaml`:
-   - `site.url_base`: `"/nome-do-repositorio"` se o endereço for `usuario.github.io/nome-do-repositorio`; vazio se usar domínio próprio.
-   - `site.repositorio`: URL do repositório (usada nos links de correção).
+3. Em `config/settings.yaml`, `site.repositorio` aponta para o repositório (links de correção). O caminho do site (`/Retropolitico`) é lido automaticamente do GitHub Pages no build.
 4. Em **Actions**, rode **Atualizar dados e publicar** manualmente na primeira vez. A primeira coleta baixa ~1–2 GB e leva de 20 a 60 minutos; as seguintes reaproveitam o cache.
 
 ## Rodando localmente

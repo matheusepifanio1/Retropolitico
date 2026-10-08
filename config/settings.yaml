@@ -14,5 +14,7 @@ camara:
 
 site:
   titulo: "Retrospectiva"
-  url_base: ""   # ex.: "/retrospectiva" se publicado em usuario.github.io/retrospectiva
-  repositorio: "https://github.com/SEU-USUARIO/retrospectiva"
+  # No GitHub Actions o caminho vem do próprio Pages (variável RETRO_URL_BASE).
+  # Localmente, vazio funciona com `python -m http.server`.
+  url_base: ""
+  repositorio: "https://github.com/matheusepifanio1/Retropolitico"

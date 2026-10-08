@@ -50,10 +50,14 @@ jobs:
       - name: Carregar no banco
         run: python -m retro carregar
 
+      - id: pages
+        uses: actions/configure-pages@v5
+
       - name: Gerar o site
         run: python -m retro site
+        env:
+          RETRO_URL_BASE: ${{ steps.pages.outputs.base_path }}
 
-      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with: { path: _site }
 
