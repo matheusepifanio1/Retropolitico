@@ -166,12 +166,16 @@ class TestTSE(unittest.TestCase):
     def test_deputado_ligado(self):
         r = self.conn.execute("SELECT pessoa_id, sexo FROM parlamentar WHERE id=101").fetchone()
         self.assertEqual((r["pessoa_id"], r["sexo"]), ("250000000001", "F"))
+        r = self.conn.execute("SELECT pessoa_id FROM parlamentar WHERE id=102").fetchone()
+        self.assertEqual(r["pessoa_id"], "10000000005", "sem CPF: liga pelo nome civil na mesma UF")
+        r = self.conn.execute("SELECT pessoa_id FROM parlamentar WHERE id=103").fetchone()
+        self.assertIsNone(r["pessoa_id"], "sem candidatura compatível: não liga")
 
     def test_site_pessoas(self):
         from retro.site import pessoas
         out = self.tmp / "site"
         info = pessoas.gerar(self.conn, out, 2024)
-        self.assertEqual(info["pessoas"], 3)
+        self.assertEqual(info["pessoas"], 4)
         idx = json.loads((out / "busca" / "dou.json").read_text())
         self.assertEqual(set(idx["douglas"]), {"10000000002", "130000000020"})
         self.assertEqual(idx["douglas"][0], "10000000002", "quem já foi eleito vem primeiro")
@@ -207,7 +211,7 @@ class TestSite(unittest.TestCase):
         self.chave.write_text(fixtures.CHAVE_OK, encoding="utf-8")
         out = self.tmp / "site"
         info = build(self.conn, out, fixtures.settings(), self.chave)
-        self.assertEqual(info, {"deputados": 3, "votacoes_chave": 1, "pessoas": 3})
+        self.assertEqual(info, {"deputados": 3, "votacoes_chave": 1, "pessoas": 4})
         perfil = (out / "deputado/101/index.html").read_text(encoding="utf-8")
         self.assertIn("Ana Ribeiro", perfil)
         self.assertIn("<strong>2</strong> presenças em 3 sessões", perfil)

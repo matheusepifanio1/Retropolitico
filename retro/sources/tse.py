@@ -205,21 +205,55 @@ def load(conn, store: RawStore, cfg: dict, src, log=print) -> dict[str, str]:
     return {cpf: primeiro[grupos.achar(chave_de[sq])][1] for cpf, sq in cpf_de.items()}
 
 
+def _norm_nome(s: str) -> str:
+    import unicodedata
+    s = unicodedata.normalize("NFKD", s or "").encode("ascii", "ignore").decode().upper()
+    return " ".join(re.sub(r"[^A-Z ]", " ", s).split())
+
+
 def ligar_deputados(conn, store_camara: RawStore, cpf_pessoa: dict[str, str], src, log=print) -> None:
-    """Liga cada deputado à pessoa do TSE pelo CPF do cadastro da Câmara (só em memória)."""
+    """Liga cada deputado à pessoa do TSE.
+
+    1) Pelo CPF do cadastro da Câmara, quando publicado (só em memória).
+    2) Sem CPF: pela candidatura a deputado federal na mesma UF cujo nome completo
+       coincide com o nome civil (ou o nome de urna com o nome parlamentar).
+       Só liga quando há exatamente uma pessoa compatível; na dúvida, não liga.
+    """
     from .base import read_csv
     nome = "deputados.csv"
     if not store_camara.path(nome).exists():
         log("  deputados.csv ausente: deputados sem ligação com o TSE")
         return
     src(nome)
-    ligados = 0
-    ids = {r[0] for r in conn.execute("SELECT id FROM parlamentar")}
-    for r in read_csv(store_camara.path(nome), ["uri", "cpf", "siglaSexo"]):
+    deps = {r[0]: (r[1], r[2]) for r in conn.execute("SELECT id, uf, nome FROM parlamentar")}
+
+    # Índice das candidaturas a deputado federal: (uf, nome) -> pessoas; priorizando 2022.
+    por_civil: dict = {}
+    por_urna: dict = {}
+    for uf, n, urna, pid, ano in conn.execute(
+            "SELECT uf, nome, nome_urna, pessoa_id, ano FROM candidatura WHERE cargo='DEPUTADO FEDERAL'"):
+        prio = 0 if ano == 2022 else 1
+        por_civil.setdefault((prio, uf, _norm_nome(n)), set()).add(pid)
+        por_urna.setdefault((prio, uf, _norm_nome(urna)), set()).add(pid)
+
+    def busca(idx, uf, chave):
+        for prio in (0, 1):
+            achados = idx.get((prio, uf, chave))
+            if achados:
+                return next(iter(achados)) if len(achados) == 1 else None
+        return None
+
+    por_cpf = por_nome = 0
+    for r in read_csv(store_camara.path(nome), ["uri", "cpf", "siglaSexo", "nomeCivil"]):
         dep = int(r["uri"].rstrip("/").rsplit("/", 1)[-1])
-        if dep not in ids:
+        if dep not in deps:
             continue
-        pessoa = cpf_pessoa.get((r["cpf"] or "").strip().zfill(11))
+        uf, nome_parl = deps[dep]
+        pessoa = cpf_pessoa.get((r["cpf"] or "").strip().zfill(11)) if (r["cpf"] or "").strip() else None
+        if pessoa:
+            por_cpf += 1
+        else:
+            pessoa = busca(por_civil, uf, _norm_nome(r.get("nomeCivil"))) or busca(por_urna, uf, _norm_nome(nome_parl))
+            por_nome += bool(pessoa)
         conn.execute("UPDATE parlamentar SET pessoa_id=?, sexo=? WHERE id=?", (pessoa, r["siglaSexo"] or None, dep))
-        ligados += bool(pessoa)
-    log(f"  deputados ligados ao TSE: {ligados} de {len(ids)}")
+    log(f"  deputados ligados ao TSE: {por_cpf + por_nome} de {len(deps)} (CPF {por_cpf}, nome {por_nome})")

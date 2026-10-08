@@ -205,7 +205,7 @@ def write_raw(root: Path, *, drop_column: str | None = None) -> RawStore:
     # Cadastro da Câmara com CPF (fictício), lido só para ligar ao TSE.
     _csv(d / "deputados.csv", ["uri", "nome", "nomeCivil", "cpf", "siglaSexo", "dataNascimento"], [
         {"uri": "https://x/deputados/101", "nome": "Ana Ribeiro", "cpf": "11111111111", "siglaSexo": "F"},
-        {"uri": "https://x/deputados/102", "nome": "Bruno Sales", "cpf": "22222222222", "siglaSexo": "M"},
+        {"uri": "https://x/deputados/102", "nome": "Bruno Sales", "nomeCivil": "Bruno Sáles Lima", "cpf": "", "siglaSexo": "M"},
         {"uri": "https://x/deputados/103", "nome": "Carla Dias", "cpf": "33333333333", "siglaSexo": "F"},
     ])
 
@@ -239,6 +239,9 @@ def write_tse(root: Path) -> RawStore:
         2022: [
             _cand(2022, 1, "SP", "SP", "SÃO PAULO", "DEPUTADO FEDERAL", "250000000001", "1234", "ANA RIBEIRO SILVA",
                   "ANA RIBEIRO", "11111111111", "000000000001", "PAA", "ELEITO POR QP"),
+            # Câmara sem CPF: liga pelo nome civil + UF + cargo
+            _cand(2022, 1, "AC", "AC", "ACRE", "DEPUTADO FEDERAL", "10000000005", "2222", "BRUNO SALES LIMA",
+                  "BRUNO SALES", "55555555555", "000000000005", "PBB", "ELEITO POR MÉDIA"),
             _cand(2022, 1, "AC", "AC", "ACRE", "GOVERNADOR", "10000000002", "40", "DOUGLAS RUAS PEREIRA",
                   "DOUGLAS RUAS", "44444444444", "000000000004", "PXX", "2º TURNO"),
             _cand(2022, 2, "AC", "AC", "ACRE", "GOVERNADOR", "10000000002", "40", "DOUGLAS RUAS PEREIRA",
