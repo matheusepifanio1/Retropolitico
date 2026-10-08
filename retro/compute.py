@@ -80,6 +80,7 @@ class Presenca:
     sessoes: int
     presentes: int
     por_ano: list[dict] = field(default_factory=list)
+    so_por_voto: int = 0  # sessões sem registro de presença, mas com voto registrado do deputado
 
     @property
     def sem_registro(self) -> int:
@@ -93,14 +94,20 @@ class Presenca:
 def presenca(conn: sqlite3.Connection, dep_id: int, periodos: list[Periodo]) -> Presenca | None:
     if not periodos:
         return None
-    presentes = {r[0] for r in conn.execute("SELECT sessao_id FROM presenca WHERE parlamentar_id=?", (dep_id,))}
+    registrados = {r[0] for r in conn.execute("SELECT sessao_id FROM presenca WHERE parlamentar_id=?", (dep_id,))}
+    # Quem votou numa sessão estava presente nela, mesmo que o registro de presença falte.
+    votou = {r[0] for r in conn.execute(
+        """SELECT DISTINCT v.id_evento FROM voto x JOIN votacao v ON v.id = x.votacao_id
+           WHERE x.parlamentar_id=? AND v.id_evento IS NOT NULL""", (dep_id,))}
+    presentes = registrados | votou
     anos: dict[str, list[int]] = {}
-    total = pres = 0
+    total = pres = so_voto = 0
     for s in conn.execute("SELECT id, data_hora FROM sessao ORDER BY data_hora"):
         if not _no_periodo(s["data_hora"], periodos):
             continue
         total += 1
         foi = s["id"] in presentes
+        so_voto += s["id"] in votou and s["id"] not in registrados
         pres += foi
         a = anos.setdefault(s["data_hora"][:4], [0, 0])
         a[0] += 1
@@ -109,7 +116,7 @@ def presenca(conn: sqlite3.Connection, dep_id: int, periodos: list[Periodo]) -> 
         return None
     por_ano = [{"ano": ano, "sessoes": t, "presentes": p, "sem_registro": t - p,
                 "pct": round(100 * p / t)} for ano, (t, p) in sorted(anos.items())]
-    return Presenca(total, pres, por_ano)
+    return Presenca(total, pres, por_ano, so_voto)
 
 
 @dataclass

@@ -67,6 +67,7 @@ def write_raw(root: Path, *, drop_column: str | None = None) -> RawStore:
             {"dataHora": "2019-02-01T00:00", "situacao": "Exercício", "descricaoStatus": "Legislatura anterior", "idLegislatura": 56},
         ],
         "103": [
+            {"dataHora": "2022-03-31T00:00", "situacao": "Exercício", "descricaoStatus": "Anterior à posse", "idLegislatura": 57},
             {"dataHora": "2024-01-10T00:00", "situacao": "Exercício", "descricaoStatus": "Suplente", "idLegislatura": 57},
             {"dataHora": "2024-06-01T00:00", "situacao": "Fim do Mandato", "descricaoStatus": "Saída", "idLegislatura": 57},
         ],
@@ -74,12 +75,12 @@ def write_raw(root: Path, *, drop_column: str | None = None) -> RawStore:
     (d / "deputados-historico.json").write_text(json.dumps(historico, ensure_ascii=False), encoding="utf-8")
 
     # ---- votações
-    vh = ["id", "uri", "data", "dataHoraRegistro", "idOrgao", "siglaOrgao", "aprovacao", "votosSim",
+    vh = ["id", "uri", "data", "dataHoraRegistro", "idOrgao", "siglaOrgao", "idEvento", "aprovacao", "votosSim",
           "votosNao", "votosOutros", "descricao", "ultimaAberturaVotacao_descricao"]
     if drop_column:
         vh = [c for c in vh if c != drop_column]
     _csv(d / f"votacoes-{ANO}.csv", vh, [
-        {"id": "900-1", "data": "2024-03-05", "dataHoraRegistro": "2024-03-05T20:10:00", "siglaOrgao": "PLEN",
+        {"id": "900-1", "data": "2024-03-05", "dataHoraRegistro": "2024-03-05T20:10:00", "siglaOrgao": "PLEN", "idEvento": "2",
          "aprovacao": "1", "votosSim": "2", "votosNao": "0", "votosOutros": "0",
          "descricao": "Aprovado o Substitutivo ao Projeto de Lei nº 1, de 2024."},
         {"id": "900-2", "data": "2024-08-01", "dataHoraRegistro": "2024-08-01T19:00:00", "siglaOrgao": "PLEN",
@@ -140,7 +141,7 @@ def write_raw(root: Path, *, drop_column: str | None = None) -> RawStore:
         {"idEvento": 6, "uriEvento": "https://x/eventos/6", "idOrgao": 2003, "siglaOrgao": "CCJC"},
     ])
     _json(d / f"eventosPresencaDeputados-{ANO}.json", [
-        {"idEvento": 1, "idDeputado": 101}, {"idEvento": 2, "idDeputado": 101}, {"idEvento": 3, "idDeputado": 101},
+        {"idEvento": 1, "idDeputado": 101}, {"idEvento": 3, "idDeputado": 101},
         {"idEvento": 1, "idDeputado": 102}, {"idEvento": 3, "idDeputado": 102},
         {"uriEvento": "https://x/eventos/2", "uriDeputado": "https://x/deputados/103"},
         {"idEvento": 6, "idDeputado": 102},

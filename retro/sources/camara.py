@@ -38,7 +38,7 @@ API = "https://dadosabertos.camara.leg.br/api/v2"
 PLEN_ID = "180"
 
 CSV_FILES = {
-    "votacoes": ["id", "data", "dataHoraRegistro", "siglaOrgao", "aprovacao",
+    "votacoes": ["id", "data", "dataHoraRegistro", "siglaOrgao", "idEvento", "aprovacao",
                  "votosSim", "votosNao", "votosOutros", "descricao"],
     "votacoesVotos": ["idVotacao", "dataHoraVoto", "voto", "deputado_id",
                       "deputado_siglaPartido", "deputado_siglaUf"],
@@ -116,7 +116,7 @@ def load(conn: sqlite3.Connection, store: RawStore, cfg: dict, log: ProgressFn =
     inicio = cfg["inicio_mandato"]
     leg = int(cfg["legislatura"])
 
-    _load_deputados(conn, store, src, leg)
+    _load_deputados(conn, store, src, leg, inicio)
     log(f"  deputados: {conn.execute('SELECT COUNT(*) FROM parlamentar').fetchone()[0]}")
 
     for ano in cfg["anos"]:
@@ -134,7 +134,7 @@ def load(conn: sqlite3.Connection, store: RawStore, cfg: dict, log: ProgressFn =
     conn.commit()
 
 
-def _load_deputados(conn, store, src, leg: int) -> None:
+def _load_deputados(conn, store, src, leg: int, inicio: str) -> None:
     nome = "deputados-legislatura.json"
     deputados = read_json_records(store.path(nome))
     require_any(deputados, nome, {"id": ("id",), "nome": ("nome",), "partido": ("siglaPartido",),
@@ -160,7 +160,10 @@ def _load_deputados(conn, store, src, leg: int) -> None:
     historicos = json.loads(store.path(hnome).read_text(encoding="utf-8"))
     hid = src(hnome)
     for dep_id, eventos in historicos.items():
-        eventos = sorted((h for h in eventos if str(h.get("idLegislatura")) == str(leg)),
+        # Registros anteriores ao início da legislatura são ignorados: há casos em que a Câmara
+        # marca com a legislatura atual um "Exercício" de antes da posse (ex.: suplentes).
+        eventos = sorted((h for h in eventos if str(h.get("idLegislatura")) == str(leg)
+                          and (h.get("dataHora") or "")[:10] >= inicio),
                          key=lambda h: h.get("dataHora") or "")
         for h in eventos:
             conn.execute(
@@ -193,10 +196,12 @@ def _load_votacoes(conn, store, src, ano: int, inicio: str) -> None:
         plen.add(r["id"])
         conn.execute(
             """INSERT OR REPLACE INTO votacao
-               (id, data, data_hora, sigla_orgao, aprovacao, votos_sim, votos_nao, votos_outros, descricao, fonte_id)
-               VALUES (?,?,?,?,?,?,?,?,?,?)""",
+               (id, data, data_hora, sigla_orgao, aprovacao, votos_sim, votos_nao, votos_outros, descricao,
+                id_evento, fonte_id)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
             (r["id"], r["data"][:10], r["dataHoraRegistro"] or None, r["siglaOrgao"], _int(r["aprovacao"]),
-             _int(r["votosSim"]), _int(r["votosNao"]), _int(r["votosOutros"]), r["descricao"], fids["votacoes"]),
+             _int(r["votosSim"]), _int(r["votosNao"]), _int(r["votosOutros"]), r["descricao"],
+             _int(r["idEvento"]) or None, fids["votacoes"]),
         )
 
     votos_por_votacao: dict[str, list[str]] = {}

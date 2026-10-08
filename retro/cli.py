@@ -62,7 +62,7 @@ def sanidade(conn) -> None:
     for r in conn.execute("SELECT substr(data_hora,1,4) ano, COUNT(*) n FROM sessao GROUP BY ano"):
         print(f"  sessões deliberativas {r['ano']}: {r['n']}")
     ate = compute.agora_iso()
-    pres, part, sem_periodo = [], [], 0
+    pres, part, sem_periodo, so_voto_total = [], [], 0, 0
     for d in conn.execute("SELECT id, nome FROM parlamentar WHERE em_exercicio=1"):
         hist = conn.execute("SELECT * FROM situacao_historico WHERE parlamentar_id=?", (d["id"],)).fetchall()
         periodos = compute.periodos_exercicio(hist, ate)
@@ -73,13 +73,17 @@ def sanidade(conn) -> None:
         v = compute.resumo_votos(conn, d["id"], periodos)
         if p:
             pres.append(p.pct)
+            so_voto_total += p.so_por_voto
             if p.pct < 50:
                 hs = "; ".join(f"{h['data_hora'][:10]} {h['situacao']}" for h in hist if h["situacao"])
                 print(f"  ATENÇÃO presença {p.pct}%: id={d['id']} {d['nome']} "
-                      f"({p.presentes}/{p.sessoes}) histórico: {hs}")
+                      f"({p.presentes}/{p.sessoes}, {p.so_por_voto} só por voto) histórico: {hs}")
         if v and v.votacoes_no_periodo:
             part.append(round(100 * v.com_registro / v.votacoes_no_periodo))
     print(f"  deputados em exercício sem período de exercício no histórico: {sem_periodo}")
+    print(f"  sessões contadas como presença só pelo voto (sem registro de presença): {so_voto_total}")
+    n_ev = conn.execute("SELECT COUNT(*) FROM votacao WHERE id_evento IN (SELECT id FROM sessao)").fetchone()[0]
+    print(f"  votações nominais ligadas a uma sessão deliberativa: {n_ev}")
     for nome, xs in (("presença %", pres), ("participação em votações %", part)):
         if xs:
             xs.sort()

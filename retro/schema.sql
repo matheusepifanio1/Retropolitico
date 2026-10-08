@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS votacao (
     votos_outros       INTEGER,
     descricao          TEXT,                -- texto oficial do que foi votado
     secreta            INTEGER NOT NULL DEFAULT 0,
+    id_evento          INTEGER,             -- sessão em que ocorreu (0/NULL se não informado)
     fonte_id           INTEGER REFERENCES fonte_arquivo(id)
 );
 

@@ -59,6 +59,12 @@ class TestCarga(unittest.TestCase):
         partido = self.conn.execute("SELECT partido FROM parlamentar WHERE id=103").fetchone()[0]
         self.assertEqual(partido, "PBB")
 
+    def test_presenca_pelo_voto(self):
+        hist = self.conn.execute("SELECT * FROM situacao_historico WHERE parlamentar_id=101").fetchall()
+        p = compute.presenca(self.conn, 101, compute.periodos_exercicio(hist, "2026-12-31T00:00:00"))
+        self.assertEqual((p.sessoes, p.presentes, p.so_por_voto), (3, 3, 1),
+                         "votou na sessão 2 sem registro de presença: conta como presente")
+
     def test_suplente(self):
         hist = self.conn.execute("SELECT * FROM situacao_historico WHERE parlamentar_id=103").fetchall()
         p = compute.presenca(self.conn, 103, compute.periodos_exercicio(hist, "2026-12-31T00:00:00"))
