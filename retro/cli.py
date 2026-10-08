@@ -17,7 +17,7 @@ import yaml
 
 from . import db
 from .site.build import CuradoriaError, build
-from .sources import camara, camara_site
+from .sources import camara, camara_site, tse
 from .sources.base import DownloadError, LayoutError, RawStore
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -132,6 +132,8 @@ def main(argv: list[str] | None = None) -> int:
     store = RawStore(args.raw, "camara")
     if args.etapa == "inspecionar":
         inspecionar(store.dir)
+        print("=== TSE")
+        tse.inspecionar(RawStore(args.raw, "tse"), settings["tse"])
         return 0
     try:
         if args.etapa in ("baixar", "tudo"):
@@ -139,6 +141,8 @@ def main(argv: list[str] | None = None) -> int:
             camara.download(store, settings["camara"])
             print("Baixando páginas de presença do site da Câmara…")
             camara_site.download(store, settings["camara"])
+            print("Baixando candidaturas do TSE…")
+            tse.download(RawStore(args.raw, "tse"), settings["tse"])
         if args.etapa in ("carregar", "tudo"):
             print("Carregando no banco…")
             args.db.parent.mkdir(parents=True, exist_ok=True)

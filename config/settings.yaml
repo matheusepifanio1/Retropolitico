@@ -14,6 +14,10 @@ camara:
   # registra como "autor" o relator da MP, não quem propôs. Entra futuramente como relatoria.
   tipos_legislativos: [PL, PLP, PEC, PDL, PRC]
 
+tse:
+  # Eleições gerais (pares não múltiplos de 4) e municipais (múltiplos de 4).
+  anos: [2014, 2016, 2018, 2020, 2022, 2024, 2026]
+
 site:
   titulo: "Retrospectiva"
   # No GitHub Actions o caminho vem do próprio Pages (variável RETRO_URL_BASE).
