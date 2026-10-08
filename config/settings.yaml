@@ -10,7 +10,9 @@ camara:
   # projetos apresentados antes do mandato que viraram lei durante ele.
   anos_proposicoes: [2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
   # Tipos de proposição que podem virar norma jurídica e entram no perfil.
-  tipos_legislativos: [PL, PLP, PEC, PDL, PRC, PLV]
+  # PLV (projeto de lei de conversão de medida provisória) fica de fora: a Câmara
+  # registra como "autor" o relator da MP, não quem propôs. Entra futuramente como relatoria.
+  tipos_legislativos: [PL, PLP, PEC, PDL, PRC]
 
 site:
   titulo: "Retrospectiva"
