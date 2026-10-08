@@ -155,12 +155,14 @@ class TestSite(unittest.TestCase):
         self.assertEqual(info, {"deputados": 3, "votacoes_chave": 1})
         perfil = (out / "deputado/101/index.html").read_text(encoding="utf-8")
         self.assertIn("Ana Ribeiro", perfil)
-        self.assertIn("2 de 3", perfil)
-        self.assertIn("Missão Autorizada", perfil)
-        self.assertIn("Revisado por Pessoa Revisora", perfil)
-        self.assertIn("Orientação do partido: Sim", perfil)
-        self.assertIn("Trajetória no mandato", perfil)
-        recentes = perfil.split('id="h-recentes"')[1].split('id="leis"')[0]
+        self.assertIn("<strong>2</strong> presenças em 3 sessões", perfil)
+        self.assertIn("Em exercício desde fevereiro de 2023", perfil)
+        self.assertIn("missão autorizada (1)", perfil)
+        self.assertIn("revisado por Pessoa Revisora", perfil)
+        self.assertIn("Partido orientou <strong>Sim</strong>", perfil)
+        self.assertIn("Presidente da Comissão de Constituição", perfil)
+        self.assertIn("Linha do tempo", perfil)
+        recentes = perfil.split('id="lista-recentes"')[1].split('id="presenca"')[0]
         self.assertIn("Aprovado o Substitutivo", recentes)
         self.assertNotIn("Votação secreta de autoridade", recentes, "não é votação de mérito")
         self.assertIn("Alteração de partido", perfil)
@@ -179,8 +181,9 @@ class TestSite(unittest.TestCase):
     def test_sem_votacoes_chave(self):
         self.chave.write_text("votacoes: []\n", encoding="utf-8")
         build(self.conn, self.tmp / "site", fixtures.settings(), self.chave)
-        self.assertIn("Nenhuma votação-chave publicada",
-                      (self.tmp / "site/deputado/101/index.html").read_text(encoding="utf-8"))
+        perfil = (self.tmp / "site/deputado/101/index.html").read_text(encoding="utf-8")
+        self.assertIn('aria-pressed="false" disabled>Votações-chave (0)', perfil)
+        self.assertIn('id="lista-recentes" class="lista-votos" >', perfil, "recentes visíveis quando não há votações-chave")
 
     def test_curadoria_invalida(self):
         self.chave.write_text(fixtures.CHAVE_OK.replace("900-1", "999-9"), encoding="utf-8")

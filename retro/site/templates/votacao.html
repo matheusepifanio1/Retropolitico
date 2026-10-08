@@ -4,15 +4,15 @@
 {% block main %}
 <section>
   <a class="small" href="{{ base }}/votacoes/">← Votações-chave</a>
-  <div class="meta"><span>{{ v.data_br }}</span><span>·</span><span>{{ v.tema }}</span><span>·</span><span>Plenário da Câmara</span></div>
+  <div class="meta"><span>{{ v.data_br }}</span><span>{{ v.tema }}</span><span>Plenário da Câmara</span></div>
   <h1 style="margin:0;font-size:32px">{{ v.proposicao.titulo if v.proposicao else 'Votação ' ~ v.id }}</h1>
   <div class="card" style="display:flex;flex-direction:column;gap:10px">
-    <div><span class="tag">DESCRIÇÃO OFICIAL</span> “{{ v.descricao }}”</div>
-    {% if v.proposicao %}<div class="small"><span class="tag">EMENTA</span> {{ v.proposicao.ementa }}</div>{% endif %}
+    <div><span class="tag">Texto oficial:</span> “{{ v.descricao }}”</div>
+    {% if v.proposicao %}<div class="small"><span class="tag">Ementa:</span> {{ v.proposicao.ementa }}</div>{% endif %}
     <div class="small">O que foi votado: <strong>{{ v.etapa }}</strong>{% if v.sentido_sim %} · Votar SIM significava: {{ v.sentido_sim }}{% endif %}</div>
-    <div class="resumo"><span class="tag">EM RESUMO</span> {{ v.resumo }} <span class="xsmall muted">Revisado por {{ v.revisado_por }} em {{ v.revisado_em }}.</span></div>
+    <div class="resumo"><span class="tag">Em resumo:</span> {{ v.resumo }} <span class="xsmall muted">Revisado por {{ v.revisado_por }} em {{ v.revisado_em }}.</span></div>
     <div class="small">Placar oficial: <span class="mono">{{ v.votos_sim }} Sim × {{ v.votos_nao }} Não · {{ v.votos_outros }} outros</span>{% if v.aprovacao is not none %} · {{ 'aprovada' if v.aprovacao else 'rejeitada' }}{% endif %}
-      · <a href="https://dadosabertos.camara.leg.br/api/v2/votacoes/{{ v.id }}/votos">registro oficial ↗</a>
+      <a href="https://dadosabertos.camara.leg.br/api/v2/votacoes/{{ v.id }}/votos">Ver na Câmara</a>
       {% if v.proposicao %}· <a href="https://www.camara.leg.br/propostas-legislativas/{{ v.proposicao.proposicao_id }}">proposição ↗</a>{% endif %}</div>
   </div>
   {% if v.secreta %}

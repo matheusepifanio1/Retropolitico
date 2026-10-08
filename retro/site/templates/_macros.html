@@ -6,6 +6,40 @@
 {%- if v == 'Sim' -%}sim{%- elif v == 'Não' -%}nao{%- elif v in (None, '', 'Ausente', 'Sem registro') -%}ausente{%- else -%}outro{%- endif -%}
 {%- endmacro -%}
 
-{%- macro selo(nivel) -%}
-<span class="selo"><span class="barras" aria-hidden="true">{% for i in range(3) %}<i class="{{ 'on' if i < nivel.barras else '' }}"></i>{% endfor %}</span>{{ nivel.nome }}</span>
+{%- macro icone_voto(v) -%}
+{%- if v == 'Sim' -%}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>
+{%- elif v == 'Não' -%}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro card_voto(v, dep, base) -%}
+<article class="voto-card" data-data="{{ v.data }}">
+  <div class="voto-lado">
+    <span class="voto {{ classe_voto(v.voto) }}">{{ icone_voto(v.voto) }}{{ v.voto_label }}</span>
+    <span class="xsmall muted">{{ v.data_br }}</span>
+  </div>
+  <div class="voto-corpo">
+    <div class="etiquetas">
+      {% if v.titulo or v.proposicao %}<span class="etiqueta">{{ v.titulo or v.proposicao.titulo }}</span>{% endif %}
+      {% if v.resumo %}<span class="etiqueta chave">Votação-chave</span>{% endif %}
+      {% if v.etapa %}<span class="etiqueta">{{ v.etapa }}</span>{% endif %}
+    </div>
+    <h3>{{ v.ementa or (v.proposicao.ementa if v.proposicao else '') or v.descricao }}</h3>
+    {% if v.resumo %}<p class="resumo">{{ v.resumo }} <span class="xsmall muted">Resumo revisado por {{ v.revisado_por }} em {{ v.revisado_em }}.</span></p>{% endif %}
+    {% if v.sentido_sim %}<p class="oficial">Votar SIM significava: {{ v.sentido_sim }}</p>{% endif %}
+    <p class="oficial">Texto oficial da Câmara: “{{ v.descricao }}”</p>
+    <div class="voto-rodape">
+      {% set total = (v.votos_sim or 0) + (v.votos_nao or 0) %}
+      <span class="placar">Resultado
+        {% if total %}<span class="barra fina" role="img" aria-label="{{ v.votos_sim }} votos sim e {{ v.votos_nao }} não"><span class="p" style="width:{{ (100 * (v.votos_sim or 0) / total)|round|int }}%"></span></span>{% endif %}
+        <strong class="mono">{{ v.votos_sim if v.votos_sim is not none else '—' }} a {{ v.votos_nao if v.votos_nao is not none else '—' }}</strong>{% if v.aprovacao is not none %}, {{ 'aprovada' if v.aprovacao else 'rejeitada' }}{% endif %}
+      </span>
+      <span>Partido orientou <strong>{{ v.orientacao or 'nada publicado' }}</strong></span>
+      <span class="links">
+        {% if v.resumo %}<a href="{{ base }}/votacao/{{ v.id }}/">Voto de todos</a>{% endif %}
+        <a href="https://dadosabertos.camara.leg.br/api/v2/votacoes/{{ v.id }}/votos">Ver na Câmara</a>
+      </span>
+    </div>
+  </div>
+</article>
 {%- endmacro -%}

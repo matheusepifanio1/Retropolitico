@@ -7,27 +7,35 @@
 <meta name="description" content="{% block description %}O que cada político fez, com dados oficiais e link para a fonte.{% endblock %}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ base }}/static/style.css">
 <script src="{{ base }}/static/app.js" defer></script>
 </head>
 <body data-base="{{ base }}">
 <header class="site-header">
   <div class="wrap">
-    <a class="logo" href="{{ base }}/">{{ site.titulo }}<span>.</span></a>
-    <nav aria-label="Principal">
-      <a href="{{ base }}/" {% if pagina == 'inicio' %}aria-current="page"{% endif %}>Buscar político</a>
-      <a href="{{ base }}/votacoes/" {% if pagina == 'votacoes' %}aria-current="page"{% endif %}>Votações-chave</a>
-      <a href="{{ base }}/metodologia/" {% if pagina == 'metodologia' %}aria-current="page"{% endif %}>Metodologia</a>
-    </nav>
+    <a class="logo" href="{{ base }}/">retrospectiva</a>
+    <div class="topo-acoes">
+      {% if pagina != 'inicio' %}
+      <form action="{{ base }}/" method="get" role="search">
+        <label class="sr" for="topo-busca">Buscar político</label>
+        <input id="topo-busca" class="topo-busca" type="search" name="q" placeholder="Buscar outro político">
+      </form>
+      {% endif %}
+      <nav aria-label="Principal">
+        <a href="{{ base }}/votacoes/" {% if pagina == 'votacoes' %}aria-current="page"{% endif %}>Votações-chave</a>
+        <a href="{{ base }}/metodologia/" {% if pagina == 'metodologia' %}aria-current="page"{% endif %}>Como funciona</a>
+      </nav>
+    </div>
   </div>
 </header>
+{% block antes %}{% endblock %}
 <main class="wrap">
 {% block main %}{% endblock %}
 <footer class="rodape">
-  <div><h3>Fontes</h3>Câmara dos Deputados (Dados Abertos). Todo número tem link para a origem. <a href="{{ base }}/dados/">Baixe os dados e confira os hashes</a>.</div>
-  <div><h3>Imparcialidade</h3>Mesmos critérios para todos, ordem alfabética, nenhum adjetivo ou nota para políticos. Nenhum texto publicado é gerado por IA.</div>
-  <div><h3>Correções</h3>Encontrou um erro? <a href="{{ site.repositorio }}/issues/new">Abra uma correção</a>. Todo o histórico de alterações é público no <a href="{{ site.repositorio }}/commits">repositório</a>.<br><span class="xsmall muted">Atualizado em {{ atualizado_em }} (UTC).</span></div>
+  <div><h3>De onde vêm os dados</h3>Câmara dos Deputados e TSE. Cada número leva à página de origem. <a href="{{ base }}/dados/">Baixe os dados e confira os arquivos</a>.</div>
+  <div><h3>Mesma régua para todos</h3>Mesmas regras em todos os perfis, ordem alfabética, sem notas, rankings ou adjetivos. Nenhum texto publicado é gerado por IA.</div>
+  <div><h3>Achou um erro?</h3><a href="{{ site.repositorio }}/issues/new">Envie uma correção</a>. Todas as alterações ficam registradas no <a href="{{ site.repositorio }}/commits">histórico público</a>.<br><span class="xsmall muted">Atualizado em {{ atualizado_em }} (UTC).</span></div>
 </footer>
 </main>
 </body>

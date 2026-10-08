@@ -61,6 +61,19 @@ def load_chave(path: Path, conn: sqlite3.Connection) -> list[dict]:
     return out
 
 
+CAMPOS_CARD = {"titulo": None, "ementa": None, "proposicao": None, "resumo": None, "etapa": None,
+               "sentido_sim": None, "revisado_por": None, "revisado_em": None, "orientacao": None}
+
+
+def para_card(v: dict) -> dict:
+    """Garante todos os campos usados pelo card de votação (chave ou recente)."""
+    card = {**CAMPOS_CARD, **v}
+    if card["proposicao"]:
+        card["titulo"] = card["titulo"] or card["proposicao"].get("titulo")
+        card["ementa"] = card["ementa"] or card["proposicao"].get("ementa")
+    return card
+
+
 def cobertura(presenca, resumo) -> tuple[list[dict], dict]:
     blocos = [
         {"nome": "Presença em sessões", "ok": presenca is not None, "motivo": "sem sessões no período"},
@@ -77,6 +90,54 @@ def cobertura(presenca, resumo) -> tuple[list[dict], dict]:
     else:
         nivel = {"nome": "Só dados básicos", "barras": 1}
     return blocos, nivel
+
+
+UF_NOME = {"AC": "do Acre", "AL": "de Alagoas", "AP": "do Amapá", "AM": "do Amazonas", "BA": "da Bahia",
+           "CE": "do Ceará", "DF": "do Distrito Federal", "ES": "do Espírito Santo", "GO": "de Goiás",
+           "MA": "do Maranhão", "MT": "de Mato Grosso", "MS": "de Mato Grosso do Sul", "MG": "de Minas Gerais",
+           "PA": "do Pará", "PB": "da Paraíba", "PR": "do Paraná", "PE": "de Pernambuco", "PI": "do Piauí",
+           "RJ": "do Rio de Janeiro", "RN": "do Rio Grande do Norte", "RS": "do Rio Grande do Sul",
+           "RO": "de Rondônia", "RR": "de Roraima", "SC": "de Santa Catarina", "SP": "de São Paulo",
+           "SE": "de Sergipe", "TO": "do Tocantins"}
+MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro",
+         "outubro", "novembro", "dezembro"]
+
+
+def mes_ano(iso: str) -> str:
+    return f"{MESES[int(iso[5:7]) - 1]} de {iso[:4]}"
+
+
+def frase_perfil(dep, linha: dict) -> str:
+    """Frase de abertura do perfil, montada só com dados oficiais."""
+    partido = f"pelo {dep['partido']} " if dep["partido"] else ""
+    frase = f"Deputado(a) federal {partido}{UF_NOME.get(dep['uf'], '')}".strip() + "."
+    exerc = [s for s in linha["situacao"] if s["exercicio"]]
+    licencas = [s for s in linha["situacao"] if s["chave"] == "licenca"]
+    if dep["em_exercicio"] and exerc:
+        frase += f" Em exercício desde {mes_ano(exerc[0]['inicio'])}"
+        if licencas:
+            frase += f", com {len(licencas)} {'período' if len(licencas) == 1 else 'períodos'} de licença"
+        frase += "."
+    elif exerc:
+        frase += f" Exerceu o mandato de {mes_ano(exerc[0]['inicio'])} a {mes_ano(exerc[-1]['fim'])}."
+    return frase
+
+
+RANK_CARGO = ["presidente", "1º vice-presidente", "2º vice-presidente", "3º vice-presidente", "vice-presidente",
+              "relator", "coordenador-geral", "coordenador", "coordenadora"]
+
+
+def cargo_destaque(direcao: list[dict]) -> dict | None:
+    if not direcao:
+        return None
+    def ordem(c):
+        t = compute.norm(c["titulo"])
+        ranks = [compute.norm(x) for x in RANK_CARGO]
+        rank = ranks.index(t) if t in ranks else len(ranks)
+        return (rank, "".join(chr(255 - ord(ch)) for ch in (c["data_inicio"] or "")))  # mais recente primeiro
+    c = sorted(direcao, key=ordem)[0]
+    return {**c, "periodo": (f"De {mes_ano(c['data_inicio'])} " if c["data_inicio"] else "")
+            + (f"a {mes_ano(c['data_fim'])}." if c["data_fim"] else "até hoje.")}
 
 
 def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path, db_path: Path | None = None) -> dict:
@@ -127,9 +188,9 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
         for v in chave:
             meu = votos_dep.get(v["id"])
             partido = (meu["partido"] if meu else d["partido"]) or ""
-            chave_dep.append({**v, "voto": meu["voto"] if meu else None,
+            chave_dep.append(para_card({**v, "voto": meu["voto"] if meu else None,
                               "voto_label": voto_label(meu["voto"] if meu else None, bool(v["secreta"]) and meu is not None),
-                              "orientacao": orient.get((v["id"], partido.upper()))})
+                              "orientacao": orient.get((v["id"], partido.upper()))}))
 
         recentes = []
         for v in todas_votacoes:
@@ -139,9 +200,9 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
                 continue
             meu = votos_dep.get(v["id"])
             partido = (meu["partido"] if meu else d["partido"]) or ""
-            recentes.append({**dict(v), "data_br": data_br(v["data"]), "voto": meu["voto"] if meu else None,
+            recentes.append(para_card({**dict(v), "data_br": data_br(v["data"]), "voto": meu["voto"] if meu else None,
                              "voto_label": voto_label(meu["voto"] if meu else None, bool(v["secreta"]) and meu is not None),
-                             "orientacao": orient.get((v["id"], partido.upper()))})
+                             "orientacao": orient.get((v["id"], partido.upper()))}))
 
         cargos = compute.cargos(conn, d["id"])
         linha = compute.linha_do_tempo(hist, cargos["direcao"], cam["inicio_mandato"], ate)
@@ -149,6 +210,8 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
         render(f"deputado/{d['id']}/index.html", "deputado.html", pagina="perfil", dep=d, presenca=pres,
                resumo=resumo, leis=leis, chave=chave_dep, cobertura=blocos, nivel=nivel,
                trajetoria=compute.trajetoria(hist), cargos=cargos, linha=linha, recentes=recentes,
+               frase=frase_perfil(d, linha), destaque=cargo_destaque(cargos["direcao"]),
+               n_cobertura=sum(b["ok"] for b in blocos), n_comissoes=len({c["id_orgao"] for c in cargos["membro"]}),
                serie_json=json.dumps(serie, separators=(",", ":")))
 
         lista = []
