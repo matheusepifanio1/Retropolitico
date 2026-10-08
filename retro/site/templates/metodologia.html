@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Metodologia · {{ site.titulo }}{% endblock %}
+{% block main %}
+<article class="prose">
+  <h1 style="font-size:36px;margin:0">Metodologia</h1>
+  <p>Este site mostra apenas dados publicados por órgãos oficiais, com link para a origem. Esta página explica cada regra de cálculo. O código que aplica essas regras é aberto e está no <a href="{{ site.repositorio }}">repositório</a>.</p>
+
+  <h2 id="principios">Princípios</h2>
+  <ul>
+    <li><strong>Fonte oficial sempre.</strong> Cada arquivo bruto é guardado com URL, data de coleta e hash SHA-256 (<a href="{{ base }}/dados/">ver arquivos</a>).</li>
+    <li><strong>Mesmo critério para todos.</strong> Todos os perfis são gerados pelo mesmo código, sem exceção.</li>
+    <li><strong>Sem opinião.</strong> Não há notas, rankings, adjetivos ou índices ideológicos.</li>
+    <li><strong>Sem IA no conteúdo publicado.</strong> Resumos de votações são escritos e revisados por pessoas, com nome e data.</li>
+    <li><strong>Quando falta dado, dizemos.</strong> Um bloco sem dado aparece como "indisponível", nunca como zero.</li>
+  </ul>
+
+  <h2 id="presenca">Presença em sessões</h2>
+  <p>Fonte: arquivos <code>eventos</code>, <code>eventosOrgaos</code> e <code>eventosPresencaDeputados</code> da Câmara.</p>
+  <ul>
+    <li>Contamos só eventos do Plenário (órgão PLEN) cujo tipo é "Sessão Deliberativa" e cuja situação é "Encerrada", a partir de {{ inicio_mandato }}.</li>
+    <li>Para cada deputado, contamos apenas as sessões que ocorreram enquanto a situação dele era "Exercício", segundo o histórico oficial (<code>/deputados/{id}/historico</code>). Assim, suplentes e licenciados não aparecem com ausências do período em que não estavam no cargo.</li>
+    <li>"Sem registro de presença" = sessão no período de exercício sem registro de presença. A Câmara não publica em dados abertos as justificativas de ausência, então não as classificamos.</li>
+  </ul>
+
+  <h2 id="votacoes">Votações nominais</h2>
+  <p>Fonte: arquivos <code>votacoes</code>, <code>votacoesVotos</code>, <code>votacoesOrientacoes</code> e <code>votacoesProposicoes</code>.</p>
+  <ul>
+    <li>Só votações do Plenário (sigla do órgão "PLEN"). Votações em comissões ficam para uma etapa futura.</li>
+    <li>Votações simbólicas não têm registro individual e não aparecem.</li>
+    <li>Votação secreta: quando a Câmara registra quem votou mas nenhum voto individual, marcamos como secreta.</li>
+    <li>"Artigo 17" indica o presidente da sessão, que pelo Regimento não vota.</li>
+    <li>Orientação do partido: mostramos a orientação publicada para a sigla exata do partido do deputado na data. Quando o partido orientou como parte de um bloco, a orientação pode não aparecer.</li>
+  </ul>
+
+  <h2 id="votacoes-chave">Critérios das votações-chave</h2>
+  <ul>
+    <li>Votações nominais de <strong>mérito</strong> do Plenário: texto-base, turnos de PEC ou destaques que mudam o conteúdo. Requerimentos de procedimento (adiamento, urgência, retirada de pauta) ficam de fora.</li>
+    <li>Equilíbrio entre temas: economia, social, segurança, meio ambiente, costumes, gastos públicos e instituições.</li>
+    <li>Cada votação tem: descrição oficial, o que estava sendo votado, o que significava votar SIM e um resumo neutro escrito por uma pessoa, com nome e data da revisão.</li>
+    <li>A lista vale para todos os deputados igualmente. Qualquer inclusão ou alteração é feita por proposta pública no repositório (arquivo <code>config/votacoes_chave.yaml</code>).</li>
+    <li>As votações-chave são um atalho: todas as demais votações nominais continuam acessíveis em cada perfil.</li>
+  </ul>
+
+  <h2 id="leis">Projetos que viraram lei</h2>
+  <p>Fonte: arquivos <code>proposicoes</code> e <code>proposicoesAutores</code> de {{ anos_prop[0] }} a {{ anos_prop[-1] }}.</p>
+  <ul>
+    <li>Tipos considerados: {{ tipos|join(', ') }}.</li>
+    <li>Virou lei: a situação oficial mais recente contém "Transformado em Norma Jurídica".</li>
+    <li>Autor principal: primeiro na ordem de assinatura. Coautor: demais assinaturas.</li>
+  </ul>
+  <h3 id="homenagens">Leis de homenagem</h3>
+  <p>São separadas automaticamente quando a ementa contém uma destas expressões (sem acento, sem diferenciar maiúsculas): {% for e in homenagem_exprs %}<code>{{ e }}</code>{{ ', ' if not loop.last }}{% endfor %}. A regra pode errar; a ementa oficial é sempre mostrada para conferência.</p>
+
+  <h2 id="cobertura">Cobertura</h2>
+  <p>O selo de cada perfil conta quantos blocos têm dados coletados. Nesta etapa, perfis de deputados federais têm presença, votações e leis; emendas orçamentárias e promessas entram nas próximas etapas.</p>
+
+  <h2 id="correcoes">Correções</h2>
+  <p>Qualquer pessoa, inclusive o próprio parlamentar, pode apontar um erro <a href="{{ site.repositorio }}/issues/new">abrindo uma solicitação</a>. Correções são registradas no histórico público do repositório.</p>
+</article>
+{% endblock %}

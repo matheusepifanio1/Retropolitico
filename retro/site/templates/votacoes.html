@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Votações-chave · {{ site.titulo }}{% endblock %}
+{% block main %}
+<section>
+  <h1 style="margin:0;font-size:36px">Votações-chave</h1>
+  <p class="lede">Votações nominais do Plenário escolhidas pelos <a href="{{ base }}/metodologia/#votacoes-chave">critérios públicos</a>, cobrindo vários temas. Em cada uma, veja o voto de todos os deputados.</p>
+  {% for v in chave %}
+  <a class="card" href="{{ base }}/votacao/{{ v.id }}/" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:6px">
+    <span class="meta"><span>{{ v.data_br }}</span><span>·</span><span>{{ v.tema }}</span></span>
+    <strong style="font-size:18px">{{ v.proposicao.titulo if v.proposicao else v.id }} · {{ v.etapa }}</strong>
+    <span class="small">{{ v.resumo }}</span>
+    <span class="small" style="color:var(--accent)">Ver o voto de todos →</span>
+  </a>
+  {% else %}
+  <div class="vazio">Nenhuma votação-chave publicada ainda. Cada inclusão passa por revisão humana e segue os critérios da metodologia.</div>
+  {% endfor %}
+</section>
+{% endblock %}

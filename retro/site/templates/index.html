@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block main %}
+<section class="hero">
+  <h1>O que cada político fez, com dados oficiais.</h1>
+  <p>Votos, presença e leis aprovadas. Cada informação tem link para a fonte pública, para você conferir.</p>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <label class="campo" for="busca">Buscar por nome</label>
+    <input id="busca" class="busca" type="search" placeholder="Digite um nome" autocomplete="off">
+  </div>
+  <div class="filtros" role="group" aria-label="Filtros">
+    <button type="button" class="filtro" aria-pressed="true">Deputado federal</button>
+    <button type="button" class="filtro" disabled title="Em breve">Senador · em breve</button>
+    <button type="button" class="filtro" disabled title="Em breve">Governador · em breve</button>
+    <label class="sr" for="uf" style="position:absolute;left:-9999px">Estado</label>
+    <select id="uf" class="filtro" aria-label="Estado">
+      <option value="">Todos os estados</option>
+      {% for uf in ufs %}<option value="{{ uf }}">{{ uf }}</option>{% endfor %}
+    </select>
+  </div>
+  <div id="resultados" class="resultados" aria-live="polite"></div>
+  <div id="sem-resultados" class="vazio" hidden>Nenhum político encontrado com esses filtros.</div>
+  <noscript><div class="vazio">A busca precisa de JavaScript. Use a <a href="{{ base }}/deputados/">lista completa por estado</a>.</div></noscript>
+  <a href="{{ base }}/deputados/" class="small">Ver lista completa de deputados por estado</a>
+
+  <div class="aviso">
+    <strong>Aviso sobre a cobertura dos dados.</strong> Nem todo órgão público divulga as mesmas informações, e este site está sendo construído por etapas.
+    Hoje ele cobre <strong>deputados federais</strong> com dados da Câmara. Senadores, governadores, emendas orçamentárias e promessas de campanha
+    entram nas próximas etapas. Cada perfil mostra o que já está disponível. Ausência de dado não significa ausência de atuação.
+  </div>
+</section>
+
+<section>
+  <h2 style="margin:0;font-size:28px">Compromisso com a imparcialidade</h2>
+  <div class="grid">
+    <div class="card"><strong>Só fontes oficiais</strong><p class="small" style="margin:6px 0 0">Todo dado tem link para a origem e o arquivo bruto pode ser conferido pelo hash.</p></div>
+    <div class="card"><strong>Mesmos critérios para todos</strong><p class="small" style="margin:6px 0 0">Todo perfil tem os mesmos blocos, calculados pelo mesmo código, aberto ao público.</p></div>
+    <div class="card"><strong>Critério de seleção público</strong><p class="small" style="margin:6px 0 0">As votações em destaque seguem regras publicadas. Todas as outras votações nominais continuam disponíveis.</p></div>
+    <div class="card"><strong>Sem opinião</strong><p class="small" style="margin:6px 0 0">Não usamos adjetivos, notas ou rankings. Resumos descrevem o que estava em votação.</p></div>
+    <div class="card"><strong>Ordem neutra</strong><p class="small" style="margin:6px 0 0">Políticos sempre em ordem alfabética. Cores neutras, sem associação a partidos.</p></div>
+    <div class="card"><strong>Correções públicas</strong><p class="small" style="margin:6px 0 0">Qualquer pessoa pode apontar um erro. Toda correção fica no histórico do repositório.</p></div>
+  </div>
+</section>
+{% endblock %}

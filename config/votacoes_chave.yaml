@@ -1,0 +1,31 @@
+# Votações-chave exibidas em destaque nos perfis.
+#
+# Regras (publicadas em docs/METODOLOGIA.md):
+#   - Só votações nominais de mérito do Plenário (texto-base, turno ou destaque
+#     relevante). Requerimentos procedimentais ficam de fora.
+#   - Equilíbrio entre temas: economia, social, segurança, meio ambiente,
+#     costumes, gastos públicos, instituições.
+#   - O resumo é escrito por uma pessoa, descreve o que estava em votação e
+#     nunca avalia se foi bom ou ruim. Nenhum resumo é gerado por IA.
+#   - Toda inclusão ou alteração passa por pull request revisado.
+#
+# Campos:
+#   id:          id oficial da votação na Câmara (ex.: "2438265-73")
+#   tema:        economia | social | seguranca | meio-ambiente | costumes | gastos | instituicoes
+#   etapa:       o que foi votado (ex.: "Texto-base, 1º turno", "Destaque supressivo do art. 12")
+#   resumo:      descrição neutra do conteúdo
+#   sentido_sim: o que significava votar SIM (obrigatório para destaques)
+#   revisado_por: nome de quem escreveu/revisou o resumo
+#   revisado_em:  data da revisão (AAAA-MM-DD)
+
+votacoes: []
+
+# Exemplo (descomente e preencha com uma votação real conferida na fonte):
+# votacoes:
+#   - id: "0000000-00"
+#     tema: social
+#     etapa: "Texto-base, 1º turno"
+#     resumo: "A proposta ..."
+#     sentido_sim: "Aprovar o texto-base."
+#     revisado_por: "Nome Sobrenome"
+#     revisado_em: "2026-10-08"

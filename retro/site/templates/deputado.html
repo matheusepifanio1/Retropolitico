@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% from "_macros.html" import info, classe_voto, selo %}
+{% block title %}{{ dep.nome }} · {{ site.titulo }}{% endblock %}
+{% block description %}Votos, presença e leis de {{ dep.nome }} ({{ dep.partido }}-{{ dep.uf }}), com fontes oficiais.{% endblock %}
+{% block main %}
+
+<section class="perfil-topo">
+  <div class="perfil-id">
+    {% if dep.url_foto %}<img class="foto" src="{{ dep.url_foto }}" alt="Foto oficial de {{ dep.nome }}" width="96" height="96">{% else %}<div class="foto"></div>{% endif %}
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <h1>{{ dep.nome }}</h1>
+      <div class="muted" style="font-size:17px">Deputado(a) federal · {{ dep.partido or 'sem partido' }} · {{ dep.uf }} · {{ legislatura }}ª legislatura</div>
+      <div class="chips">
+        <span class="chip {{ 'forte' if dep.em_exercicio }}">{{ 'Em exercício' if dep.em_exercicio else 'Fora de exercício hoje' }}</span>
+        <a class="chip" href="https://www.camara.leg.br/deputados/{{ dep.id }}">Página oficial na Câmara ↗</a>
+      </div>
+      <div class="cobertura">
+        {{ selo(nivel) }}
+        {{ info('i-cobertura', 'O que significa o selo de cobertura?') }}
+      </div>
+      <div id="i-cobertura" class="info" hidden>
+        <p>O selo mostra quantos blocos deste perfil já têm dados oficiais coletados:</p>
+        <p>{% for c in cobertura %}{{ '✓' if c.ok else '—' }} {{ c.nome }}{% if not c.ok %} <span class="muted">({{ c.motivo }})</span>{% endif %}{% if not loop.last %}<br>{% endif %}{% endfor %}</p>
+        <p>Ausência de dado não significa ausência de atuação.</p>
+      </div>
+    </div>
+  </div>
+  <div class="card como-ler">
+    <strong>Como ler esta página</strong><br>
+    Todo número tem link para a fonte oficial. Toque no <strong>i</strong> para ver o que cada item significa.
+    Textos marcados <span class="tag">EM RESUMO</span> foram escritos por pessoas e descrevem o que estava em votação, sem opinião.
+  </div>
+</section>
+
+<section class="grid" aria-label="Números principais">
+  <div class="card stat">
+    <div class="label-row"><span class="label">Sessões deliberativas com presença registrada</span>{{ info('i-s1', 'O que significa presença em sessões?') }}</div>
+    {% if presenca %}
+    <div class="valor">{{ presenca.presentes }} de {{ presenca.sessoes }}</div>
+    <div class="detalhe">{{ presenca.pct }}% · {{ presenca.sem_registro }} sem registro de presença</div>
+    {% else %}<div class="valor">—</div><div class="detalhe">Indisponível para este período</div>{% endif %}
+    <div id="i-s1" class="info" hidden>Sessões do Plenário com votação, encerradas, em que a Câmara registrou a presença do deputado. Contamos só as sessões do período em que ele estava em exercício. "Sem registro" pode ter justificativa (licença médica, missão oficial), que a Câmara não publica em dados abertos.</div>
+    <a class="xsmall" href="https://dadosabertos.camara.leg.br/swagger/api.html">Fonte: Câmara dos Deputados ↗</a>
+  </div>
+  <div class="card stat">
+    <div class="label-row"><span class="label">Votações nominais com registro</span>{{ info('i-s2', 'O que é votação nominal?') }}</div>
+    {% if resumo %}
+    <div class="valor">{{ resumo.com_registro }}</div>
+    <div class="detalhe">de {{ resumo.votacoes_no_periodo }} realizadas no Plenário enquanto em exercício</div>
+    {% else %}<div class="valor">—</div><div class="detalhe">Indisponível</div>{% endif %}
+    <div id="i-s2" class="info" hidden>Votação nominal é aquela em que cada parlamentar registra o voto no painel. Decisões por votação simbólica não têm registro individual e não entram nesta conta. Inclui registros de "Artigo 17" (presidente da sessão, que não vota) e de votações secretas.</div>
+    <a class="xsmall" href="{{ base }}/deputado/{{ dep.id }}/votos/">Ver todos os votos →</a>
+  </div>
+  <div class="card stat">
+    <div class="label-row"><span class="label">Leis como autor principal</span>{{ info('i-s3', 'O que conta como lei de autoria?') }}</div>
+    <div class="valor">{{ leis.principal|length }}</div>
+    <div class="detalhe">+ {{ leis.coautor|length }} como coautor · {{ leis.homenagem|length }} de homenagem</div>
+    <div id="i-s3" class="info" hidden>Projetos apresentados por ele (primeiro a assinar) cuja situação oficial é "transformado em norma jurídica". Leis de homenagem (nomes de obras, datas comemorativas) são contadas à parte.</div>
+    <a class="xsmall" href="#leis">Ver lista ↓</a>
+  </div>
+</section>
+
+<section aria-labelledby="h-presenca">
+  <div class="title-row"><h2 id="h-presenca">Presença em sessões</h2>{{ info('i-presenca', 'Como a presença é medida?') }}</div>
+  <div id="i-presenca" class="info" hidden>
+    <p>A Câmara registra a presença dos deputados nas <strong>sessões deliberativas</strong> do Plenário (sessões com votação). Isso não mede todo o trabalho do mandato: comissões, gabinete e agendas no estado não aparecem aqui.</p>
+    <p>A Câmara não publica em dados abertos a <strong>justificativa</strong> das ausências. Por isso usamos "sem registro de presença", e não "falta". As justificativas podem ser conferidas na <a href="https://www.camara.leg.br/deputados/{{ dep.id }}">página oficial do deputado</a>.</p>
+  </div>
+  {% if presenca %}
+  <div class="table-box">
+    <table>
+      <thead><tr><th>Ano</th><th>Sessões em exercício</th><th>Presença registrada</th><th>Sem registro</th><th style="width:30%">Distribuição</th></tr></thead>
+      <tbody>
+      {% for a in presenca.por_ano %}
+      <tr>
+        <td class="mono">{{ a.ano }}</td><td>{{ a.sessoes }}</td>
+        <td><strong>{{ a.presentes }}</strong> <span class="muted">({{ a.pct }}%)</span></td>
+        <td>{{ a.sem_registro }}</td>
+        <td><div class="dist" role="img" aria-label="{{ a.pct }}% com presença registrada"><div class="p" style="width:{{ a.pct }}%"></div><div class="s" style="width:{{ 100 - a.pct }}%"></div></div></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="legenda"><span><span class="sw p"></span>Presença registrada</span><span><span class="sw s"></span>Sem registro de presença</span></div>
+  {% else %}
+  <div class="vazio">Não há sessões deliberativas no período de exercício deste deputado nos dados coletados.</div>
+  {% endif %}
+</section>
+
+<section aria-labelledby="h-votacoes">
+  <div class="title-row" style="justify-content:space-between">
+    <div class="title-row"><h2 id="h-votacoes">Votações-chave</h2>{{ info('i-votacoes', 'Como ler as votações') }}</div>
+    <div class="small" style="display:flex;gap:16px;flex-wrap:wrap"><a href="{{ base }}/deputado/{{ dep.id }}/votos/">Ver todas as votações</a><a href="{{ base }}/metodologia/#votacoes-chave">Como escolhemos estas</a></div>
+  </div>
+  <div id="i-votacoes" class="info" hidden>
+    <p><strong>Texto-base</strong> é a versão principal do projeto. <strong>Destaque</strong> é uma votação separada sobre um trecho: nele, SIM pode significar manter o trecho e NÃO, retirá-lo. Por isso cada votação diz o que significava votar SIM.</p>
+    <p><strong>Orientação do partido</strong> é a recomendação do líder da bancada; o deputado pode seguir ou não. <strong>Sem registro</strong>: não registrou voto naquela votação.</p>
+  </div>
+  {% for v in chave %}
+  <article class="card votacao">
+    <div class="corpo">
+      <div class="meta"><span>{{ v.data_br }}</span><span>·</span><span>{{ v.tema }}</span>{% if v.proposicao %}<span>·</span><span>{{ v.proposicao.titulo }}</span>{% endif %}</div>
+      <div><span class="tag">DESCRIÇÃO OFICIAL</span> “{{ v.descricao }}”</div>
+      {% if v.proposicao %}<div class="small"><span class="tag">EMENTA</span> {{ v.proposicao.ementa }}</div>{% endif %}
+      <div class="small">O que foi votado: <strong>{{ v.etapa }}</strong>{% if v.sentido_sim %} · Votar SIM significava: {{ v.sentido_sim }}{% endif %}</div>
+      <div class="resumo"><span class="tag">EM RESUMO</span> {{ v.resumo }} <span class="xsmall muted">Revisado por {{ v.revisado_por }} em {{ v.revisado_em }}.</span></div>
+    </div>
+    <div class="lado">
+      <div class="xsmall muted">Voto de {{ dep.nome }}</div>
+      <div class="voto {{ classe_voto(v.voto) }}">{{ v.voto_label }}</div>
+      <div class="xsmall muted">Orientação do partido: {{ v.orientacao or 'não publicada para o partido' }}</div>
+      <div class="xsmall muted">Placar oficial: <span class="mono" style="color:var(--ink)">{{ v.votos_sim }} × {{ v.votos_nao }}</span>{% if v.aprovacao is not none %} · {{ 'aprovada' if v.aprovacao else 'rejeitada' }}{% endif %}</div>
+      <a class="xsmall" href="{{ base }}/votacao/{{ v.id }}/">Ver o voto de todos →</a>
+      <a class="xsmall" href="https://dadosabertos.camara.leg.br/api/v2/votacoes/{{ v.id }}/votos">Registro oficial ↗</a>
+    </div>
+  </article>
+  {% else %}
+  <div class="vazio">Nenhuma votação-chave publicada ainda. A seleção segue os <a href="{{ base }}/metodologia/#votacoes-chave">critérios públicos</a>. Enquanto isso, veja <a href="{{ base }}/deputado/{{ dep.id }}/votos/">todas as votações nominais</a> deste deputado.</div>
+  {% endfor %}
+</section>
+
+<section id="leis" aria-labelledby="h-leis">
+  <div class="title-row"><h2 id="h-leis">Projetos que viraram lei</h2>{{ info('i-leis', 'O que significa autoria de lei?') }}</div>
+  <div id="i-leis" class="info" hidden>
+    <p><strong>Autor principal</strong>: primeiro a assinar o projeto. Para virar lei, o projeto passa por comissões, pelos plenários da Câmara e do Senado e pela sanção presidencial, então outras pessoas também mudam o texto final.</p>
+    <p><strong>Coautor</strong>: assinou junto. <strong>Homenagem</strong>: leis que dão nome a obras, criam datas comemorativas ou títulos. Essa separação é feita automaticamente pela ementa, com <a href="{{ base }}/metodologia/#homenagens">regras públicas</a>, e pode ter erros: confira a ementa.</p>
+  </div>
+  <p class="lede">Inclui projetos dos tipos {{ tipos|join(', ') }} apresentados desde {{ anos_prop[0] }}.</p>
+  <div class="grid-wide">
+    <div class="card">
+      <strong>Autor principal · {{ leis.principal|length }}</strong>
+      <div class="lista-leis" style="margin-top:12px">
+        {% for p in leis.principal %}
+        <div><a class="mono xsmall" href="https://www.camara.leg.br/propostas-legislativas/{{ p.id }}">{{ p.sigla_tipo }} {{ p.numero }}/{{ p.ano }} ↗</a><div style="font-size:15px">{{ p.ementa }}</div></div>
+        {% else %}<div class="small muted">Nenhuma nos dados coletados.</div>{% endfor %}
+      </div>
+    </div>
+    <div class="card">
+      <strong>Outras atuações</strong>
+      <div class="linha"><span>Coautor de leis aprovadas</span><strong>{{ leis.coautor|length }}</strong></div>
+      <div class="linha"><span>Leis de homenagem (autor ou coautor)</span><strong>{{ leis.homenagem|length }}</strong></div>
+      <div class="linha"><span>Outras proposições como autor principal</span><strong>{{ leis.apresentadas_principal_nao_lei }}</strong></div>
+      <p class="xsmall muted" style="margin:10px 0 0">Relatorias entram numa próxima etapa.</p>
+      {% if leis.homenagem %}
+      <details style="margin-top:10px"><summary class="small">Ver leis de homenagem</summary>
+        <div class="lista-leis" style="margin-top:8px">{% for p in leis.homenagem %}<div><a class="mono xsmall" href="https://www.camara.leg.br/propostas-legislativas/{{ p.id }}">{{ p.sigla_tipo }} {{ p.numero }}/{{ p.ano }} ↗</a><div class="small">{{ p.ementa }}</div></div>{% endfor %}</div>
+      </details>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-emendas">
+  <div class="title-row"><h2 id="h-emendas">Emendas orçamentárias</h2>{{ info('i-emendas', 'O que são emendas orçamentárias?') }}</div>
+  <div id="i-emendas" class="info" hidden>
+    <p>Todo ano, cada deputado e senador pode decidir o destino de uma parte do orçamento federal: um município, um hospital, uma obra. Essa indicação se chama <strong>emenda parlamentar</strong>. <strong>Indicado</strong> é o valor destinado; <strong>pago</strong> é o que o governo de fato transferiu. Não confundir com emendas a projetos de lei.</p>
+  </div>
+  <div class="vazio">Ainda não coletado. Este bloco virá do Portal da Transparência na próxima etapa.</div>
+</section>
+
+<section aria-labelledby="h-promessas">
+  <div class="title-row"><h2 id="h-promessas">Promessas × o que foi feito</h2></div>
+  <div class="vazio">Ainda não disponível. Deputados não registram plano de governo no TSE; as promessas dependem de material de campanha arquivado e revisão humana, previstas para uma etapa futura.</div>
+</section>
+{% endblock %}

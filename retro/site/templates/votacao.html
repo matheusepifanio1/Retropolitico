@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_macros.html" import classe_voto %}
+{% block title %}{{ v.proposicao.titulo if v.proposicao else 'Votação' }} · {{ v.data_br }} · {{ site.titulo }}{% endblock %}
+{% block main %}
+<section>
+  <a class="small" href="{{ base }}/votacoes/">← Votações-chave</a>
+  <div class="meta"><span>{{ v.data_br }}</span><span>·</span><span>{{ v.tema }}</span><span>·</span><span>Plenário da Câmara</span></div>
+  <h1 style="margin:0;font-size:32px">{{ v.proposicao.titulo if v.proposicao else 'Votação ' ~ v.id }}</h1>
+  <div class="card" style="display:flex;flex-direction:column;gap:10px">
+    <div><span class="tag">DESCRIÇÃO OFICIAL</span> “{{ v.descricao }}”</div>
+    {% if v.proposicao %}<div class="small"><span class="tag">EMENTA</span> {{ v.proposicao.ementa }}</div>{% endif %}
+    <div class="small">O que foi votado: <strong>{{ v.etapa }}</strong>{% if v.sentido_sim %} · Votar SIM significava: {{ v.sentido_sim }}{% endif %}</div>
+    <div class="resumo"><span class="tag">EM RESUMO</span> {{ v.resumo }} <span class="xsmall muted">Revisado por {{ v.revisado_por }} em {{ v.revisado_em }}.</span></div>
+    <div class="small">Placar oficial: <span class="mono">{{ v.votos_sim }} Sim × {{ v.votos_nao }} Não · {{ v.votos_outros }} outros</span>{% if v.aprovacao is not none %} · {{ 'aprovada' if v.aprovacao else 'rejeitada' }}{% endif %}
+      · <a href="https://dadosabertos.camara.leg.br/api/v2/votacoes/{{ v.id }}/votos">registro oficial ↗</a>
+      {% if v.proposicao %}· <a href="https://www.camara.leg.br/propostas-legislativas/{{ v.proposicao.proposicao_id }}">proposição ↗</a>{% endif %}</div>
+  </div>
+  {% if v.secreta %}
+  <div class="vazio">Votação secreta: a Câmara registra quem votou, mas não o voto de cada deputado.</div>
+  {% endif %}
+  <div class="legenda">{% for tipo, n in contagem %}<span><strong>{{ n }}</strong> {{ tipo }}</span>{% endfor %}</div>
+  <div class="table-box">
+    <table>
+      <thead><tr><th>Deputado(a)</th><th>Partido na data</th><th>UF</th><th>Voto</th><th>Orientação do partido</th></tr></thead>
+      <tbody>
+      {% for r in votos %}
+      <tr>
+        <td><a href="{{ base }}/deputado/{{ r.parlamentar_id }}/">{{ r.nome }}</a></td>
+        <td>{{ r.partido }}</td><td>{{ r.uf }}</td>
+        <td><span class="pill {{ classe_voto(r.voto) }}">{{ r.voto_label }}</span></td>
+        <td class="small muted">{{ r.orientacao or '—' }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="xsmall muted">Lista em ordem alfabética. Deputados em exercício que não aparecem aqui não registraram voto nesta votação.</p>
+</section>
+{% endblock %}

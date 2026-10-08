@@ -1,0 +1,18 @@
+# Configuração geral da coleta.
+
+camara:
+  legislatura: 57
+  # Início do mandato atual. Sessões e votações antes disso são ignoradas.
+  inicio_mandato: "2023-02-01"
+  # Anos dos arquivos de votações e presença.
+  anos: [2023, 2024, 2025, 2026]
+  # Anos dos arquivos de proposições e autores. Inclui anos anteriores para pegar
+  # projetos apresentados antes do mandato que viraram lei durante ele.
+  anos_proposicoes: [2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
+  # Tipos de proposição que podem virar norma jurídica e entram no perfil.
+  tipos_legislativos: [PL, PLP, PEC, PDL, PRC, PLV]
+
+site:
+  titulo: "Retrospectiva"
+  url_base: ""   # ex.: "/retrospectiva" se publicado em usuario.github.io/retrospectiva
+  repositorio: "https://github.com/SEU-USUARIO/retrospectiva"

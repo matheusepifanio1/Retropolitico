@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Deputados federais por estado · {{ site.titulo }}{% endblock %}
+{% block main %}
+<section>
+  <h1 style="margin:0;font-size:36px">Deputados federais por estado</h1>
+  <p class="lede">Todos que exerceram mandato na {{ legislatura }}ª legislatura, em ordem alfabética.</p>
+  {% for uf, deps in por_uf %}
+  <h2 id="{{ uf }}" style="margin:16px 0 0;font-size:22px">{{ uf }}</h2>
+  <div class="resultados">
+    {% for d in deps %}
+    <a class="resultado" href="{{ base }}/deputado/{{ d.id }}/">
+      <span><span class="nome">{{ d.nome }}</span><br><span class="small muted">{{ d.partido or 'sem partido' }}{% if not d.em_exercicio %} · fora de exercício{% endif %}</span></span>
+      <span class="ir">Ver perfil →</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}

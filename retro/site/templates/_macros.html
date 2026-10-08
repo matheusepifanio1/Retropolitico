@@ -1,0 +1,11 @@
+{%- macro info(id, label) -%}
+<button type="button" class="info-btn" aria-expanded="false" aria-controls="{{ id }}" aria-label="{{ label }}"><span aria-hidden="true">i</span></button>
+{%- endmacro -%}
+
+{%- macro classe_voto(v) -%}
+{%- if v == 'Sim' -%}sim{%- elif v == 'Não' -%}nao{%- elif v in (None, '', 'Ausente', 'Sem registro') -%}ausente{%- else -%}outro{%- endif -%}
+{%- endmacro -%}
+
+{%- macro selo(nivel) -%}
+<span class="selo"><span class="barras" aria-hidden="true">{% for i in range(3) %}<i class="{{ 'on' if i < nivel.barras else '' }}"></i>{% endfor %}</span>{{ nivel.nome }}</span>
+{%- endmacro -%}
