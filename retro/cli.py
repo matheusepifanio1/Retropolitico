@@ -17,7 +17,7 @@ import yaml
 
 from . import db
 from .site.build import CuradoriaError, build
-from .sources import camara
+from .sources import camara, camara_site
 from .sources.base import DownloadError, LayoutError, RawStore
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -28,7 +28,21 @@ def inspecionar(pasta: Path) -> None:
     import csv
     import json
 
+    site = pasta / "presenca-plenario-site.json"
+    if site.exists():
+        paginas = json.loads(site.read_text(encoding="utf-8"))
+        ok = [k for k, v in paginas.items() if v.get("ok")]
+        print(f"{site.name}: {len(ok)}/{len(paginas)} páginas ok; status: "
+              f"{sorted({str(v.get('status', v.get('erro', '?')))[:40] for v in paginas.values()})}")
+        for chave in ["204450-2024", "204379-2024"] + ok[:1]:
+            v = paginas.get(chave)
+            if v:
+                print(f"--- {chave} {v.get('url')} ({len(v.get('linhas', []))} linhas)")
+                for linha in v.get("linhas", [])[:80]:
+                    print(f"    {linha[:300]}")
     for f in sorted(pasta.glob("*")):
+        if f.name == site.name:
+            continue
         if f.suffix == ".csv":
             with open(f, encoding="utf-8-sig", newline="") as fh:
                 rows = csv.reader(fh, delimiter=";")
@@ -123,6 +137,8 @@ def main(argv: list[str] | None = None) -> int:
         if args.etapa in ("baixar", "tudo"):
             print("Baixando arquivos da Câmara…")
             camara.download(store, settings["camara"])
+            print("Baixando páginas de presença do site da Câmara…")
+            camara_site.download(store, settings["camara"])
         if args.etapa in ("carregar", "tudo"):
             print("Carregando no banco…")
             args.db.parent.mkdir(parents=True, exist_ok=True)
