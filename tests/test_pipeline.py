@@ -70,6 +70,25 @@ class TestCarga(unittest.TestCase):
         self.assertEqual([r["titulo"] for r in c["direcao"]], ["Presidente"])
         self.assertEqual(len(c["membro"]), 1)
 
+    def test_linha_do_tempo(self):
+        hist = self.conn.execute("SELECT * FROM situacao_historico WHERE parlamentar_id=102").fetchall()
+        lt = compute.linha_do_tempo(hist, [], "2023-02-01", "2026-10-08T00:00:00")
+        self.assertEqual([s["rotulo"] for s in lt["situacao"]], ["Em exercício", "Licença", "Em exercício"])
+        self.assertEqual(lt["situacao"][1]["inicio"], "2024-01-10")
+        self.assertEqual(lt["situacao"][1]["fim"], "2024-06-01")
+        self.assertAlmostEqual(sum(s["width"] for s in lt["situacao"]), 100, delta=1)
+        c = compute.cargos(self.conn, 101)["direcao"]
+        lt = compute.linha_do_tempo([], c, "2023-02-01", "2026-10-08T00:00:00")
+        self.assertEqual(lt["cargos"][0]["rotulo"], "Presidente · CCJC")
+
+    def test_serie_periodo(self):
+        hist = self.conn.execute("SELECT * FROM situacao_historico WHERE parlamentar_id=101").fetchall()
+        per = compute.periodos_exercicio(hist, "2026-12-31T00:00:00")
+        s = compute.serie_periodo(self.conn, 101, per, compute.leis(self.conn, 101))
+        self.assertEqual(s["s"], [["2024-02-06", 1], ["2024-03-05", 1], ["2024-07-02", 1]])
+        self.assertEqual(s["v"], [["2024-03-05", "S"], ["2024-08-01", "X"]])
+        self.assertEqual(sorted(k for _, k in s["l"]), ["c", "h", "p"])
+
     def test_suplente(self):
         hist = self.conn.execute("SELECT * FROM situacao_historico WHERE parlamentar_id=103").fetchall()
         p = compute.presenca(self.conn, 103, compute.periodos_exercicio(hist, "2026-12-31T00:00:00"))

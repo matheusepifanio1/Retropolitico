@@ -151,3 +151,32 @@ select.filtro { padding-right: 32px; }
   .perfil-id { gap: 16px; }
   .foto { width: 72px; height: 72px; }
 }
+
+/* linha do tempo */
+.lt { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 10px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px 20px 16px; }
+.lt-faixa { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; align-items: start; }
+.lt-nome { font-size: 13px; color: var(--muted); padding-top: 10px; }
+.lt-trilho { position: relative; height: 40px; border-radius: 4px; }
+.lt-ano { position: absolute; top: -22px; font: 12px var(--mono); color: var(--muted); transform: translateX(-50%); }
+.lt-ano::after { content: ""; position: absolute; left: 50%; top: 20px; height: 1000px; border-left: 1px dashed var(--line); }
+.lt-faixa:last-child .lt-ano::after { top: -2px; }
+.lt-trilho { overflow: hidden; }
+.lt-faixa:first-child .lt-trilho { overflow: visible; }
+.lt-barra { position: absolute; top: 4px; height: 30px; min-width: 6px; border-radius: 4px; border: 1px solid var(--ink); font: 600 12px var(--sans); padding: 0 8px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: left; cursor: pointer; }
+.lt-barra span { display: block; overflow: hidden; text-overflow: ellipsis; }
+.lt-barra.exercicio { background: var(--ink); color: #fff; }
+.lt-barra.fora { background: repeating-linear-gradient(45deg, #fff 0 4px, var(--mid) 4px 7px); color: var(--ink); border-style: dashed; }
+.lt-barra.cargo { background: var(--info-bg); color: var(--accent-ink); border-color: var(--accent); }
+.lt-barra:hover { filter: brightness(1.1); }
+.lt-barra:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; z-index: 2; }
+.lt-barra[aria-pressed="true"] { outline: 3px solid var(--accent); outline-offset: 2px; z-index: 2; }
+.lt-vazio { position: absolute; top: 10px; left: 8px; font-size: 13px; color: var(--muted); }
+.filtro-ativo { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; background: var(--info-bg); border: 1px solid var(--info-line); border-radius: var(--radius); padding: 8px 8px 8px 16px; font-size: 15px; position: sticky; top: 8px; z-index: 5; }
+.filtro-ativo[hidden] { display: none; }
+.fora-do-periodo { display: none !important; }
+@media (max-width: 640px) {
+  .lt-faixa { grid-template-columns: 1fr; gap: 4px; }
+  .lt-nome { padding-top: 0; margin-bottom: 24px; }
+  .lt-faixa + .lt-faixa .lt-nome { margin-bottom: 4px; }
+  .lt-barra { font-size: 11px; padding: 0 4px; }
+}

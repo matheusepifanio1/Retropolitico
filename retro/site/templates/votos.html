@@ -6,13 +6,17 @@
   <a class="small" href="{{ base }}/deputado/{{ dep.id }}/">← {{ dep.nome }}</a>
   <h1 style="margin:0;font-size:36px">Todas as votações nominais do Plenário</h1>
   <p class="lede">{{ dep.nome }} ({{ dep.partido }}-{{ dep.uf }}). Votações realizadas enquanto o deputado estava em exercício, da mais recente para a mais antiga. A descrição é o texto oficial da Câmara.</p>
+  <div id="filtro-periodo" class="filtro-ativo" hidden role="status">
+    <span>Mostrando só votações de <span id="filtro-datas" class="mono small"></span></span>
+    <a class="filtro" href="./">Ver todas</a>
+  </div>
   <div class="legenda">{% for tipo, n in resumo.por_tipo.items() %}<span><strong>{{ n }}</strong> {{ tipo }}</span>{% endfor %}<span><strong>{{ resumo.votacoes_no_periodo - resumo.com_registro }}</strong> sem registro</span></div>
   <div class="table-box">
     <table>
       <thead><tr><th>Data</th><th>O que foi votado (descrição oficial)</th><th>Voto</th><th>Placar</th><th>Fonte</th></tr></thead>
       <tbody>
       {% for v in votos %}
-      <tr>
+      <tr data-data="{{ v.data }}">
         <td class="mono small" style="white-space:nowrap">{{ v.data_br }}</td>
         <td class="small">{% if v.titulo %}<strong>{{ v.titulo }}</strong><br>{% endif %}{{ v.descricao }}</td>
         <td><span class="pill {{ classe_voto(v.voto) }}">{{ v.voto_label }}</span></td>

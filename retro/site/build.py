@@ -131,9 +131,13 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
                               "voto_label": voto_label(meu["voto"] if meu else None, bool(v["secreta"]) and meu is not None),
                               "orientacao": orient.get((v["id"], partido.upper()))})
 
+        cargos = compute.cargos(conn, d["id"])
+        linha = compute.linha_do_tempo(hist, cargos["direcao"], cam["inicio_mandato"], ate)
+        serie = compute.serie_periodo(conn, d["id"], periodos, leis)
         render(f"deputado/{d['id']}/index.html", "deputado.html", pagina="perfil", dep=d, presenca=pres,
                resumo=resumo, leis=leis, chave=chave_dep, cobertura=blocos, nivel=nivel,
-               trajetoria=compute.trajetoria(hist), cargos=compute.cargos(conn, d["id"]))
+               trajetoria=compute.trajetoria(hist), cargos=cargos, linha=linha,
+               serie_json=json.dumps(serie, separators=(",", ":")))
 
         lista = []
         for v in todas_votacoes:

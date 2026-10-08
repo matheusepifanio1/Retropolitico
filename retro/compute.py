@@ -12,7 +12,7 @@ import re
 import sqlite3
 import unicodedata
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 LEI = re.compile(r"transformad[oa] (em|na) (norma juridica|lei)")
 # Ementas típicas de leis honoríficas ou comemorativas. Lista pública na metodologia.
@@ -188,6 +188,97 @@ def cargos(conn: sqlite3.Connection, dep_id: int) -> dict:
     direcao = [r for r in rows if norm(r["titulo"]) not in MEMBRO]
     membro = [r for r in rows if norm(r["titulo"]) in MEMBRO]
     return {"direcao": direcao, "membro": membro}
+
+
+ROTULO_SITUACAO = {"exercicio": "Em exercício", "licenca": "Licença", "suplencia": "Suplência",
+                   "convocado": "Convocado", "vacancia": "Vacância", "suspenso": "Suspenso",
+                   "fim de mandato": "Fim de mandato", "fim do mandato": "Fim de mandato"}
+
+
+def _dia(iso: str) -> date:
+    return date.fromisoformat(iso[:10])
+
+
+def linha_do_tempo(historico: list, direcao: list[dict], inicio: str, ate: str) -> dict:
+    """Faixas da linha do tempo do perfil, com posições em % entre o início do mandato e hoje."""
+    t0, t1 = _dia(inicio), _dia(ate)
+    span = max((t1 - t0).days, 1)
+
+    def pos(a: str, b: str) -> tuple[float, float]:
+        da, db = max(_dia(a), t0), min(_dia(b), t1)
+        left = 100 * (da - t0).days / span
+        return round(left, 2), round(max(100 * (db - da).days / span, 0.6), 2)
+
+    # Situação: cada registro vale até o próximo registro de situação.
+    regs = [h for h in sorted(historico, key=lambda h: h["data_hora"]) if (h["situacao"] or "").strip()]
+    situacao = []
+    for i, h in enumerate(regs):
+        fim = regs[i + 1]["data_hora"] if i + 1 < len(regs) else ate
+        if _dia(fim) <= t0 or _dia(h["data_hora"]) >= t1:
+            continue
+        chave = norm(h["situacao"])
+        if situacao and situacao[-1]["chave"] == chave:
+            situacao[-1]["fim"] = fim[:10]
+            continue
+        situacao.append({"chave": chave, "rotulo": ROTULO_SITUACAO.get(chave, h["situacao"]),
+                         "detalhe": h["descricao_status"] or "", "inicio": max(h["data_hora"][:10], inicio),
+                         "fim": fim[:10], "exercicio": chave == "exercicio"})
+    for s in situacao:
+        s["left"], s["width"] = pos(s["inicio"], s["fim"])
+
+    # Cargos de direção, empilhados em linhas quando se sobrepõem.
+    cargos, linhas_fim = [], []
+    for c in sorted(direcao, key=lambda c: c["data_inicio"] or ""):
+        ini = c["data_inicio"] or inicio
+        fim = c["data_fim"] or ate[:10]
+        if _dia(fim) <= t0:
+            continue
+        linha = next((i for i, f in enumerate(linhas_fim) if f <= ini), None)
+        if linha is None:
+            linhas_fim.append(fim)
+            linha = len(linhas_fim) - 1
+        else:
+            linhas_fim[linha] = fim
+        left, width = pos(ini, fim)
+        cargos.append({"rotulo": f"{c['titulo']} · {c['sigla_orgao'] or c['nome_orgao']}",
+                       "detalhe": c["nome_orgao"] or "", "inicio": max(ini, inicio), "fim": fim,
+                       "linha": linha, "left": left, "width": width, "atual": not c["data_fim"]})
+
+    anos = [{"ano": a, "left": pos(f"{a}-01-01", f"{a}-01-02")[0]}
+            for a in range(t0.year + 1, t1.year + 1)]
+    return {"inicio": inicio, "fim": ate[:10], "situacao": situacao, "cargos": cargos,
+            "linhas_cargos": max(len(linhas_fim), 1), "anos": anos}
+
+
+CODIGO_VOTO = {"Sim": "S", "Não": "N", "Abstenção": "A", "Obstrução": "O", "Artigo 17": "P"}
+
+
+def serie_periodo(conn: sqlite3.Connection, dep_id: int, periodos: list[Periodo], leis_dep: dict) -> dict:
+    """Dados compactos para o filtro por período no navegador (só datas e códigos)."""
+    registrados = {r[0] for r in conn.execute("SELECT sessao_id FROM presenca WHERE parlamentar_id=?", (dep_id,))}
+    votou_ev = {r[0] for r in conn.execute(
+        """SELECT DISTINCT v.id_evento FROM voto x JOIN votacao v ON v.id = x.votacao_id
+           WHERE x.parlamentar_id=? AND v.id_evento IS NOT NULL""", (dep_id,))}
+    sessoes = [[s["data_hora"][:10], int(s["id"] in registrados or s["id"] in votou_ev)]
+               for s in conn.execute("SELECT id, data_hora FROM sessao ORDER BY data_hora")
+               if _no_periodo(s["data_hora"], periodos)]
+    votos = {r["votacao_id"]: r["voto"] for r in conn.execute(
+        "SELECT votacao_id, voto FROM voto WHERE parlamentar_id=?", (dep_id,))}
+    vs = []
+    for v in conn.execute("SELECT id, data, data_hora, secreta FROM votacao ORDER BY data"):
+        if not _no_periodo(v["data_hora"] or v["data"], periodos):
+            continue
+        if v["id"] not in votos:
+            cod = ""
+        elif v["secreta"]:
+            cod = "X"
+        else:
+            cod = CODIGO_VOTO.get(votos[v["id"]], "X")
+        vs.append([v["data"], cod])
+    leis = [[p["data_apresentacao"] or "", k] for k, lista in
+            (("p", leis_dep["principal"]), ("c", leis_dep["coautor"]), ("h", leis_dep["homenagem"]))
+            for p in lista]
+    return {"s": sessoes, "v": vs, "l": leis}
 
 
 def agora_iso() -> str:

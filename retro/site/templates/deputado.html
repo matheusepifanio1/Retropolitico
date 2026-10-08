@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% from "_macros.html" import info, classe_voto, selo %}
-{% block title %}{{ dep.nome }} · {{ site.titulo }}{% endblock %}
-{% block description %}Votos, presença e leis de {{ dep.nome }} ({{ dep.partido }}-{{ dep.uf }}), com fontes oficiais.{% endblock %}
+{% block title %}{{ dep.nome }} · {{ site.titulo }}
+{% endblock %}
+{% block description %}Votos, presença e leis de {{ dep.nome }} ({{ dep.partido }}-{{ dep.uf }}), com fontes oficiais.
+{% endblock %}
 {% block main %}
 
 <section class="perfil-topo">
@@ -32,12 +34,50 @@
   </div>
 </section>
 
+<section class="linha-tempo" aria-labelledby="h-linha">
+  <div class="title-row"><h2 id="h-linha">Linha do tempo do mandato</h2>{{ info('i-linha', 'Como usar a linha do tempo') }}</div>
+  <div id="i-linha" class="info" hidden>
+    <p>Cada barra é um período registrado pela Câmara: a situação do deputado (em exercício, licença, suplência) e os cargos de direção que ocupou. <strong>Clique numa barra</strong> para ver presença, votações e leis só daquele período.</p>
+    <p>As leis são filtradas pela data em que o projeto foi apresentado.</p>
+  </div>
+  <div class="lt" data-inicio="{{ linha.inicio }}" data-fim="{{ linha.fim }}">
+    <div class="lt-faixa">
+      <div class="lt-nome">Situação</div>
+      <div class="lt-trilho">
+        {% for a in linha.anos %}<span class="lt-ano" style="left:{{ a.left }}%">{{ a.ano }}</span>{% endfor %}
+        {% for s in linha.situacao %}
+        <button type="button" class="lt-barra {{ 'exercicio' if s.exercicio else 'fora' }}" style="left:{{ s.left }}%;width:{{ s.width }}%"
+          data-inicio="{{ s.inicio }}" data-fim="{{ s.fim }}" data-rotulo="{{ s.rotulo }}"
+          aria-label="{{ s.rotulo }}, de {{ s.inicio|br }} a {{ s.fim|br }}" title="{{ s.rotulo }} · {{ s.inicio|br }} a {{ s.fim|br }}{% if s.detalhe %} · {{ s.detalhe }}{% endif %}"><span>{{ s.rotulo }}</span></button>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="lt-faixa">
+      <div class="lt-nome">Cargos</div>
+      <div class="lt-trilho" style="height:{{ linha.linhas_cargos * 34 + 4 }}px">
+        {% for a in linha.anos %}<span class="lt-ano" style="left:{{ a.left }}%"></span>{% endfor %}
+        {% for c in linha.cargos %}
+        <button type="button" class="lt-barra cargo" style="left:{{ c.left }}%;width:{{ c.width }}%;top:{{ c.linha * 34 + 4 }}px"
+          data-inicio="{{ c.inicio }}" data-fim="{{ c.fim }}" data-rotulo="{{ c.rotulo }}"
+          aria-label="{{ c.rotulo }}, de {{ c.inicio|br }} a {{ c.fim|br if not c.atual else 'hoje' }}" title="{{ c.rotulo }} · {{ c.detalhe }} · {{ c.inicio|br }} a {{ 'hoje' if c.atual else c.fim|br }}"><span>{{ c.rotulo }}</span></button>
+        {% else %}
+        <span class="lt-vazio">Nenhum cargo de direção em órgãos da Câmara</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div id="filtro-periodo" class="filtro-ativo" hidden role="status">
+    <span>Mostrando: <strong id="filtro-rotulo"></strong> · <span id="filtro-datas" class="mono small"></span></span>
+    <button type="button" id="filtro-limpar" class="filtro">Ver mandato inteiro</button>
+  </div>
+</section>
+
 <section class="grid" aria-label="Números principais">
   <div class="card stat">
     <div class="label-row"><span class="label">Sessões deliberativas com presença registrada</span>{{ info('i-s1', 'O que significa presença em sessões?') }}</div>
     {% if presenca %}
-    <div class="valor">{{ presenca.presentes }} de {{ presenca.sessoes }}</div>
-    <div class="detalhe">{{ presenca.pct }}% · {{ presenca.sem_registro }} sem registro de presença</div>
+    <div class="valor" data-alvo="pres-valor">{{ presenca.presentes }} de {{ presenca.sessoes }}</div>
+    <div class="detalhe" data-alvo="pres-detalhe">{{ presenca.pct }}% · {{ presenca.sem_registro }} sem registro de presença</div>
     {% else %}<div class="valor">—</div><div class="detalhe">Indisponível para este período</div>{% endif %}
     <div id="i-s1" class="info" hidden>Sessões deliberativas do Plenário, encerradas, em que a Câmara registrou a presença do deputado ou um voto dele. Contamos só as sessões do período em que ele estava em exercício. "Sem registro" pode ter justificativa (licença médica, missão oficial), que a Câmara não publica em dados abertos.</div>
     <a class="xsmall" href="https://dadosabertos.camara.leg.br/swagger/api.html">Fonte: Câmara dos Deputados ↗</a>
@@ -45,16 +85,16 @@
   <div class="card stat">
     <div class="label-row"><span class="label">Votações nominais com registro</span>{{ info('i-s2', 'O que é votação nominal?') }}</div>
     {% if resumo %}
-    <div class="valor">{{ resumo.com_registro }}</div>
-    <div class="detalhe">de {{ resumo.votacoes_no_periodo }} realizadas no Plenário enquanto em exercício</div>
+    <div class="valor" data-alvo="vot-valor">{{ resumo.com_registro }}</div>
+    <div class="detalhe" data-alvo="vot-detalhe">de {{ resumo.votacoes_no_periodo }} realizadas no Plenário enquanto em exercício</div>
     {% else %}<div class="valor">—</div><div class="detalhe">Indisponível</div>{% endif %}
     <div id="i-s2" class="info" hidden>Votação nominal é aquela em que cada parlamentar registra o voto no painel. Decisões por votação simbólica não têm registro individual e não entram nesta conta. Inclui registros de "Artigo 17" (presidente da sessão, que não vota) e de votações secretas.</div>
-    <a class="xsmall" href="{{ base }}/deputado/{{ dep.id }}/votos/">Ver todos os votos →</a>
+    <a class="xsmall" data-alvo="vot-link" href="{{ base }}/deputado/{{ dep.id }}/votos/">Ver todos os votos →</a>
   </div>
   <div class="card stat">
     <div class="label-row"><span class="label">Leis como autor principal</span>{{ info('i-s3', 'O que conta como lei de autoria?') }}</div>
-    <div class="valor">{{ leis.principal|length }}</div>
-    <div class="detalhe">+ {{ leis.coautor|length }} como coautor · {{ leis.homenagem|length }} de homenagem</div>
+    <div class="valor" data-alvo="leis-valor">{{ leis.principal|length }}</div>
+    <div class="detalhe" data-alvo="leis-detalhe">+ {{ leis.coautor|length }} como coautor · {{ leis.homenagem|length }} de homenagem</div>
     <div id="i-s3" class="info" hidden>Projetos apresentados por ele (primeiro a assinar) cuja situação oficial é "transformado em norma jurídica". Leis de homenagem (nomes de obras, datas comemorativas) são contadas à parte.</div>
     <a class="xsmall" href="#leis">Ver lista ↓</a>
   </div>
@@ -160,7 +200,7 @@
     <p><strong>Orientação do partido</strong> é a recomendação do líder da bancada; o deputado pode seguir ou não. <strong>Sem registro</strong>: não registrou voto naquela votação.</p>
   </div>
   {% for v in chave %}
-  <article class="card votacao">
+  <article class="card votacao" data-data="{{ v.data }}">
     <div class="corpo">
       <div class="meta"><span>{{ v.data_br }}</span><span>·</span><span>{{ v.tema }}</span>{% if v.proposicao %}<span>·</span><span>{{ v.proposicao.titulo }}</span>{% endif %}</div>
       <div><span class="tag">DESCRIÇÃO OFICIAL</span> “{{ v.descricao }}”</div>
@@ -194,7 +234,7 @@
       <strong>Autor principal · {{ leis.principal|length }}</strong>
       <div class="lista-leis" style="margin-top:12px">
         {% for p in leis.principal %}
-        <div><a class="mono xsmall" href="https://www.camara.leg.br/propostas-legislativas/{{ p.id }}">{{ p.sigla_tipo }} {{ p.numero }}/{{ p.ano }} ↗</a><div style="font-size:15px">{{ p.ementa }}</div></div>
+        <div data-data="{{ p.data_apresentacao or '' }}"><a class="mono xsmall" href="https://www.camara.leg.br/propostas-legislativas/{{ p.id }}">{{ p.sigla_tipo }} {{ p.numero }}/{{ p.ano }} ↗</a><div style="font-size:15px">{{ p.ementa }}</div></div>
         {% else %}<div class="small muted">Nenhuma nos dados coletados.</div>{% endfor %}
       </div>
     </div>
@@ -225,4 +265,5 @@
   <div class="title-row"><h2 id="h-promessas">Promessas × o que foi feito</h2></div>
   <div class="vazio">Ainda não disponível. Deputados não registram plano de governo no TSE; as promessas dependem de material de campanha arquivado e revisão humana, previstas para uma etapa futura.</div>
 </section>
+<script type="application/json" id="serie-periodo">{{ serie_json|safe }}</script>
 {% endblock %}
