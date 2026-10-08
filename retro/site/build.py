@@ -109,7 +109,7 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
         orient[(o["votacao_id"], o["sigla_bancada"].upper())] = o["orientacao"]
     nomes = {d["id"]: d["nome"] for d in deputados}
     todas_votacoes = conn.execute(
-        """SELECT v.*, MIN(vp.titulo) AS titulo FROM votacao v
+        """SELECT v.*, MIN(vp.titulo) AS titulo, MIN(vp.ementa) AS ementa, MIN(vp.proposicao_id) AS proposicao_id FROM votacao v
            LEFT JOIN votacao_proposicao vp ON vp.votacao_id = v.id
            GROUP BY v.id ORDER BY v.data_hora DESC, v.data DESC""").fetchall()
 
@@ -131,12 +131,24 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
                               "voto_label": voto_label(meu["voto"] if meu else None, bool(v["secreta"]) and meu is not None),
                               "orientacao": orient.get((v["id"], partido.upper()))})
 
+        recentes = []
+        for v in todas_votacoes:
+            if len(recentes) >= 6:
+                break
+            if not compute.is_merito(v["descricao"]) or not any(p.contem(v["data_hora"] or v["data"]) for p in periodos):
+                continue
+            meu = votos_dep.get(v["id"])
+            partido = (meu["partido"] if meu else d["partido"]) or ""
+            recentes.append({**dict(v), "data_br": data_br(v["data"]), "voto": meu["voto"] if meu else None,
+                             "voto_label": voto_label(meu["voto"] if meu else None, bool(v["secreta"]) and meu is not None),
+                             "orientacao": orient.get((v["id"], partido.upper()))})
+
         cargos = compute.cargos(conn, d["id"])
         linha = compute.linha_do_tempo(hist, cargos["direcao"], cam["inicio_mandato"], ate)
         serie = compute.serie_periodo(conn, d["id"], periodos, leis)
         render(f"deputado/{d['id']}/index.html", "deputado.html", pagina="perfil", dep=d, presenca=pres,
                resumo=resumo, leis=leis, chave=chave_dep, cobertura=blocos, nivel=nivel,
-               trajetoria=compute.trajetoria(hist), cargos=cargos, linha=linha,
+               trajetoria=compute.trajetoria(hist), cargos=cargos, linha=linha, recentes=recentes,
                serie_json=json.dumps(serie, separators=(",", ":")))
 
         lista = []

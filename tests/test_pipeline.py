@@ -160,6 +160,9 @@ class TestSite(unittest.TestCase):
         self.assertIn("Revisado por Pessoa Revisora", perfil)
         self.assertIn("Orientação do partido: Sim", perfil)
         self.assertIn("Trajetória no mandato", perfil)
+        recentes = perfil.split('id="h-recentes"')[1].split('id="leis"')[0]
+        self.assertIn("Aprovado o Substitutivo", recentes)
+        self.assertNotIn("Votação secreta de autoridade", recentes, "não é votação de mérito")
         self.assertIn("Alteração de partido", perfil)
         self.assertIn("Comissão de Constituição e Justiça e de Cidadania", perfil)
         self.assertIn("Membro de 1 órgão como", perfil)
@@ -197,6 +200,12 @@ class TestRegras(unittest.TestCase):
         self.assertTrue(compute.is_homenagem("Institui o Dia Nacional do Café."))
         self.assertTrue(compute.is_homenagem("Inscreve o nome de Fulana no Livro dos Heróis e Heroínas da Pátria."))
         self.assertFalse(compute.is_homenagem("Altera a Lei nº 8.666 para dispor sobre a denominação social de empresas."))
+
+    def test_merito(self):
+        self.assertTrue(compute.is_merito("Aprovada a Proposta de Emenda à Constituição nº 45, de 2019."))
+        self.assertTrue(compute.is_merito("Rejeitado o Destaque nº 3."))
+        self.assertFalse(compute.is_merito("Aprovado o Requerimento de urgência."))
+        self.assertFalse(compute.is_merito("Mantido o texto."))
 
     def test_lei(self):
         self.assertTrue(compute.is_lei("Transformado em Norma Jurídica"))

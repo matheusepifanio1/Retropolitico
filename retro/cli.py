@@ -126,9 +126,28 @@ def sanidade(conn) -> None:
         print(f"    cargo '{r['titulo']}': {r['n']}")
 
 
+def candidatas(conn) -> None:
+    """Votações de mérito de PEC/PLP/PL/MPV/PDL com mais votos, para a curadoria das votações-chave."""
+    from . import compute
+    rows = conn.execute(
+        """SELECT v.id, v.data, v.descricao, v.votos_sim, v.votos_nao, v.votos_outros, v.aprovacao,
+                  MIN(vp.titulo) titulo, MIN(vp.ementa) ementa
+           FROM votacao v LEFT JOIN votacao_proposicao vp ON vp.votacao_id = v.id
+           GROUP BY v.id ORDER BY v.data DESC""").fetchall()
+    n = 0
+    for r in rows:
+        tit = r["titulo"] or ""
+        if not compute.is_merito(r["descricao"]) or not tit.startswith(("PEC", "PLP", "PL ", "MPV", "PDL", "PLV")):
+            continue
+        n += 1
+        print(f"{r['id']} | {r['data']} | {tit} | {r['votos_sim']}x{r['votos_nao']} | "
+              f"{(r['descricao'] or '')[:160]} || {(r['ementa'] or '')[:220]}")
+    print(f"total: {n}")
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="retro", description="Retrospectiva Política")
-    p.add_argument("etapa", choices=["baixar", "carregar", "site", "tudo", "inspecionar"])
+    p.add_argument("etapa", choices=["baixar", "carregar", "site", "tudo", "inspecionar", "candidatas"])
     p.add_argument("--raw", type=Path, default=ROOT / "data" / "raw")
     p.add_argument("--db", type=Path, default=ROOT / "data" / "retrospectiva.sqlite")
     p.add_argument("--out", type=Path, default=ROOT / "_site")
@@ -139,6 +158,9 @@ def main(argv: list[str] | None = None) -> int:
     if "RETRO_URL_BASE" in os.environ:
         settings["site"]["url_base"] = os.environ["RETRO_URL_BASE"]
     store = RawStore(args.raw, "camara")
+    if args.etapa == "candidatas":
+        candidatas(db.connect(args.db))
+        return 0
     if args.etapa == "inspecionar":
         inspecionar(store.dir)
         print("=== TSE")

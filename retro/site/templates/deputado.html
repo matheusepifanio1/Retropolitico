@@ -228,6 +228,36 @@
   {% endfor %}
 </section>
 
+<section aria-labelledby="h-recentes">
+  <div class="title-row" style="justify-content:space-between">
+    <div class="title-row"><h2 id="h-recentes">Votações recentes</h2>{{ info('i-recentes', 'Como estas votações são escolhidas') }}</div>
+    <a class="small" href="{{ base }}/deputado/{{ dep.id }}/votos/">Ver todas as votações</a>
+  </div>
+  <div id="i-recentes" class="info" hidden>
+    <p>Escolha automática, igual para todos: as 6 votações nominais de <strong>mérito</strong> mais recentes do Plenário no período em que o deputado estava em exercício. Votações de mérito decidem o conteúdo (texto-base, emendas, destaques); requerimentos de procedimento, como urgência ou adiamento, ficam de fora.</p>
+    <p>O texto é a descrição oficial da Câmara, sem resumo nosso. Em destaques, SIM pode significar manter o trecho e NÃO, retirá-lo: confira a descrição.</p>
+  </div>
+  {% for v in recentes %}
+  <article class="card votacao" data-data="{{ v.data }}">
+    <div class="corpo">
+      <div class="meta"><span>{{ v.data_br }}</span>{% if v.titulo %}<span>·</span><span>{{ v.titulo }}</span>{% endif %}</div>
+      <div><span class="tag">DESCRIÇÃO OFICIAL</span> “{{ v.descricao }}”</div>
+      {% if v.ementa %}<div class="small"><span class="tag">EMENTA</span> {{ v.ementa }}</div>{% endif %}
+    </div>
+    <div class="lado">
+      <div class="xsmall muted">Voto de {{ dep.nome }}</div>
+      <div class="voto {{ classe_voto(v.voto) }}">{{ v.voto_label }}</div>
+      <div class="xsmall muted">Orientação do partido: {{ v.orientacao or 'não publicada para o partido' }}</div>
+      <div class="xsmall muted">Placar oficial: <span class="mono" style="color:var(--ink)">{{ v.votos_sim }} × {{ v.votos_nao }}</span>{% if v.aprovacao is not none %} · {{ 'aprovada' if v.aprovacao else 'rejeitada' }}{% endif %}</div>
+      {% if v.proposicao_id %}<a class="xsmall" href="https://www.camara.leg.br/propostas-legislativas/{{ v.proposicao_id }}">Proposição ↗</a>{% endif %}
+      <a class="xsmall" href="https://dadosabertos.camara.leg.br/api/v2/votacoes/{{ v.id }}/votos">Registro oficial ↗</a>
+    </div>
+  </article>
+  {% else %}
+  <div class="vazio">Nenhuma votação de mérito no período de exercício.</div>
+  {% endfor %}
+</section>
+
 <section id="leis" aria-labelledby="h-leis">
   <div class="title-row"><h2 id="h-leis">Projetos que viraram lei</h2>{{ info('i-leis', 'O que significa autoria de lei?') }}</div>
   <div id="i-leis" class="info" hidden>

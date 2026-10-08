@@ -28,6 +28,14 @@ HOMENAGEM_LEGIVEL = [
     "capital nacional d…", "declara patrono/patrona", "data comemorativa",
 ]
 VOTOS_VALIDOS = ("Sim", "Não", "Abstenção", "Obstrução")
+# Votação de mérito: o texto oficial começa com "Aprovado/Rejeitado" e não trata de procedimento.
+PROCEDIMENTO = ["requerimento", "urgencia", "adiamento", "retirada de pauta", "encerramento",
+                "preferencia", "inversao de pauta", "intersticio", "votacao por partes", "recurso"]
+
+
+def is_merito(descricao: str | None) -> bool:
+    d = norm(descricao).strip()
+    return d.startswith(("aprovad", "rejeitad")) and not any(p in d for p in PROCEDIMENTO)
 
 
 def norm(text: str | None) -> str:
