@@ -9,7 +9,7 @@ on:
     paths: ["retro/**", "config/**", ".github/workflows/atualizar.yml"]
 
 permissions:
-  contents: read
+  contents: write     # grava o relatório na branch "estado"
   pages: write
   id-token: write
 
@@ -36,6 +36,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12", cache: pip }
       - run: pip install -r requirements.txt
+      - run: mkdir -p relatorio
 
       # Reaproveita arquivos brutos de anos fechados entre execuções.
       - uses: actions/cache@v4
@@ -45,21 +46,45 @@ jobs:
           restore-keys: raw-
 
       - name: Baixar arquivos oficiais
-        run: python -m retro baixar
+        run: set -o pipefail; python -u -m retro baixar 2>&1 | tee relatorio/1-baixar.txt
+
+      - name: Inspecionar formato dos arquivos
+        if: always()
+        run: python -u -m retro inspecionar 2>&1 | tee relatorio/2-inspecao.txt
 
       - name: Carregar no banco
-        run: python -m retro carregar
+        run: set -o pipefail; python -u -m retro carregar 2>&1 | tee relatorio/3-carregar.txt
 
       - id: pages
         uses: actions/configure-pages@v5
 
       - name: Gerar o site
-        run: python -m retro site
+        run: set -o pipefail; python -u -m retro site 2>&1 | tee relatorio/4-site.txt
         env:
           RETRO_URL_BASE: ${{ steps.pages.outputs.base_path }}
 
       - uses: actions/upload-pages-artifact@v3
         with: { path: _site }
+
+      # Relatório da execução numa branch própria, para acompanhar sem acesso à interface do Actions.
+      - name: Publicar relatório na branch "estado"
+        if: always()
+        run: |
+          {
+            echo "execucao: ${{ github.run_id }}"
+            echo "evento: ${{ github.event_name }}"
+            echo "commit: ${{ github.sha }}"
+            echo "data_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "resultado_job: ${{ job.status }}"
+          } > relatorio/0-resumo.txt
+          cp data/raw/manifest.json relatorio/manifest.json 2>/dev/null || true
+          cd relatorio
+          git init -q -b estado
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Relatório da execução ${{ github.run_id }}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" estado
 
   deploy:
     needs: coletar-e-publicar
