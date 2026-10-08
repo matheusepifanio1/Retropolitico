@@ -21,7 +21,8 @@
     <li>Para cada deputado, contamos apenas as sessões que ocorreram enquanto a situação dele era "Exercício", segundo o histórico oficial (<code>/deputados/{id}/historico</code>). Assim, suplentes e licenciados não aparecem com ausências do período em que não estavam no cargo.</li>
     <li>Contamos como presente quem tem registro de presença na sessão <strong>ou</strong> registrou voto numa votação nominal daquela sessão (o arquivo <code>votacoes</code> informa a sessão de cada votação). Quem votou estava presente.</li>
     <li>Registros do histórico anteriores ao início da legislatura são ignorados.</li>
-    <li>"Sem registro de presença" = sessão no período de exercício sem registro de presença e sem voto. A Câmara não publica em dados abertos as justificativas de ausência, então não as classificamos.</li>
+    <li>Ausências são classificadas com a frequência por dia publicada na página oficial de cada deputado (<code>camara.leg.br/deputados/{id}/presenca-plenario/{ano}</code>): "Ausência" vira <strong>sem justificativa</strong>; qualquer outro motivo (ex.: "Missão Autorizada") vira <strong>ausência justificada</strong>, com o motivo exibido. Guardamos o hash de cada página consultada.</li>
+    <li>Se o dia não aparece na página oficial, a ausência fica como <strong>sem informação</strong>.</li>
   </ul>
 
   <h2 id="votacoes">Votações nominais</h2>

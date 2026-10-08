@@ -62,8 +62,22 @@ class TestCarga(unittest.TestCase):
     def test_presenca_pelo_voto(self):
         hist = self.conn.execute("SELECT * FROM situacao_historico WHERE parlamentar_id=101").fetchall()
         p = compute.presenca(self.conn, 101, compute.periodos_exercicio(hist, "2026-12-31T00:00:00"))
-        self.assertEqual((p.sessoes, p.presentes, p.so_por_voto), (3, 3, 1),
+        self.assertEqual((p.sessoes, p.presentes, p.so_por_voto), (3, 2, 1),
                          "votou na sessão 2 sem registro de presença: conta como presente")
+        self.assertEqual((p.justificadas, p.nao_justificadas, p.sem_informacao), (1, 0, 0))
+        self.assertEqual(p.motivos, [("Missão Autorizada", 1)])
+
+    def test_ausencia_sem_justificativa(self):
+        hist = self.conn.execute("SELECT * FROM situacao_historico WHERE parlamentar_id=103").fetchall()
+        p = compute.presenca(self.conn, 103, compute.periodos_exercicio(hist, "2026-12-31T00:00:00"))
+        self.assertEqual((p.presentes, p.justificadas, p.nao_justificadas), (1, 0, 1))
+
+    def test_parse_pagina_presenca(self):
+        from retro.sources.camara_site import parse_linhas
+        self.assertEqual(parse_linhas(["06/02/2024 Missão Autorizada | | Missão Autorizada",
+                                       "EXTRAORDINÁRIA Nº 001 - 06/02/2024 | Missão Autorizada",
+                                       "Data | Frequência por Sessão | Frequência por Dia/Justificativa"]),
+                         [("2024-02-06", "Missão Autorizada")])
 
     def test_cargos(self):
         c = compute.cargos(self.conn, 101)
@@ -85,7 +99,7 @@ class TestCarga(unittest.TestCase):
         hist = self.conn.execute("SELECT * FROM situacao_historico WHERE parlamentar_id=101").fetchall()
         per = compute.periodos_exercicio(hist, "2026-12-31T00:00:00")
         s = compute.serie_periodo(self.conn, 101, per, compute.leis(self.conn, 101))
-        self.assertEqual(s["s"], [["2024-02-06", 1], ["2024-03-05", 1], ["2024-07-02", 1]])
+        self.assertEqual(s["s"], [["2024-02-06", "P"], ["2024-03-05", "P"], ["2024-07-02", "J"]])
         self.assertEqual(s["v"], [["2024-03-05", "S"], ["2024-08-01", "X"]])
         self.assertEqual(sorted(k for _, k in s["l"]), ["c", "h", "p"])
 
@@ -141,7 +155,8 @@ class TestSite(unittest.TestCase):
         self.assertEqual(info, {"deputados": 3, "votacoes_chave": 1})
         perfil = (out / "deputado/101/index.html").read_text(encoding="utf-8")
         self.assertIn("Ana Ribeiro", perfil)
-        self.assertIn("3 de 3", perfil)
+        self.assertIn("2 de 3", perfil)
+        self.assertIn("Missão Autorizada", perfil)
         self.assertIn("Revisado por Pessoa Revisora", perfil)
         self.assertIn("Orientação do partido: Sim", perfil)
         self.assertIn("Trajetória no mandato", perfil)

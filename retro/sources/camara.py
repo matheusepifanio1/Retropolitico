@@ -131,6 +131,9 @@ def load(conn: sqlite3.Connection, store: RawStore, cfg: dict, log: ProgressFn =
 
     for ano in cfg["anos"]:
         _load_presenca(conn, store, src, ano, inicio)
+    from . import camara_site
+    camara_site.load(conn, store, src)
+    log(f"  dias com frequência do site: {conn.execute('SELECT COUNT(*) FROM frequencia_dia').fetchone()[0]}")
     log(f"  sessões deliberativas: {conn.execute('SELECT COUNT(*) FROM sessao').fetchone()[0]}")
 
     for ano in cfg["anos_proposicoes"]:

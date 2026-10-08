@@ -64,10 +64,12 @@ document.addEventListener("click", (ev) => {
 
   function aplicar(a, b, rotulo, fimExibido) {
     const ses = serie.s.filter(([d]) => dentro(d, a, b));
-    const pres = ses.filter(([, p]) => p).length;
+    const conta = (c) => ses.filter(([, x]) => x === c).length;
+    const pres = conta("P");
     if (ses.length) {
+      const u = conta("U");
       set("pres-valor", `${pres} de ${ses.length}`);
-      set("pres-detalhe", `${Math.round((100 * pres) / ses.length)}% · ${ses.length - pres} sem registro de presença`);
+      set("pres-detalhe", `${Math.round((100 * pres) / ses.length)}% · ${conta("J")} ausências justificadas · ${conta("N")} sem justificativa${u ? ` · ${u} sem informação` : ""}`);
     } else {
       set("pres-valor", "—");
       set("pres-detalhe", "Nenhuma sessão deliberativa em exercício neste período");

@@ -104,3 +104,39 @@ def download(store: RawStore, cfg: dict, log=print) -> None:
     store.save_manifest()
     ok = sum(1 for v in saida.values() if v.get("ok"))
     log(f"  ok páginas de presença do site: {ok}/{len(saida)} (novas: {n}, erros de rede: {erros})")
+
+
+DIA = re.compile(r"^(\d{2})/(\d{2})/(\d{4}) .*?\| \| (.+)$")
+
+
+def parse_linhas(linhas: list[str]) -> list[tuple[str, str]]:
+    """Linhas de dia: 'dd/mm/aaaa <status da sessão> | | <status do dia/justificativa>'."""
+    out = []
+    for linha in linhas:
+        m = DIA.match(linha.strip())
+        if m:
+            d, mes, a, status = m.groups()
+            out.append((f"{a}-{mes}-{d}", status.strip()))
+    return out
+
+
+def load(conn, store: RawStore, src) -> None:
+    from .base import LayoutError
+    if not store.path(ARQUIVO).exists():
+        return
+    paginas = json.loads(store.path(ARQUIVO).read_text(encoding="utf-8"))
+    fid = src(ARQUIVO)
+    com_linhas = lidas = 0
+    for chave, pag in paginas.items():
+        if not pag.get("ok"):
+            continue
+        dep_id = int(chave.split("-")[0])
+        dias = parse_linhas(pag.get("linhas", []))
+        com_linhas += bool(pag.get("linhas"))
+        lidas += bool(dias)
+        for data, status in dias:
+            conn.execute("INSERT OR REPLACE INTO frequencia_dia VALUES (?,?,?,?,?)",
+                         (dep_id, data, status, pag["url"], fid))
+    # Páginas com conteúdo mas sem nenhum dia reconhecido indicam mudança de layout.
+    if com_linhas and lidas < 0.5 * com_linhas:
+        raise LayoutError(f"{ARQUIVO}: só {lidas} de {com_linhas} páginas tiveram dias reconhecidos; o layout mudou?")

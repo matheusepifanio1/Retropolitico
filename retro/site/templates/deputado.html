@@ -74,13 +74,13 @@
 
 <section class="grid" aria-label="Números principais">
   <div class="card stat">
-    <div class="label-row"><span class="label">Sessões deliberativas com presença registrada</span>{{ info('i-s1', 'O que significa presença em sessões?') }}</div>
+    <div class="label-row"><span class="label">Presença em sessões deliberativas</span>{{ info('i-s1', 'O que significa presença em sessões?') }}</div>
     {% if presenca %}
     <div class="valor" data-alvo="pres-valor">{{ presenca.presentes }} de {{ presenca.sessoes }}</div>
-    <div class="detalhe" data-alvo="pres-detalhe">{{ presenca.pct }}% · {{ presenca.sem_registro }} sem registro de presença</div>
+    <div class="detalhe" data-alvo="pres-detalhe">{{ presenca.pct }}% · {{ presenca.justificadas }} ausências justificadas · {{ presenca.nao_justificadas }} sem justificativa{% if presenca.sem_informacao %} · {{ presenca.sem_informacao }} sem informação{% endif %}</div>
     {% else %}<div class="valor">—</div><div class="detalhe">Indisponível para este período</div>{% endif %}
-    <div id="i-s1" class="info" hidden>Sessões deliberativas do Plenário, encerradas, em que a Câmara registrou a presença do deputado ou um voto dele. Contamos só as sessões do período em que ele estava em exercício. "Sem registro" pode ter justificativa (licença médica, missão oficial), que a Câmara não publica em dados abertos.</div>
-    <a class="xsmall" href="https://dadosabertos.camara.leg.br/swagger/api.html">Fonte: Câmara dos Deputados ↗</a>
+    <div id="i-s1" class="info" hidden>Sessões deliberativas do Plenário em que o deputado esteve presente, contando só o período em que estava em exercício. <strong>Ausência justificada</strong>: a Câmara aceitou um motivo, como missão oficial autorizada ou licença médica. <strong>Sem justificativa</strong>: a Câmara registra "Ausência" sem motivo aceito. As justificativas vêm da página oficial de presença de cada deputado.</div>
+    <a class="xsmall" href="https://www.camara.leg.br/deputados/{{ dep.id }}/presenca-plenario/{{ presenca.por_ano[-1].ano if presenca else '' }}">Fonte: presença na Câmara ↗</a>
   </div>
   <div class="card stat">
     <div class="label-row"><span class="label">Votações nominais com registro</span>{{ info('i-s2', 'O que é votação nominal?') }}</div>
@@ -166,25 +166,31 @@
   <div class="title-row"><h2 id="h-presenca">Presença em sessões</h2>{{ info('i-presenca', 'Como a presença é medida?') }}</div>
   <div id="i-presenca" class="info" hidden>
     <p>A Câmara registra a presença dos deputados nas <strong>sessões deliberativas</strong> do Plenário (sessões com votação). Isso não mede todo o trabalho do mandato: comissões, gabinete e agendas no estado não aparecem aqui.</p>
-    <p>A Câmara não publica em dados abertos a <strong>justificativa</strong> das ausências. Por isso usamos "sem registro de presença", e não "falta". As justificativas podem ser conferidas na <a href="https://www.camara.leg.br/deputados/{{ dep.id }}">página oficial do deputado</a>.</p>
+    <p>Cada ausência é classificada pela própria Câmara: <strong>justificada</strong> (missão autorizada, licença médica e outros motivos aceitos) ou <strong>sem justificativa</strong>. Os motivos vêm da página oficial de presença do deputado, ano a ano.</p>
+    <p>Quando um dia não aparece na página oficial, a ausência fica como <strong>sem informação</strong>, sem classificar.</p>
   </div>
   {% if presenca %}
   <div class="table-box">
     <table>
-      <thead><tr><th>Ano</th><th>Sessões em exercício</th><th>Presença registrada</th><th>Sem registro</th><th style="width:30%">Distribuição</th></tr></thead>
+      <thead><tr><th>Ano</th><th>Sessões em exercício</th><th>Presença</th><th>Ausência justificada</th><th>Sem justificativa</th><th style="width:26%">Distribuição</th><th>Fonte</th></tr></thead>
       <tbody>
       {% for a in presenca.por_ano %}
       <tr>
         <td class="mono">{{ a.ano }}</td><td>{{ a.sessoes }}</td>
         <td><strong>{{ a.presentes }}</strong> <span class="muted">({{ a.pct }}%)</span></td>
-        <td>{{ a.sem_registro }}</td>
-        <td><div class="dist" role="img" aria-label="{{ a.pct }}% com presença registrada"><div class="p" style="width:{{ a.pct }}%"></div><div class="s" style="width:{{ 100 - a.pct }}%"></div></div></td>
+        <td>{{ a.justificadas }}</td>
+        <td>{{ a.nao_justificadas }}{% if a.sem_informacao %} <span class="muted small">+ {{ a.sem_informacao }} sem informação</span>{% endif %}</td>
+        <td><div class="dist" role="img" aria-label="{{ a.pct }}% presença, {{ a.pct_j }}% ausência justificada, {{ a.pct_n }}% sem justificativa"><div class="p" style="width:{{ a.pct }}%"></div><div class="j" style="width:{{ a.pct_j }}%"></div><div class="s" style="width:{{ a.pct_n + a.pct_u }}%"></div></div></td>
+        <td class="small"><a href="https://www.camara.leg.br/deputados/{{ dep.id }}/presenca-plenario/{{ a.ano }}">ver ↗</a></td>
       </tr>
       {% endfor %}
       </tbody>
     </table>
   </div>
-  <div class="legenda"><span><span class="sw p"></span>Presença registrada</span><span><span class="sw s"></span>Sem registro de presença</span></div>
+  <div class="legenda"><span><span class="sw p"></span>Presença</span><span><span class="sw j"></span>Ausência justificada</span><span><span class="sw s"></span>Sem justificativa</span></div>
+  {% if presenca.motivos %}
+  <div class="small"><strong>Motivos das ausências justificadas:</strong> {% for m, n in presenca.motivos %}{{ m }} ({{ n }}){{ ', ' if not loop.last }}{% endfor %}</div>
+  {% endif %}
   {% else %}
   <div class="vazio">Não há sessões deliberativas no período de exercício deste deputado nos dados coletados.</div>
   {% endif %}

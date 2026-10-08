@@ -130,6 +130,16 @@ CREATE TABLE IF NOT EXISTS presenca (
     PRIMARY KEY (sessao_id, parlamentar_id)
 );
 
+-- Frequência por dia publicada no site da Câmara (inclui justificativas de ausência).
+CREATE TABLE IF NOT EXISTS frequencia_dia (
+    parlamentar_id  INTEGER NOT NULL,
+    data            TEXT NOT NULL,          -- AAAA-MM-DD
+    status          TEXT NOT NULL,          -- Presença, Ausência, Missão Autorizada, ...
+    url             TEXT,
+    fonte_id        INTEGER REFERENCES fonte_arquivo(id),
+    PRIMARY KEY (parlamentar_id, data)
+);
+
 CREATE INDEX IF NOT EXISTS idx_voto_parl ON voto(parlamentar_id);
 CREATE INDEX IF NOT EXISTS idx_autoria_parl ON autoria(parlamentar_id);
 CREATE INDEX IF NOT EXISTS idx_presenca_parl ON presenca(parlamentar_id);

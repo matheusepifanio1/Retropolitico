@@ -77,6 +77,7 @@ def sanidade(conn) -> None:
         print(f"  sessões deliberativas {r['ano']}: {r['n']}")
     ate = compute.agora_iso()
     pres, part, sem_periodo, so_voto_total = [], [], 0, 0
+    just_total = nj_total = u_total = conflitos_total = 0
     for d in conn.execute("SELECT id, nome FROM parlamentar WHERE em_exercicio=1"):
         hist = conn.execute("SELECT * FROM situacao_historico WHERE parlamentar_id=?", (d["id"],)).fetchall()
         periodos = compute.periodos_exercicio(hist, ate)
@@ -88,14 +89,20 @@ def sanidade(conn) -> None:
         if p:
             pres.append(p.pct)
             so_voto_total += p.so_por_voto
+            just_total += p.justificadas
+            nj_total += p.nao_justificadas
+            u_total += p.sem_informacao
+            conflitos_total += p.conflitos
             if p.pct < 50:
                 hs = "; ".join(f"{h['data_hora'][:10]} {h['situacao']}" for h in hist if h["situacao"])
                 print(f"  ATENÇÃO presença {p.pct}%: id={d['id']} {d['nome']} "
-                      f"({p.presentes}/{p.sessoes}, {p.so_por_voto} só por voto) histórico: {hs}")
+                      f"({p.presentes}/{p.sessoes}, justificadas {p.justificadas}, sem justificativa {p.nao_justificadas}, sem info {p.sem_informacao}) histórico: {hs}")
         if v and v.votacoes_no_periodo:
             part.append(round(100 * v.com_registro / v.votacoes_no_periodo))
     print(f"  deputados em exercício sem período de exercício no histórico: {sem_periodo}")
     print(f"  sessões contadas como presença só pelo voto (sem registro de presença): {so_voto_total}")
+    print(f"  ausências: justificadas={just_total} sem justificativa={nj_total} sem informação={u_total} "
+          f"conflitos (presença/voto em dia 'Ausência')={conflitos_total}")
     n_ev = conn.execute("SELECT COUNT(*) FROM votacao WHERE id_evento IN (SELECT id FROM sessao)").fetchone()[0]
     print(f"  votações nominais ligadas a uma sessão deliberativa: {n_ev}")
     for nome, xs in (("presença %", pres), ("participação em votações %", part)):
@@ -104,6 +111,8 @@ def sanidade(conn) -> None:
             faixas = {f: sum(1 for x in xs if lo <= x < hi) for f, (lo, hi) in
                       {"<50": (0, 50), "50-79": (50, 80), "80-94": (80, 95), "95+": (95, 101)}.items()}
             print(f"  {nome}: n={len(xs)} min={xs[0]} mediana={median(xs)} max={xs[-1]} faixas={faixas}")
+    for r in conn.execute("SELECT status, COUNT(*) n FROM frequencia_dia GROUP BY status ORDER BY n DESC LIMIT 20"):
+        print(f"    frequência no site '{r['status']}': {r['n']}")
     leis = sum(1 for r in conn.execute("SELECT situacao FROM proposicao") if compute.is_lei(r[0]))
     print(f"  proposições de deputados que viraram lei: {leis}")
     for r in conn.execute("SELECT situacao, COUNT(*) n FROM proposicao GROUP BY situacao ORDER BY n DESC LIMIT 12"):

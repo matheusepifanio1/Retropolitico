@@ -153,7 +153,7 @@ def write_raw(root: Path, *, drop_column: str | None = None) -> RawStore:
         {"idEvento": 6, "uriEvento": "https://x/eventos/6", "idOrgao": 2003, "siglaOrgao": "CCJC"},
     ])
     _json(d / f"eventosPresencaDeputados-{ANO}.json", [
-        {"idEvento": 1, "idDeputado": 101}, {"idEvento": 3, "idDeputado": 101},
+        {"idEvento": 1, "idDeputado": 101},
         {"idEvento": 1, "idDeputado": 102}, {"idEvento": 3, "idDeputado": 102},
         {"uriEvento": "https://x/eventos/2", "uriDeputado": "https://x/deputados/103"},
         {"idEvento": 6, "idDeputado": 102},
@@ -185,6 +185,21 @@ def write_raw(root: Path, *, drop_column: str | None = None) -> RawStore:
         {"idProposicao": "5005", "idDeputadoAutor": "101", "ordemAssinatura": "1", "proponente": "1"},
         {"idProposicao": "5003", "idDeputadoAutor": "", "nomeAutor": "Senado Federal", "ordemAssinatura": "3", "proponente": "0"},
     ])
+
+    # Páginas de presença do site da Câmara, no formato real extraído (linhas de dia e de sessão).
+    site = {
+        "101-2024": {"url": "https://www.camara.leg.br/deputados/101/presenca-plenario/2024", "status": 200, "ok": True,
+                     "sha256": "0" * 64, "baixado_em": "2026-10-08T00:00:00Z", "linhas": [
+            "Presença em Plenário - 2024", "Data | Frequência por Sessão | Frequência por Dia/Justificativa",
+            "06/02/2024 Presença | | Presença", "EXTRAORDINÁRIA Nº 001 - 06/02/2024 | Presença",
+            "05/03/2024 Presença | | Presença", "EXTRAORDINÁRIA Nº 017 - 05/03/2024 | Presença",
+            "02/07/2024 Missão Autorizada | | Missão Autorizada", "EXTRAORDINÁRIA Nº 120 - 02/07/2024 | Missão Autorizada"]},
+        "103-2024": {"url": "https://www.camara.leg.br/deputados/103/presenca-plenario/2024", "status": 200, "ok": True,
+                     "sha256": "1" * 64, "baixado_em": "2026-10-08T00:00:00Z", "linhas": [
+            "06/02/2024 Ausência | | Ausência", "EXTRAORDINÁRIA Nº 001 - 06/02/2024 | Ausência",
+            "05/03/2024 Presença | | Presença"]},
+    }
+    (d / "presenca-plenario-site.json").write_text(json.dumps(site, ensure_ascii=False), encoding="utf-8")
 
     for f in sorted(d.iterdir()):
         store._record(f.name, f"https://dadosabertos.camara.leg.br/teste/{f.name}")

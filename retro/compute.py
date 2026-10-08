@@ -75,12 +75,54 @@ def _no_periodo(momento: str | None, periodos: list[Periodo]) -> bool:
     return bool(momento) and any(p.contem(momento) for p in periodos)
 
 
+PRESENTE_SITE = "presenca"
+AUSENTE_SITE = "ausencia"
+
+
+def classificar_sessoes(conn: sqlite3.Connection, dep_id: int, periodos: list[Periodo]) -> list[dict]:
+    """Cada sessão deliberativa em exercício, classificada como:
+    P presente (registro de presença, voto, ou 'Presença' no site da Câmara)
+    J ausência justificada (motivo publicado no site da Câmara)
+    N ausência sem justificativa ('Ausência' no site da Câmara)
+    U sem registro de presença e sem informação de justificativa
+    """
+    registrados = {r[0] for r in conn.execute("SELECT sessao_id FROM presenca WHERE parlamentar_id=?", (dep_id,))}
+    votou = {r[0] for r in conn.execute(
+        """SELECT DISTINCT v.id_evento FROM voto x JOIN votacao v ON v.id = x.votacao_id
+           WHERE x.parlamentar_id=? AND v.id_evento IS NOT NULL""", (dep_id,))}
+    site = {r["data"]: r["status"] for r in conn.execute(
+        "SELECT data, status FROM frequencia_dia WHERE parlamentar_id=?", (dep_id,))}
+    out = []
+    for s in conn.execute("SELECT id, data_hora FROM sessao ORDER BY data_hora"):
+        if not _no_periodo(s["data_hora"], periodos):
+            continue
+        dia = s["data_hora"][:10]
+        status = site.get(dia)
+        if s["id"] in registrados or s["id"] in votou or norm(status) == PRESENTE_SITE:
+            cod, motivo = "P", None
+        elif status is None:
+            cod, motivo = "U", None
+        elif norm(status) == AUSENTE_SITE:
+            cod, motivo = "N", None
+        else:
+            cod, motivo = "J", status
+        out.append({"id": s["id"], "data": dia, "cod": cod, "motivo": motivo,
+                    "so_voto": s["id"] in votou and s["id"] not in registrados,
+                    "conflito": cod == "P" and norm(status) == AUSENTE_SITE})
+    return out
+
+
 @dataclass
 class Presenca:
     sessoes: int
     presentes: int
+    justificadas: int = 0
+    nao_justificadas: int = 0
+    sem_informacao: int = 0
+    motivos: list = field(default_factory=list)
     por_ano: list[dict] = field(default_factory=list)
-    so_por_voto: int = 0  # sessões sem registro de presença, mas com voto registrado do deputado
+    so_por_voto: int = 0
+    conflitos: int = 0  # presença/voto registrado em dia marcado como "Ausência" no site
 
     @property
     def sem_registro(self) -> int:
@@ -91,32 +133,31 @@ class Presenca:
         return round(100 * self.presentes / self.sessoes) if self.sessoes else None
 
 
+def _pct(n: int, t: int) -> int:
+    return round(100 * n / t) if t else 0
+
+
 def presenca(conn: sqlite3.Connection, dep_id: int, periodos: list[Periodo]) -> Presenca | None:
     if not periodos:
         return None
-    registrados = {r[0] for r in conn.execute("SELECT sessao_id FROM presenca WHERE parlamentar_id=?", (dep_id,))}
-    # Quem votou numa sessão estava presente nela, mesmo que o registro de presença falte.
-    votou = {r[0] for r in conn.execute(
-        """SELECT DISTINCT v.id_evento FROM voto x JOIN votacao v ON v.id = x.votacao_id
-           WHERE x.parlamentar_id=? AND v.id_evento IS NOT NULL""", (dep_id,))}
-    presentes = registrados | votou
-    anos: dict[str, list[int]] = {}
-    total = pres = so_voto = 0
-    for s in conn.execute("SELECT id, data_hora FROM sessao ORDER BY data_hora"):
-        if not _no_periodo(s["data_hora"], periodos):
-            continue
-        total += 1
-        foi = s["id"] in presentes
-        so_voto += s["id"] in votou and s["id"] not in registrados
-        pres += foi
-        a = anos.setdefault(s["data_hora"][:4], [0, 0])
-        a[0] += 1
-        a[1] += foi
-    if total == 0:
+    sessoes = classificar_sessoes(conn, dep_id, periodos)
+    if not sessoes:
         return None
-    por_ano = [{"ano": ano, "sessoes": t, "presentes": p, "sem_registro": t - p,
-                "pct": round(100 * p / t)} for ano, (t, p) in sorted(anos.items())]
-    return Presenca(total, pres, por_ano, so_voto)
+    from collections import Counter
+    c = Counter(s["cod"] for s in sessoes)
+    motivos = Counter(s["motivo"] for s in sessoes if s["motivo"])
+    anos: dict[str, Counter] = {}
+    for s in sessoes:
+        anos.setdefault(s["data"][:4], Counter())[s["cod"]] += 1
+    por_ano = []
+    for ano, k in sorted(anos.items()):
+        t = sum(k.values())
+        por_ano.append({"ano": ano, "sessoes": t, "presentes": k["P"], "justificadas": k["J"],
+                        "nao_justificadas": k["N"], "sem_informacao": k["U"], "sem_registro": t - k["P"],
+                        "pct": _pct(k["P"], t), "pct_j": _pct(k["J"], t), "pct_n": _pct(k["N"], t),
+                        "pct_u": _pct(k["U"], t)})
+    return Presenca(len(sessoes), c["P"], c["J"], c["N"], c["U"], motivos.most_common(), por_ano,
+                    sum(s["so_voto"] for s in sessoes), sum(s["conflito"] for s in sessoes))
 
 
 @dataclass
@@ -255,13 +296,7 @@ CODIGO_VOTO = {"Sim": "S", "Não": "N", "Abstenção": "A", "Obstrução": "O", 
 
 def serie_periodo(conn: sqlite3.Connection, dep_id: int, periodos: list[Periodo], leis_dep: dict) -> dict:
     """Dados compactos para o filtro por período no navegador (só datas e códigos)."""
-    registrados = {r[0] for r in conn.execute("SELECT sessao_id FROM presenca WHERE parlamentar_id=?", (dep_id,))}
-    votou_ev = {r[0] for r in conn.execute(
-        """SELECT DISTINCT v.id_evento FROM voto x JOIN votacao v ON v.id = x.votacao_id
-           WHERE x.parlamentar_id=? AND v.id_evento IS NOT NULL""", (dep_id,))}
-    sessoes = [[s["data_hora"][:10], int(s["id"] in registrados or s["id"] in votou_ev)]
-               for s in conn.execute("SELECT id, data_hora FROM sessao ORDER BY data_hora")
-               if _no_periodo(s["data_hora"], periodos)]
+    sessoes = [[s["data"], s["cod"]] for s in classificar_sessoes(conn, dep_id, periodos)]
     votos = {r["votacao_id"]: r["voto"] for r in conn.execute(
         "SELECT votacao_id, voto FROM voto WHERE parlamentar_id=?", (dep_id,))}
     vs = []
