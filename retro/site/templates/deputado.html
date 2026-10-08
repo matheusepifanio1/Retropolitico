@@ -60,6 +60,68 @@
   </div>
 </section>
 
+<section aria-labelledby="h-trajetoria">
+  <div class="title-row"><h2 id="h-trajetoria">Trajetória no mandato</h2>{{ info('i-trajetoria', 'O que é a trajetória?') }}</div>
+  <div id="i-trajetoria" class="info" hidden>
+    <p>Mudanças de situação registradas pela Câmara nesta legislatura: posse, licenças, afastamentos para outros cargos, retornos e trocas de partido. A descrição é o texto oficial, sem edição.</p>
+    <p><strong>Exercício</strong>: no cargo de deputado. <strong>Licença</strong>: afastado temporariamente (saúde, interesse particular, cargo no Executivo, entre outros). <strong>Suplência</strong> e <strong>Convocado</strong>: situações de suplentes. Presença e votos só são contados nos períodos de exercício.</p>
+  </div>
+  {% if trajetoria %}
+  <div class="table-box">
+    <table>
+      <thead><tr><th>Data</th><th>Situação</th><th>Descrição oficial</th><th>Partido</th></tr></thead>
+      <tbody>
+      {% for t in trajetoria %}
+      <tr>
+        <td class="mono small" style="white-space:nowrap">{{ t.data|br }}</td>
+        <td>{% if t.exercicio %}<strong>{{ t.situacao }}</strong>{% else %}{{ t.situacao }}{% endif %}</td>
+        <td class="small">{{ t.descricao or '—' }}</td>
+        <td class="small">{{ t.partido or '—' }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <a class="xsmall" href="https://dadosabertos.camara.leg.br/api/v2/deputados/{{ dep.id }}/historico">Fonte: histórico oficial na Câmara ↗</a>
+  {% else %}
+  <div class="vazio">Sem registros de histórico nesta legislatura.</div>
+  {% endif %}
+</section>
+
+<section aria-labelledby="h-cargos">
+  <div class="title-row"><h2 id="h-cargos">Cargos na Câmara</h2>{{ info('i-cargos', 'O que são esses cargos?') }}</div>
+  <div id="i-cargos" class="info" hidden>
+    <p>Funções que o deputado ocupou em órgãos da Câmara nesta legislatura: comissões, Mesa Diretora, conselhos e frentes. <strong>Presidente</strong> e <strong>vice-presidente</strong> conduzem os trabalhos do órgão. <strong>Titular</strong> e <strong>suplente</strong> são membros com e sem voto garantido.</p>
+  </div>
+  {% if cargos.direcao %}
+  <div class="table-box">
+    <table>
+      <thead><tr><th>Cargo</th><th>Órgão</th><th>Início</th><th>Fim</th></tr></thead>
+      <tbody>
+      {% for c in cargos.direcao %}
+      <tr>
+        <td><strong>{{ c.titulo }}</strong></td>
+        <td class="small">{{ c.nome_orgao or c.sigla_orgao }}{% if c.sigla_orgao and c.nome_orgao %} <span class="muted">({{ c.sigla_orgao }})</span>{% endif %}</td>
+        <td class="mono small" style="white-space:nowrap">{{ c.data_inicio|br }}</td>
+        <td class="mono small" style="white-space:nowrap">{{ c.data_fim|br if c.data_fim else 'atual' }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="vazio">Nenhum cargo de direção em órgãos da Câmara nesta legislatura.</div>
+  {% endif %}
+  {% if cargos.membro %}
+  <details><summary class="small">Membro de {{ cargos.membro|length }} {{ 'órgão' if cargos.membro|length == 1 else 'órgãos' }} como titular ou suplente</summary>
+    <div class="table-box" style="margin-top:8px"><table><tbody>
+    {% for c in cargos.membro %}<tr><td class="small">{{ c.titulo }}</td><td class="small">{{ c.nome_orgao or c.sigla_orgao }}</td><td class="mono xsmall" style="white-space:nowrap">{{ c.data_inicio|br }} → {{ c.data_fim|br if c.data_fim else 'atual' }}</td></tr>{% endfor %}
+    </tbody></table></div>
+  </details>
+  {% endif %}
+  <a class="xsmall" href="https://dadosabertos.camara.leg.br/api/v2/deputados/{{ dep.id }}/orgaos">Fonte: órgãos do deputado na Câmara ↗</a>
+</section>
+
 <section aria-labelledby="h-presenca">
   <div class="title-row"><h2 id="h-presenca">Presença em sessões</h2>{{ info('i-presenca', 'Como a presença é medida?') }}</div>
   <div id="i-presenca" class="info" hidden>

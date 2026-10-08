@@ -65,6 +65,11 @@ class TestCarga(unittest.TestCase):
         self.assertEqual((p.sessoes, p.presentes, p.so_por_voto), (3, 3, 1),
                          "votou na sessão 2 sem registro de presença: conta como presente")
 
+    def test_cargos(self):
+        c = compute.cargos(self.conn, 101)
+        self.assertEqual([r["titulo"] for r in c["direcao"]], ["Presidente"])
+        self.assertEqual(len(c["membro"]), 1)
+
     def test_suplente(self):
         hist = self.conn.execute("SELECT * FROM situacao_historico WHERE parlamentar_id=103").fetchall()
         p = compute.presenca(self.conn, 103, compute.periodos_exercicio(hist, "2026-12-31T00:00:00"))
@@ -120,6 +125,10 @@ class TestSite(unittest.TestCase):
         self.assertIn("3 de 3", perfil)
         self.assertIn("Revisado por Pessoa Revisora", perfil)
         self.assertIn("Orientação do partido: Sim", perfil)
+        self.assertIn("Trajetória no mandato", perfil)
+        self.assertIn("Alteração de partido", perfil)
+        self.assertIn("Comissão de Constituição e Justiça e de Cidadania", perfil)
+        self.assertIn("Membro de 1 órgão como", perfil)
         perfil_c = (out / "deputado/102/index.html").read_text(encoding="utf-8")
         self.assertIn("SEM REGISTRO", perfil_c, "Bruno estava licenciado na votação-chave")
         votacao = (out / "votacao/900-1/index.html").read_text(encoding="utf-8")

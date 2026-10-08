@@ -85,6 +85,7 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
     agora = datetime.now(timezone.utc)
     env = Environment(loader=FileSystemLoader(HERE / "templates"), autoescape=select_autoescape(["html"]),
                       undefined=StrictUndefined, trim_blocks=True, lstrip_blocks=True)
+    env.filters["br"] = data_br
     ctx = {"site": site, "base": base, "legislatura": cam["legislatura"],
            "atualizado_em": agora.strftime("%d/%m/%Y %H:%M"), "tipos": cam["tipos_legislativos"],
            "anos_prop": cam["anos_proposicoes"], "inicio_mandato": data_br(cam["inicio_mandato"]),
@@ -131,7 +132,8 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
                               "orientacao": orient.get((v["id"], partido.upper()))})
 
         render(f"deputado/{d['id']}/index.html", "deputado.html", pagina="perfil", dep=d, presenca=pres,
-               resumo=resumo, leis=leis, chave=chave_dep, cobertura=blocos, nivel=nivel)
+               resumo=resumo, leis=leis, chave=chave_dep, cobertura=blocos, nivel=nivel,
+               trajetoria=compute.trajetoria(hist), cargos=compute.cargos(conn, d["id"]))
 
         lista = []
         for v in todas_votacoes:

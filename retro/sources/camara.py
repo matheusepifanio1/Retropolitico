@@ -100,12 +100,17 @@ def download(store: RawStore, cfg: dict, log: ProgressFn = print) -> None:
     store.save_json("deputados-em-exercicio.json", url_atual, _paginate(store, url_atual))
     log(f"  ok {len(deputados)} deputados na legislatura {leg}")
 
-    historicos = {}
-    for i, d in enumerate(deputados, 1):
-        historicos[str(d["id"])] = store.get_json(f"{API}/deputados/{d['id']}/historico", pause=0.1).get("dados", [])
+    # A listagem por legislatura repete o deputado a cada mudança de partido/situação.
+    ids = sorted({str(d["id"]) for d in deputados})
+    historicos, orgaos = {}, {}
+    inicio = cfg["inicio_mandato"]
+    for i, dep_id in enumerate(ids, 1):
+        historicos[dep_id] = store.get_json(f"{API}/deputados/{dep_id}/historico", pause=0.05).get("dados", [])
+        orgaos[dep_id] = _paginate(store, f"{API}/deputados/{dep_id}/orgaos?dataInicio={inicio}&itens=100")
         if i % 100 == 0:
-            log(f"  histórico {i}/{len(deputados)}")
+            log(f"  histórico e órgãos {i}/{len(ids)}")
     store.save_json("deputados-historico.json", f"{API}/deputados/{{id}}/historico", historicos)
+    store.save_json("deputados-orgaos.json", f"{API}/deputados/{{id}}/orgaos?dataInicio={inicio}", orgaos)
     store.save_manifest()
 
 
@@ -167,8 +172,9 @@ def _load_deputados(conn, store, src, leg: int, inicio: str) -> None:
                          key=lambda h: h.get("dataHora") or "")
         for h in eventos:
             conn.execute(
-                "INSERT OR IGNORE INTO situacao_historico VALUES (?,?,?,?,?)",
-                (int(dep_id), h["dataHora"], h.get("situacao"), h.get("descricaoStatus"), hid),
+                "INSERT OR IGNORE INTO situacao_historico VALUES (?,?,?,?,?,?)",
+                (int(dep_id), h["dataHora"], h.get("situacao"), h.get("descricaoStatus"),
+                 h.get("siglaPartido"), hid),
             )
         # Quem não está em exercício hoje: partido/UF do registro mais recente do histórico.
         if eventos and dep_id not in em_exercicio:
@@ -176,6 +182,25 @@ def _load_deputados(conn, store, src, leg: int, inicio: str) -> None:
             if ultimo.get("siglaPartido"):
                 conn.execute("UPDATE parlamentar SET partido=?, uf=COALESCE(?, uf) WHERE id=?",
                              (ultimo["siglaPartido"], ultimo.get("siglaUf"), int(dep_id)))
+
+    onome = "deputados-orgaos.json"
+    orgaos = json.loads(store.path(onome).read_text(encoding="utf-8"))
+    oid = src(onome)
+    amostra = [o for lista in orgaos.values() for o in lista][:1]
+    require_any(amostra, onome, {
+        "orgao": ("idOrgao", "uriOrgao"),
+        "sigla": ("siglaOrgao",),
+        "titulo": ("titulo",),
+        "inicio": ("dataInicio",),
+    })
+    for dep_id, lista in orgaos.items():
+        for o in lista:
+            conn.execute(
+                "INSERT OR IGNORE INTO cargo VALUES (?,?,?,?,?,?,?,?)",
+                (int(dep_id), _int(pick(o, "idOrgao", uri_keys=("uriOrgao",))), o.get("siglaOrgao"),
+                 o.get("nomePublicacao") or o.get("nomeOrgao"), o.get("titulo"),
+                 (o.get("dataInicio") or "")[:10] or None, (o.get("dataFim") or "")[:10] or None, oid),
+            )
 
 
 def _int(v: str | None) -> int | None:

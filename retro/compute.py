@@ -165,5 +165,30 @@ def leis(conn: sqlite3.Connection, dep_id: int) -> dict:
             "apresentadas_principal_nao_lei": tramitando}
 
 
+def trajetoria(historico: list) -> list[dict]:
+    """Linha do tempo do mandato, com o texto oficial de cada registro."""
+    itens = []
+    for h in sorted(historico, key=lambda h: h["data_hora"]):
+        itens.append({
+            "data": h["data_hora"][:10],
+            "situacao": h["situacao"] or "Registro de nome/partido",
+            "descricao": h["descricao_status"] or "",
+            "partido": h["partido"] or "",
+            "exercicio": norm(h["situacao"]) == "exercicio",
+        })
+    return itens
+
+
+MEMBRO = {"titular", "suplente"}
+
+
+def cargos(conn: sqlite3.Connection, dep_id: int) -> dict:
+    rows = [dict(r) for r in conn.execute(
+        "SELECT * FROM cargo WHERE parlamentar_id=? ORDER BY data_inicio DESC", (dep_id,))]
+    direcao = [r for r in rows if norm(r["titulo"]) not in MEMBRO]
+    membro = [r for r in rows if norm(r["titulo"]) in MEMBRO]
+    return {"direcao": direcao, "membro": membro}
+
+
 def agora_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")

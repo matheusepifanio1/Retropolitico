@@ -33,9 +33,23 @@ CREATE TABLE IF NOT EXISTS situacao_historico (
     parlamentar_id   INTEGER NOT NULL REFERENCES parlamentar(id),
     data_hora        TEXT NOT NULL,
     situacao         TEXT,
-    descricao_status TEXT,
+    descricao_status TEXT,                  -- texto oficial (ex.: motivo da licença)
+    partido          TEXT,                  -- partido registrado naquele momento
     fonte_id         INTEGER REFERENCES fonte_arquivo(id),
     PRIMARY KEY (parlamentar_id, data_hora, situacao)
+);
+
+-- Cargos em órgãos da Câmara (comissões, Mesa Diretora, conselhos...).
+CREATE TABLE IF NOT EXISTS cargo (
+    parlamentar_id  INTEGER NOT NULL REFERENCES parlamentar(id),
+    id_orgao        INTEGER,
+    sigla_orgao     TEXT,
+    nome_orgao      TEXT,
+    titulo          TEXT,                   -- Presidente, Titular, Suplente, ...
+    data_inicio     TEXT,
+    data_fim        TEXT,
+    fonte_id        INTEGER REFERENCES fonte_arquivo(id),
+    PRIMARY KEY (parlamentar_id, id_orgao, titulo, data_inicio)
 );
 
 CREATE TABLE IF NOT EXISTS votacao (

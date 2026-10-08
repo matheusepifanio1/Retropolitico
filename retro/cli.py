@@ -96,6 +96,11 @@ def sanidade(conn) -> None:
         print(f"    situação '{r['situacao']}': {r['n']}")
     for r in conn.execute("SELECT situacao, COUNT(*) n FROM situacao_historico GROUP BY situacao ORDER BY n DESC"):
         print(f"    histórico situação '{r['situacao']}': {r['n']}")
+    for r in conn.execute("""SELECT situacao, descricao_status, COUNT(*) n FROM situacao_historico
+                             GROUP BY situacao, descricao_status ORDER BY n DESC LIMIT 25"""):
+        print(f"    histórico descrição [{r['situacao']}] '{r['descricao_status']}': {r['n']}")
+    for r in conn.execute("SELECT titulo, COUNT(*) n FROM cargo GROUP BY titulo ORDER BY n DESC LIMIT 15"):
+        print(f"    cargo '{r['titulo']}': {r['n']}")
 
 
 def main(argv: list[str] | None = None) -> int:

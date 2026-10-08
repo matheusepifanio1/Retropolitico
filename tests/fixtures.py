@@ -73,6 +73,18 @@ def write_raw(root: Path, *, drop_column: str | None = None) -> RawStore:
         ],
     }
     (d / "deputados-historico.json").write_text(json.dumps(historico, ensure_ascii=False), encoding="utf-8")
+    orgaos = {
+        "101": [
+            {"idOrgao": 2003, "uriOrgao": "https://x/orgaos/2003", "siglaOrgao": "CCJC",
+             "nomeOrgao": "Comissão de Constituição e Justiça e de Cidadania", "nomePublicacao": "Comissão de Constituição e Justiça e de Cidadania",
+             "titulo": "Presidente", "codTitulo": "1", "dataInicio": "2024-03-06T00:00", "dataFim": "2025-03-01T00:00"},
+            {"idOrgao": 2004, "uriOrgao": "https://x/orgaos/2004", "siglaOrgao": "CSAUDE",
+             "nomeOrgao": "Comissão de Saúde", "nomePublicacao": "Comissão de Saúde",
+             "titulo": "Titular", "codTitulo": "101", "dataInicio": "2023-03-01T00:00", "dataFim": None},
+        ],
+        "102": [], "103": [],
+    }
+    (d / "deputados-orgaos.json").write_text(json.dumps(orgaos, ensure_ascii=False), encoding="utf-8")
 
     # ---- votações
     vh = ["id", "uri", "data", "dataHoraRegistro", "idOrgao", "siglaOrgao", "idEvento", "aprovacao", "votosSim",
