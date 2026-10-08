@@ -14,6 +14,7 @@ import yaml
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 
 from .. import compute
+from . import pessoas
 
 HERE = Path(__file__).parent
 VOTO_LABEL = {"Sim": "SIM", "Não": "NÃO", "Abstenção": "ABSTENÇÃO", "Obstrução": "OBSTRUÇÃO",
@@ -110,7 +111,8 @@ def mes_ano(iso: str) -> str:
 def frase_perfil(dep, linha: dict) -> str:
     """Frase de abertura do perfil, montada só com dados oficiais."""
     partido = f"pelo {dep['partido']} " if dep["partido"] else ""
-    frase = f"Deputado(a) federal {partido}{UF_NOME.get(dep['uf'], '')}".strip() + "."
+    cargo = {"F": "Deputada", "M": "Deputado"}.get(dep["sexo"] or "", "Deputado(a)")
+    frase = f"{cargo} federal {partido}{UF_NOME.get(dep['uf'], '')}".strip() + "."
     exerc = [s for s in linha["situacao"] if s["exercicio"]]
     licencas = [s for s in linha["situacao"] if s["chave"] == "licenca"]
     if dep["em_exercicio"] and exerc:
@@ -241,9 +243,14 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
         contagem = Counter(r["voto_label"] for r in rows).most_common()
         render(f"votacao/{v['id']}/index.html", "votacao.html", pagina="votacoes", v=v, votos=rows, contagem=contagem)
 
+    tse_anos = settings.get("tse", {}).get("anos", [])
+    info_pessoas = pessoas.gerar(conn, out, max(tse_anos) if tse_anos else agora.year)
+    render("pessoa/index.html", "pessoa.html", pagina="pessoa", tse_anos=tse_anos or [agora.year])
+
     ufs = sorted({d["uf"] for d in deputados if d["uf"]})
     por_uf = [(uf, [d for d in deputados if d["uf"] == uf]) for uf in ufs]
-    render("index.html", "index.html", pagina="inicio", ufs=ufs)
+    render("index.html", "index.html", pagina="inicio", ufs=ufs, segundo=info_pessoas["segundo_turno"],
+           n_pessoas=info_pessoas["pessoas"], ano_tse=max(tse_anos) if tse_anos else agora.year)
     render("deputados/index.html", "lista.html", pagina="inicio", por_uf=por_uf)
     render("votacoes/index.html", "votacoes.html", pagina="votacoes", chave=chave)
     render("metodologia/index.html", "metodologia.html", pagina="metodologia")
@@ -256,4 +263,4 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
             shutil.copyfileobj(src, dst)
     render("dados/index.html", "dados.html", pagina="dados", fontes=fontes)
     (out / ".nojekyll").write_text("")
-    return {"deputados": len(deputados), "votacoes_chave": len(chave)}
+    return {"deputados": len(deputados), "votacoes_chave": len(chave), "pessoas": info_pessoas["pessoas"]}

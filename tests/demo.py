@@ -19,6 +19,11 @@ if __name__ == "__main__":
         store = fixtures.write_raw(tmp / "raw")
         conn = db.connect(tmp / "demo.sqlite")
         camara.load(conn, store, fixtures.settings()["camara"])
+        from retro.sources import tse
+        from retro.sources.base import RawStore
+        st = RawStore(tmp / "raw", "tse")
+        cpfs = tse.load(conn, st, fixtures.settings()["tse"], lambda n: db.register_source(conn, "tse", st.entry(n)))
+        tse.ligar_deputados(conn, store, cpfs, lambda n: db.register_source(conn, "camara", store.entry(n)))
         chave = tmp / "chave.yaml"
         chave.write_text(fixtures.CHAVE_OK, encoding="utf-8")
         build(conn, ROOT / "_demo", fixtures.settings(), chave, db_path=tmp / "demo.sqlite")

@@ -30,6 +30,7 @@ def _json(path: Path, rows) -> None:
 
 def settings() -> dict:
     return {
+        "tse": {"anos": [2022, 2024]},
         "camara": {"legislatura": 57, "inicio_mandato": INICIO, "anos": [ANO], "anos_proposicoes": [ANO],
                    "tipos_legislativos": ["PL", "PLP", "PEC"]},
         "site": {"titulo": "Retrospectiva", "url_base": "", "repositorio": "https://github.com/exemplo/retro"},
@@ -201,8 +202,67 @@ def write_raw(root: Path, *, drop_column: str | None = None) -> RawStore:
     }
     (d / "presenca-plenario-site.json").write_text(json.dumps(site, ensure_ascii=False), encoding="utf-8")
 
+    # Cadastro da Câmara com CPF (fictício), lido só para ligar ao TSE.
+    _csv(d / "deputados.csv", ["uri", "nome", "nomeCivil", "cpf", "siglaSexo", "dataNascimento"], [
+        {"uri": "https://x/deputados/101", "nome": "Ana Ribeiro", "cpf": "11111111111", "siglaSexo": "F"},
+        {"uri": "https://x/deputados/102", "nome": "Bruno Sales", "cpf": "22222222222", "siglaSexo": "M"},
+        {"uri": "https://x/deputados/103", "nome": "Carla Dias", "cpf": "33333333333", "siglaSexo": "F"},
+    ])
+
     for f in sorted(d.iterdir()):
         store._record(f.name, f"https://dadosabertos.camara.leg.br/teste/{f.name}")
+    store.save_manifest()
+    write_tse(root)
+    return store
+
+
+TSE_COLS = ["ANO_ELEICAO", "NM_TIPO_ELEICAO", "DS_ELEICAO", "NR_TURNO", "SG_UF", "SG_UE", "NM_UE", "DS_CARGO",
+            "SQ_CANDIDATO", "NR_CANDIDATO", "NM_CANDIDATO", "NM_URNA_CANDIDATO", "NM_SOCIAL_CANDIDATO",
+            "NR_CPF_CANDIDATO", "NR_TITULO_ELEITORAL_CANDIDATO", "DT_NASCIMENTO", "DS_GENERO", "DS_COR_RACA",
+            "SG_PARTIDO", "DS_SITUACAO_CANDIDATURA", "DS_SIT_TOT_TURNO"]
+
+
+def _cand(ano, turno, uf, ue, nm_ue, cargo, sq, num, nome, urna, cpf, titulo, partido, res, sit="APTO"):
+    return {"ANO_ELEICAO": str(ano), "NM_TIPO_ELEICAO": "ELEIÇÃO ORDINÁRIA", "DS_ELEICAO": f"Eleições {ano}",
+            "NR_TURNO": str(turno), "SG_UF": uf, "SG_UE": ue, "NM_UE": nm_ue, "DS_CARGO": cargo, "SQ_CANDIDATO": sq,
+            "NR_CANDIDATO": num, "NM_CANDIDATO": nome, "NM_URNA_CANDIDATO": urna, "NM_SOCIAL_CANDIDATO": "#NULO#",
+            "NR_CPF_CANDIDATO": cpf, "NR_TITULO_ELEITORAL_CANDIDATO": titulo, "DT_NASCIMENTO": "01/01/1980",
+            "DS_GENERO": "FEMININO", "DS_COR_RACA": "PARDA", "SG_PARTIDO": partido,
+            "DS_SITUACAO_CANDIDATURA": sit, "DS_SIT_TOT_TURNO": res}
+
+
+def write_tse(root: Path) -> RawStore:
+    import io
+    import zipfile
+    store = RawStore(root, "tse")
+    linhas = {
+        2022: [
+            _cand(2022, 1, "SP", "SP", "SÃO PAULO", "DEPUTADO FEDERAL", "250000000001", "1234", "ANA RIBEIRO SILVA",
+                  "ANA RIBEIRO", "11111111111", "000000000001", "PAA", "ELEITO POR QP"),
+            _cand(2022, 1, "AC", "AC", "ACRE", "GOVERNADOR", "10000000002", "40", "DOUGLAS RUAS PEREIRA",
+                  "DOUGLAS RUAS", "44444444444", "000000000004", "PXX", "2º TURNO"),
+            _cand(2022, 2, "AC", "AC", "ACRE", "GOVERNADOR", "10000000002", "40", "DOUGLAS RUAS PEREIRA",
+                  "DOUGLAS RUAS", "44444444444", "000000000004", "PXX", "NÃO ELEITO"),
+        ],
+        2024: [
+            # 2024 sem CPF: liga pelo título de eleitor
+            _cand(2024, 1, "AC", "01392", "RIO BRANCO", "PREFEITO", "10000000010", "40", "DOUGLAS RUAS PEREIRA",
+                  "DOUGLAS RUAS", "-4", "000000000004", "PXX", "ELEITO"),
+            # homônimo: mesmo nome, outro título
+            _cand(2024, 1, "MG", "41238", "BELO HORIZONTE", "VEREADOR", "130000000020", "40123", "DOUGLAS RUAS PEREIRA",
+                  "DOUGLAS DO BAIRRO", "-4", "000000000099", "PYY", "SUPLENTE"),
+        ],
+    }
+    for ano, rows in linhas.items():
+        buf = io.StringIO()
+        w = csv.writer(buf, delimiter=";", quoting=csv.QUOTE_ALL)
+        w.writerow(TSE_COLS)
+        for r in rows:
+            w.writerow([r.get(c, "") for c in TSE_COLS])
+        with zipfile.ZipFile(store.path(f"consulta_cand_{ano}.zip"), "w") as z:
+            z.writestr(f"consulta_cand_{ano}_BRASIL.csv", buf.getvalue().encode("latin-1"))
+            z.writestr(f"consulta_cand_{ano}_AC.csv", buf.getvalue().encode("latin-1"))
+        store._record(f"consulta_cand_{ano}.zip", f"https://cdn.tse.jus.br/teste/consulta_cand_{ano}.zip")
     store.save_manifest()
     return store
 

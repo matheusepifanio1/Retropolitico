@@ -93,6 +93,10 @@ def download(store: RawStore, cfg: dict, log: ProgressFn = print) -> None:
         for nome in PROPOSICAO_FILES:
             bulk(nome, ano, "csv", refresh=True)
 
+    # Cadastro com CPF: usado só em memória para ligar o deputado às candidaturas do TSE.
+    store.fetch("https://dadosabertos.camara.leg.br/arquivos/deputados/csv/deputados.csv", "deputados.csv", refresh=True)
+    log("  ok deputados.csv")
+
     url_leg = f"{API}/deputados?idLegislatura={leg}&itens=100&ordem=ASC&ordenarPor=nome"
     deputados = _paginate(store, url_leg)
     store.save_json("deputados-legislatura.json", url_leg, deputados)

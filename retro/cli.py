@@ -111,6 +111,18 @@ def sanidade(conn) -> None:
             faixas = {f: sum(1 for x in xs if lo <= x < hi) for f, (lo, hi) in
                       {"<50": (0, 50), "50-79": (50, 80), "80-94": (80, 95), "95+": (95, 101)}.items()}
             print(f"  {nome}: n={len(xs)} min={xs[0]} mediana={median(xs)} max={xs[-1]} faixas={faixas}")
+    n_c = conn.execute("SELECT COUNT(*) FROM candidatura").fetchone()[0]
+    n_p = conn.execute("SELECT COUNT(DISTINCT pessoa_id) FROM candidatura").fetchone()[0]
+    multi = conn.execute("SELECT COUNT(*) FROM (SELECT pessoa_id FROM candidatura GROUP BY pessoa_id HAVING COUNT(*) > 1)").fetchone()[0]
+    lig = conn.execute("SELECT COUNT(*) FROM parlamentar WHERE pessoa_id IS NOT NULL").fetchone()[0]
+    print(f"  TSE: {n_c} candidaturas, {n_p} pessoas, {multi} com mais de uma candidatura; deputados ligados: {lig}")
+    for r in conn.execute("SELECT ano, COUNT(*) n FROM candidatura GROUP BY ano"):
+        print(f"    TSE {r['ano']}: {r['n']} candidaturas")
+    # Conferência com uma figura pública conhecida (candidato em 2026).
+    for r in conn.execute("""SELECT pessoa_id, ano, cargo, uf, nm_ue, partido, resultado FROM candidatura
+                             WHERE pessoa_id IN (SELECT pessoa_id FROM candidatura WHERE nome_urna LIKE 'DOUGLAS RUAS%')
+                             ORDER BY pessoa_id, ano"""):
+        print(f"    exemplo DOUGLAS RUAS: {tuple(r)}")
     for r in conn.execute("SELECT status, COUNT(*) n FROM frequencia_dia GROUP BY status ORDER BY n DESC LIMIT 20"):
         print(f"    frequência no site '{r['status']}': {r['n']}")
     leis = sum(1 for r in conn.execute("SELECT situacao FROM proposicao") if compute.is_lei(r[0]))
@@ -180,6 +192,13 @@ def main(argv: list[str] | None = None) -> int:
             args.db.unlink(missing_ok=True)  # o banco é sempre reconstruído dos arquivos brutos
             conn = db.connect(args.db)
             camara.load(conn, store, settings["camara"])
+            store_tse = RawStore(args.raw, "tse")
+            cpf_pessoa = tse.load(conn, store_tse, settings["tse"],
+                                  lambda nome: db.register_source(conn, "tse", store_tse.entry(nome)))
+            tse.ligar_deputados(conn, store, cpf_pessoa,
+                                lambda nome: db.register_source(conn, "camara", store.entry(nome)))
+            del cpf_pessoa
+            conn.commit()
             sanidade(conn)
             conn.execute("VACUUM")
             conn.close()
@@ -187,7 +206,8 @@ def main(argv: list[str] | None = None) -> int:
             print("Gerando o site…")
             conn = db.connect(args.db)
             info = build(conn, args.out, settings, args.config / "votacoes_chave.yaml", db_path=args.db)
-            print(f"  {info['deputados']} perfis, {info['votacoes_chave']} votações-chave → {args.out}")
+            print(f"  {info['deputados']} perfis de deputados, {info['pessoas']} pessoas na busca, "
+                  f"{info['votacoes_chave']} votações-chave → {args.out}")
     except (LayoutError, CuradoriaError) as exc:
         print(f"ERRO: {exc}", file=sys.stderr)
         print("Nada foi publicado. Corrija o leitor ou a curadoria antes de seguir.", file=sys.stderr)

@@ -13,6 +13,7 @@
       <div class="chips">
         {% if not dep.em_exercicio %}<span class="chip">Fora de exercício hoje</span>{% endif %}
         <a class="chip" href="https://www.camara.leg.br/deputados/{{ dep.id }}">Página oficial na Câmara</a>
+        {% if dep.pessoa_id %}<a class="chip forte" href="{{ base }}/pessoa/?id={{ dep.pessoa_id }}">Todas as candidaturas</a>{% endif %}
       </div>
     </div>
     <div class="cobertura">

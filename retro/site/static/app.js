@@ -9,47 +9,145 @@ document.addEventListener("click", (ev) => {
   alvo.hidden = !abrir;
 });
 
-// Busca da página inicial (dados em busca.json, gerado no build).
-(async function busca() {
+// Utilidades compartilhadas
+const RETRO = (() => {
+  const base = document.body.dataset.base || "";
+  const norm = (s) => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const titulo = (s) => (s && s === s.toUpperCase()
+    ? s.toLowerCase().replace(/(^|[\s'-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase()).replace(/ (De|Da|Do|Das|Dos|E) /g, (w) => w.toLowerCase())
+    : s || "");
+  const cache = new Map();
+  const json = (url) => {
+    if (!cache.has(url)) cache.set(url, fetch(url).then((r) => (r.ok ? r.json() : {})).catch(() => ({})));
+    return cache.get(url);
+  };
+  const BALDES = 4096;
+  const pessoa = async (id) => (await json(`${base}/pessoas/${Number(BigInt(id) % BigInt(BALDES))}.json`))[id];
+  return { base, norm, esc, titulo, json, pessoa };
+})();
+
+// Busca da página inicial: índice dividido pelas 3 primeiras letras de cada palavra do nome.
+(function busca() {
   const campo = document.getElementById("busca");
   if (!campo) return;
+  const { base, norm, esc, titulo, json, pessoa } = RETRO;
   const lista = document.getElementById("resultados");
   const ufSel = document.getElementById("uf");
   const vazio = document.getElementById("sem-resultados");
-  const base = document.body.dataset.base || "";
-  let dados = [];
-  try {
-    dados = await (await fetch(base + "/busca.json")).json();
-  } catch (e) {
-    lista.innerHTML = "";
-    vazio.hidden = false;
-    vazio.textContent = "Não foi possível carregar a lista. Use a lista completa abaixo.";
-    return;
-  }
-  const norm = (s) => s.normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
-  const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const dica = document.getElementById("busca-dica");
+  let cargo = "Todos";
+  let versao = 0;
 
-  function render() {
-    const q = norm(campo.value.trim());
+  async function idsPara(token) {
+    const shard = await json(`${base}/busca/${token.slice(0, 3)}.json`);
+    const exatos = shard[token] || [];
+    const outros = Object.keys(shard).filter((t) => t !== token && t.startsWith(token)).flatMap((t) => shard[t]);
+    return [...exatos, ...outros];
+  }
+
+  function rotuloCand(c) {
+    const [ano, cg, uf, local] = c;
+    return `${titulo(cg)} em ${ano}${local ? `, ${titulo(local)}` : ""} (${uf})`;
+  }
+
+  async function render() {
+    const minha = ++versao;
+    const palavras = norm(campo.value).split(/[^a-z0-9]+/).filter((p) => p.length >= 3 && !["das", "dos"].includes(p));
+    dica.hidden = palavras.length > 0;
+    if (!palavras.length) { lista.innerHTML = ""; vazio.hidden = true; return; }
+    const listas = await Promise.all(palavras.map(idsPara));
+    if (minha !== versao) return;
+    listas.sort((a, b) => a.length - b.length);
+    const resto = listas.slice(1).map((l) => new Set(l));
+    const vistos = new Set();
+    const candidatos = [];
+    for (const id of listas[0]) {
+      if (vistos.has(id) || !resto.every((s) => s.has(id))) continue;
+      vistos.add(id);
+      candidatos.push(id);
+      if (candidatos.length >= 120) break;
+    }
     const uf = ufSel.value;
-    if (!q && !uf) { lista.innerHTML = ""; vazio.hidden = true; return; }
-    const achados = dados
-      .filter((d) => (!uf || d.uf === uf) && (!q || d.n.includes(q)))
-      .slice(0, 30);
-    lista.innerHTML = achados.map((d) => `
-      <a class="resultado" href="${base}/deputado/${d.id}/">
-        <img src="${esc(d.foto || "")}" alt="" loading="lazy" width="52" height="52">
-        <span class="txt"><span class="nome">${esc(d.nome)}</span>
-        <span class="sub">${esc(d.cargo)} ${d.partido ? "pelo " + esc(d.partido) : "sem partido"}, ${esc(d.uf || "")}${d.exercicio ? "" : ". Fora de exercício hoje"}</span></span>
-        <span class="selo-res completo">Votos e presença</span>
-      </a>`).join("");
+    const achados = [];
+    for (let i = 0; i < candidatos.length && achados.length < 25; i += 25) {
+      const recs = await Promise.all(candidatos.slice(i, i + 25).map(async (id) => [id, await pessoa(id)]));
+      if (minha !== versao) return;
+      for (const [id, p] of recs) {
+        if (!p) continue;
+        const okCargo = cargo === "Todos" || p.c.some((c) => norm(c[1]) === norm(cargo));
+        const okUf = !uf || p.c.some((c) => c[2] === uf);
+        if (okCargo && okUf) achados.push([id, p]);
+      }
+    }
+    lista.innerHTML = achados.slice(0, 25).map(([id, p]) => {
+      const href = p.d ? `${base}/deputado/${p.d}/` : `${base}/pessoa/?id=${id}`;
+      const selo = p.d ? '<span class="selo-res completo">Votos e presença</span>' : '<span class="selo-res eleitoral">Candidaturas</span>';
+      const eleito = p.c.find((c) => c[6] === "Eleito(a)");
+      const linha = eleito ? `Eleito(a) ${titulo(eleito[1]).toLowerCase()} em ${eleito[0]}${eleito[3] ? `, ${titulo(eleito[3])}` : ""} (${eleito[2]})` : `Candidato(a) a ${rotuloCand(p.c[0]).replace(/^(.)/, (m) => m.toLowerCase())}`;
+      return `<a class="resultado" href="${href}">
+        <span class="ini" aria-hidden="true"></span>
+        <span class="txt"><span class="nome">${esc(titulo(p.u || p.n))}</span>
+        <span class="sub">${esc(titulo(p.n))}. ${esc(linha)}. ${p.c.length} ${p.c.length === 1 ? "candidatura" : "candidaturas"}.</span></span>
+        ${selo}</a>`;
+    }).join("");
     vazio.hidden = achados.length > 0;
   }
+
+  let espera;
+  const agendar = () => { clearTimeout(espera); espera = setTimeout(render, 180); };
   const inicial = new URLSearchParams(location.search).get("q");
   if (inicial) campo.value = inicial;
-  campo.addEventListener("input", render);
+  campo.addEventListener("input", agendar);
   ufSel.addEventListener("change", render);
+  document.querySelectorAll("[data-cargo]").forEach((b) => b.addEventListener("click", () => {
+    cargo = b.dataset.cargo;
+    document.querySelectorAll("[data-cargo]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    render();
+  }));
   render();
+})();
+
+// Página de pessoa (candidaturas do TSE), montada no navegador.
+(async function paginaPessoa() {
+  const cfgEl = document.getElementById("config-pessoa");
+  if (!cfgEl) return;
+  const { base, esc, titulo, pessoa } = RETRO;
+  const id = new URLSearchParams(location.search).get("id");
+  const p = id && /^\d+$/.test(id) ? await pessoa(id) : null;
+  if (!p) {
+    document.getElementById("p-nome").textContent = "Pessoa não encontrada";
+    document.getElementById("p-erro").hidden = false;
+    return;
+  }
+  const nome = titulo(p.u || p.n);
+  document.title = `${nome} · Retrospectiva`;
+  document.getElementById("p-nome").textContent = nome;
+  const eleicoes = p.c.length;
+  const eleito = p.c.filter((c) => c[6] === "Eleito(a)").length;
+  const anos = p.c.map((c) => c[0]);
+  document.getElementById("p-frase").textContent =
+    `${titulo(p.n)}. ${eleicoes} ${eleicoes === 1 ? "candidatura" : "candidaturas"} registradas no TSE entre ${Math.min(...anos)} e ${Math.max(...anos)}` +
+    (eleito ? `. Eleito(a) ${eleito} ${eleito === 1 ? "vez" : "vezes"}.` : ".");
+  document.getElementById("p-chips").innerHTML = p.d
+    ? `<a class="chip forte" href="${base}/deputado/${p.d}/">Ver votos, presença e leis na Câmara</a>`
+    : "";
+  const segs = p.d ? 3 : 1;
+  document.getElementById("p-cobertura").innerHTML =
+    `<div class="segs" aria-hidden="true">${[0, 1, 2, 3, 4].map((i) => `<i class="${i < segs ? "on" : ""}"></i>`).join("")}</div>
+     <span><strong>${p.d ? "Dados em 3 de 5 áreas." : "Só dados eleitorais."}</strong> ${p.d ? "Candidaturas e mandato de deputado federal." : "Para este cargo ainda não há votos ou presença em formato aberto."}</span>`;
+  const classe = (r) => r === "Eleito(a)" ? "sim" : r === "Não eleito(a)" ? "nao" : r.includes("turno") ? "outro" : "ausente";
+  document.getElementById("p-lista").innerHTML = p.c.map((c) => {
+    const [ano, cargo, uf, local, partido, numero, resultado, , suplementar] = c;
+    return `<article class="voto-card">
+      <div class="voto-lado"><span class="voto ${classe(resultado)}">${esc(resultado)}</span><span class="xsmall muted">${ano}</span></div>
+      <div class="voto-corpo">
+        <div class="etiquetas"><span class="etiqueta">${esc(partido)}</span><span class="etiqueta">Número ${esc(numero)}</span>${suplementar ? '<span class="etiqueta">Eleição suplementar</span>' : ""}</div>
+        <h3>${esc(titulo(cargo))}${local ? ` em ${esc(titulo(local))}` : ""} (${esc(uf)})</h3>
+        <p class="oficial"><a href="https://dadosabertos.tse.jus.br/dataset/candidatos-${ano}">Arquivo de candidatos ${ano} no TSE</a></p>
+      </div></article>`;
+  }).join("");
+  document.getElementById("p-candidaturas").hidden = false;
 })();
 
 // Linha do tempo: filtra o perfil pelo período clicado.

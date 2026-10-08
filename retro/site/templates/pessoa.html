@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Candidaturas · {{ site.titulo }}{% endblock %}
+{% block description %}Todas as candidaturas registradas no TSE, com cargo, ano, partido e resultado.{% endblock %}
+
+{% block antes %}
+<section class="perfil-hero">
+  <div class="wrap">
+    <div class="foto" aria-hidden="true"></div>
+    <div class="perfil-id">
+      <h1 id="p-nome">Carregando…</h1>
+      <p class="frase" id="p-frase"></p>
+      <div class="chips" id="p-chips"></div>
+    </div>
+    <div class="cobertura" id="p-cobertura"></div>
+  </div>
+</section>
+{% endblock %}
+
+{% block main %}
+<div id="p-erro" class="vazio" hidden>Não encontramos essa pessoa. Confira o endereço ou <a href="{{ base }}/">faça uma nova busca</a>.</div>
+<section id="p-candidaturas" aria-labelledby="h-cand" hidden>
+  <div class="title-row"><h2 id="h-cand">Candidaturas</h2>
+    <button type="button" class="info-btn" aria-expanded="false" aria-controls="i-cand" aria-label="De onde vêm as candidaturas"><span aria-hidden="true">i</span></button></div>
+  <div id="i-cand" class="info" hidden>
+    <p>Todas as candidaturas registradas no TSE desde {{ tse_anos[0] }}, ligadas pelo próprio TSE à mesma pessoa. O resultado é o do último turno disputado.</p>
+    <p><strong>Suplente</strong>: não ficou com a vaga na eleição, mas pode assumir se alguém da mesma coligação ou partido sair. <strong>Candidatura não apta</strong>: o registro foi indeferido, cancelado ou houve renúncia.</p>
+  </div>
+  <div class="lista-votos" id="p-lista"></div>
+  <p class="nota">Fonte: dados abertos do TSE, arquivos de candidatos de cada eleição. <a href="https://dadosabertos.tse.jus.br/dataset/?q=candidatos">Ver no TSE</a></p>
+</section>
+<script type="application/json" id="config-pessoa">{"anos": {{ tse_anos|tojson }}}</script>
+{% endblock %}

@@ -3,15 +3,16 @@
 <section class="inicio-hero">
   <div class="wrap">
     <h1>Antes de votar, veja o que cada político fez.</h1>
-    <p>Votos, presença e leis de cada deputado federal, com link para a fonte oficial em cada número.</p>
+    <p>Candidaturas de {{ '{:,}'.format(n_pessoas).replace(',', '.') }} pessoas que disputaram eleições desde 2014, e votos, presença e leis de cada deputado federal. Tudo com link para a fonte oficial.</p>
     <div class="busca-box">
       <label class="sr" for="busca">Nome do político</label>
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5B6675" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
-      <input id="busca" class="busca" type="search" placeholder="Digite um nome" autocomplete="off">
+      <input id="busca" class="busca" type="search" placeholder="Digite um nome, como aparece na urna ou o nome completo" autocomplete="off">
     </div>
     <div class="filtros" role="group" aria-label="Filtros da busca">
-      <button type="button" class="filtro" aria-pressed="true">Deputado federal</button>
-      <button type="button" class="filtro" disabled title="Em breve">Outros cargos em breve</button>
+      {% for c in ['Todos', 'Deputado federal', 'Senador', 'Deputado estadual', 'Governador', 'Prefeito', 'Vereador', 'Presidente'] %}
+      <button type="button" class="filtro" data-cargo="{{ c }}" aria-pressed="{{ 'true' if loop.first else 'false' }}">{{ c }}</button>
+      {% endfor %}
       <label class="sr" for="uf">Estado</label>
       <select id="uf" class="filtro">
         <option value="">Todos os estados</option>
@@ -19,17 +20,36 @@
       </select>
     </div>
     <div id="resultados" class="resultados" aria-live="polite"></div>
-    <div id="sem-resultados" class="vazio" hidden>Ninguém encontrado com esse nome. Confira a grafia ou tente só o sobrenome.</div>
+    <div id="sem-resultados" class="vazio" hidden>Ninguém encontrado com esse nome. Confira a grafia, tente só o sobrenome ou tire os filtros.</div>
+    <p class="nota" id="busca-dica">Digite pelo menos 3 letras de um nome.</p>
     <noscript><div class="vazio">A busca precisa de JavaScript. Use a <a href="{{ base }}/deputados/">lista completa por estado</a>.</div></noscript>
-    <a href="{{ base }}/deputados/" class="small">Ver todos os deputados por estado</a>
+    <a href="{{ base }}/deputados/" class="small">Ver todos os deputados federais por estado</a>
   </div>
 </section>
 {% endblock %}
 
 {% block main %}
+{% if segundo %}
+<section aria-labelledby="h-segundo">
+  <div class="sec-topo">
+    <h2 id="h-segundo">Segundo turno de {{ ano_tse }}</h2>
+    <span class="small muted">Candidatos em ordem alfabética</span>
+  </div>
+  <div class="grid-wide">
+    {% for d in segundo %}
+    <div class="card" style="display:flex;flex-direction:column;gap:10px">
+      <span class="small muted">{{ d.cargo|capitalize }}{% if d.cargo != 'PRESIDENTE' %} {{ 'em ' ~ d.local|title if d.cargo == 'PREFEITO' else '· ' ~ d.uf }}{% endif %}</span>
+      {% for c in d.candidatos %}
+      <a href="{{ base }}/pessoa/?id={{ c.id }}" style="font-family:var(--display);font-weight:700;font-size:20px;color:var(--ink);text-decoration:none">{{ c.u|title }} <span class="small muted" style="font-family:var(--sans);font-weight:400">{{ c.p }}</span></a>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
 <section class="principios" aria-label="Como o site funciona">
   <div><h3>Só dados oficiais</h3><p>Câmara dos Deputados e TSE. Cada número leva à página de origem, para você conferir.</p></div>
   <div><h3>Mesma régua para todos</h3><p>Todos os perfis seguem as mesmas regras, em ordem alfabética, sem notas, rankings ou adjetivos.</p></div>
-  <div><h3>Nem todo cargo tem tudo</h3><p>Hoje o site cobre deputados federais. Outros cargos entram por etapas, e cada perfil mostra quais dados já existem.</p></div>
+  <div><h3>Nem todo cargo tem tudo</h3><p>Deputados federais têm votos, presença e leis. Para os demais, mostramos as candidaturas registradas no TSE. O selo de cada resultado indica o que existe.</p></div>
 </section>
 {% endblock %}

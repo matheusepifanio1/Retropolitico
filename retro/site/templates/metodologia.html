@@ -54,8 +54,18 @@
   <h3 id="homenagens">Leis de homenagem</h3>
   <p>São separadas automaticamente quando a ementa contém uma destas expressões (sem acento, sem diferenciar maiúsculas): {% for e in homenagem_exprs %}<code>{{ e }}</code>{{ ', ' if not loop.last }}{% endfor %}. A regra pode errar; a ementa oficial é sempre mostrada para conferência.</p>
 
+  <h2 id="candidaturas">Candidaturas (TSE)</h2>
+  <p>Fonte: arquivos <code>consulta_cand</code> de cada eleição, publicados pelo TSE.</p>
+  <ul>
+    <li>Mostramos só dados públicos da candidatura: nome, nome de urna, cargo, local, partido, número, situação e resultado. Não publicamos CPF, título de eleitor, data de nascimento, e-mail, gênero, raça/cor, bens ou ocupação.</li>
+    <li>Para reunir as candidaturas de uma mesma pessoa em anos diferentes, a coleta usa o título de eleitor (e o CPF, quando o TSE publica) apenas durante o processamento. Esses números não são gravados no banco nem no site. Pessoas com o mesmo nome e títulos diferentes ficam separadas.</li>
+    <li>O endereço de cada pessoa usa o número sequencial (SQ) da primeira candidatura dela no TSE, que é público.</li>
+    <li>O resultado mostrado é o do último turno disputado. Em eleições com 2º turno ainda por acontecer, aparece "Disputa o 2º turno".</li>
+    <li>Deputados federais são ligados às suas candidaturas pelo cadastro da Câmara, também sem gravar o CPF.</li>
+  </ul>
+
   <h2 id="cobertura">Cobertura</h2>
-  <p>O selo de cada perfil conta quantos blocos têm dados coletados. Nesta etapa, perfis de deputados federais têm presença, votações e leis; emendas orçamentárias e promessas entram nas próximas etapas.</p>
+  <p>O selo de cada perfil conta quantos blocos têm dados coletados. Deputados federais têm presença, votações e leis. Para as demais pessoas, mostramos as candidaturas do TSE ("só dados eleitorais"), porque assembleias, câmaras municipais e governos não publicam votos e presença de forma padronizada. Emendas orçamentárias e promessas entram nas próximas etapas.</p>
 
   <h2 id="correcoes">Correções</h2>
   <p>Qualquer pessoa, inclusive o próprio parlamentar, pode apontar um erro <a href="{{ site.repositorio }}/issues/new">abrindo uma solicitação</a>. Correções são registradas no histórico público do repositório.</p>

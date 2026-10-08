@@ -241,3 +241,6 @@ select.filtro { padding-right: 34px; }
 .tag { font-size: 14px; font-weight: 700; color: var(--muted); margin-right: 4px; }
 .voltar { font-size: 16px; }
 .perfil-hero, .inicio-hero { gap: 0; }
+.voto-card { grid-template-columns: minmax(140px, max-content) minmax(0, 1fr); }
+.voto { white-space: nowrap; }
+@media (max-width: 700px) { .voto-card { grid-template-columns: 1fr; } }

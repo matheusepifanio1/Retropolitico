@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS parlamentar (
     url_foto      TEXT,
     legislatura   INTEGER,
     em_exercicio  INTEGER NOT NULL DEFAULT 0,
+    pessoa_id     TEXT,                     -- ligação com candidatura.pessoa_id (TSE)
+    sexo          TEXT,                     -- M/F, como publicado pela Câmara (só para concordância)
     fonte_id      INTEGER REFERENCES fonte_arquivo(id)
 );
 
@@ -139,6 +141,31 @@ CREATE TABLE IF NOT EXISTS frequencia_dia (
     fonte_id        INTEGER REFERENCES fonte_arquivo(id),
     PRIMARY KEY (parlamentar_id, data)
 );
+
+-- Candidaturas do TSE. Só campos públicos da candidatura; nada de CPF, título,
+-- nascimento, gênero, raça, e-mail, bens ou ocupação.
+-- pessoa_id: SQ_CANDIDATO da primeira candidatura da pessoa (número público do TSE).
+-- O agrupamento das candidaturas de uma mesma pessoa usa o título de eleitor só em memória.
+CREATE TABLE IF NOT EXISTS candidatura (
+    sq_candidato      TEXT PRIMARY KEY,
+    pessoa_id         TEXT NOT NULL,
+    ano               INTEGER NOT NULL,
+    tipo_eleicao      TEXT,               -- ELEIÇÃO ORDINÁRIA / SUPLEMENTAR
+    ds_eleicao        TEXT,
+    uf                TEXT,
+    ue                TEXT,               -- código da unidade eleitoral
+    nm_ue             TEXT,               -- município ou estado
+    cargo             TEXT,
+    numero            TEXT,
+    nome              TEXT,               -- nome civil ou social, como publicado
+    nome_urna         TEXT,
+    partido           TEXT,
+    situacao          TEXT,               -- situação da candidatura (APTO, INAPTO...)
+    resultado         TEXT,               -- resultado no último turno disputado
+    turno_final       INTEGER,
+    fonte_id          INTEGER REFERENCES fonte_arquivo(id)
+);
+CREATE INDEX IF NOT EXISTS idx_cand_pessoa ON candidatura(pessoa_id);
 
 CREATE INDEX IF NOT EXISTS idx_voto_parl ON voto(parlamentar_id);
 CREATE INDEX IF NOT EXISTS idx_autoria_parl ON autoria(parlamentar_id);

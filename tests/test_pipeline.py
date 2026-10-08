@@ -12,9 +12,16 @@ from tests import fixtures
 
 
 def carregar(tmp: Path, **kw):
+    from retro.sources import tse
+    from retro.sources.base import RawStore
     store = fixtures.write_raw(tmp / "raw", **kw)
     conn = db.connect(tmp / "t.sqlite")
     camara.load(conn, store, fixtures.settings()["camara"], log=lambda *_: None)
+    st = RawStore(tmp / "raw", "tse")
+    cpfs = tse.load(conn, st, fixtures.settings()["tse"], lambda n: db.register_source(conn, "tse", st.entry(n)),
+                    log=lambda *_: None)
+    tse.ligar_deputados(conn, store, cpfs, lambda n: db.register_source(conn, "camara", store.entry(n)),
+                        log=lambda *_: None)
     return conn
 
 
@@ -129,6 +136,54 @@ class TestCarga(unittest.TestCase):
         self.assertEqual(len(f["sha256"]), 64)
 
 
+class TestTSE(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.tmp = Path(self._tmp.name)
+        self.conn = carregar(self.tmp)
+
+    def tearDown(self):
+        self.conn.close()
+        self._tmp.cleanup()
+
+    def test_agrupa_pessoa_entre_anos_pelo_titulo(self):
+        rows = self.conn.execute("SELECT sq_candidato, pessoa_id, resultado FROM candidatura WHERE nome_urna='DOUGLAS RUAS' ORDER BY ano").fetchall()
+        self.assertEqual({r["pessoa_id"] for r in rows}, {"10000000002"}, "2022 (com CPF) e 2024 (sem CPF) são a mesma pessoa")
+        self.assertEqual(rows[0]["resultado"], "NÃO ELEITO", "fica o resultado do último turno")
+
+    def test_homonimo_fica_separado(self):
+        pid = self.conn.execute("SELECT pessoa_id FROM candidatura WHERE nome_urna='DOUGLAS DO BAIRRO'").fetchone()[0]
+        self.assertEqual(pid, "130000000020")
+
+    def test_sem_dados_pessoais(self):
+        colunas = [r[1] for r in self.conn.execute("PRAGMA table_info(candidatura)")]
+        for proibida in ("cpf", "titulo", "nascimento", "genero", "raca", "email"):
+            self.assertFalse(any(proibida in c for c in colunas), proibida)
+        texto = "\n".join(str(tuple(r)) for r in self.conn.execute("SELECT * FROM candidatura"))
+        self.assertNotIn("44444444444", texto)
+        self.assertNotIn("000000000004", texto)
+
+    def test_deputado_ligado(self):
+        r = self.conn.execute("SELECT pessoa_id, sexo FROM parlamentar WHERE id=101").fetchone()
+        self.assertEqual((r["pessoa_id"], r["sexo"]), ("250000000001", "F"))
+
+    def test_site_pessoas(self):
+        from retro.site import pessoas
+        out = self.tmp / "site"
+        info = pessoas.gerar(self.conn, out, 2024)
+        self.assertEqual(info["pessoas"], 3)
+        idx = json.loads((out / "busca" / "dou.json").read_text())
+        self.assertEqual(set(idx["douglas"]), {"10000000002", "130000000020"})
+        self.assertEqual(idx["douglas"][0], "10000000002", "quem já foi eleito vem primeiro")
+        rec = json.loads((out / "pessoas" / f"{10000000002 % pessoas.BALDES}.json").read_text())["10000000002"]
+        self.assertEqual([c[0] for c in rec["c"]], [2024, 2022])
+        self.assertEqual(rec["c"][0][6], "Eleito(a)")
+        ana = json.loads((out / "pessoas" / f"{250000000001 % pessoas.BALDES}.json").read_text())["250000000001"]
+        self.assertEqual(ana["d"], 101)
+        todos = "".join(p.read_text() for p in (out / "pessoas").glob("*.json"))
+        self.assertNotIn("44444444444", todos)
+
+
 class TestLayout(unittest.TestCase):
     def test_coluna_ausente_para_a_coleta(self):
         with tempfile.TemporaryDirectory() as t:
@@ -152,7 +207,7 @@ class TestSite(unittest.TestCase):
         self.chave.write_text(fixtures.CHAVE_OK, encoding="utf-8")
         out = self.tmp / "site"
         info = build(self.conn, out, fixtures.settings(), self.chave)
-        self.assertEqual(info, {"deputados": 3, "votacoes_chave": 1})
+        self.assertEqual(info, {"deputados": 3, "votacoes_chave": 1, "pessoas": 3})
         perfil = (out / "deputado/101/index.html").read_text(encoding="utf-8")
         self.assertIn("Ana Ribeiro", perfil)
         self.assertIn("<strong>2</strong> presenças em 3 sessões", perfil)

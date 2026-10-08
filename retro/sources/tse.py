@@ -96,3 +96,130 @@ def inspecionar(store: RawStore, cfg: dict) -> None:
                 print(f"    {c}: {dict(classes[c].most_common(6)) if classes[c] else 'coluna ausente'}")
             print(f"    cargos: {dict(cargos.most_common(15))}")
             print(f"    resultado (DS_SIT_TOT_TURNO): {dict(situacoes.most_common(12))}")
+
+
+# ---------------------------------------------------------------- carga
+
+PUBLICAS = ["ANO_ELEICAO", "NM_TIPO_ELEICAO", "DS_ELEICAO", "NR_TURNO", "SG_UF", "SG_UE", "NM_UE", "DS_CARGO",
+            "SQ_CANDIDATO", "NR_CANDIDATO", "NM_CANDIDATO", "NM_URNA_CANDIDATO", "NM_SOCIAL_CANDIDATO",
+            "SG_PARTIDO", "DS_SITUACAO_CANDIDATURA", "DS_SIT_TOT_TURNO"]
+# Lidas só em memória para agrupar candidaturas da mesma pessoa. Nunca gravadas.
+IDENTIDADE = ["NR_TITULO_ELEITORAL_CANDIDATO", "NR_CPF_CANDIDATO"]
+
+
+class _Grupos:
+    """Union-find simples para juntar candidaturas que compartilham título ou CPF."""
+
+    def __init__(self):
+        self.pai: dict = {}
+
+    def achar(self, x):
+        self.pai.setdefault(x, x)
+        while self.pai[x] != x:
+            self.pai[x] = self.pai[self.pai[x]]
+            x = self.pai[x]
+        return x
+
+    def unir(self, a, b):
+        ra, rb = self.achar(a), self.achar(b)
+        if ra != rb:
+            self.pai[rb] = ra
+
+
+def _membros_brasil(zf: zipfile.ZipFile) -> list[str]:
+    membros = membros_csv(zf)
+    brasil = [m for m in membros if "BRASIL" in m.upper()]
+    return brasil or membros
+
+
+def load(conn, store: RawStore, cfg: dict, src, log=print) -> dict[str, str]:
+    """Carrega candidaturas e devolve {cpf: pessoa_id} só para ligar deputados (fica em memória).
+
+    Cada linha vai direto para o banco (sem título nem CPF). Em memória fica só o agrupamento:
+    {sq: chave de identidade} e o union-find de chaves.
+    """
+    from .base import LayoutError
+    turno_de: dict[str, int] = {}
+    chave_de: dict[str, tuple] = {}
+    ano_de: dict[str, int] = {}
+    grupos = _Grupos()
+    cpf_de: dict[str, str] = {}
+    sql = """INSERT OR REPLACE INTO candidatura VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"""  # pessoa_id provisório = sq
+    for ano in cfg["anos"]:
+        nome = nome_zip(ano)
+        if not store.path(nome).exists():
+            raise LayoutError(f"{nome}: arquivo não baixado")
+        fid = src(nome)
+        lote = []
+        with zipfile.ZipFile(store.path(nome)) as zf:
+            for membro in _membros_brasil(zf):
+                for i, r in enumerate(ler(zf, membro)):
+                    if i == 0:
+                        faltam = [c for c in PUBLICAS + IDENTIDADE if c not in r and c != "NM_SOCIAL_CANDIDATO"]
+                        if faltam:
+                            raise LayoutError(f"{nome}/{membro}: colunas ausentes {faltam}")
+                    sq = (r["SQ_CANDIDATO"] or "").strip()
+                    if not sq:
+                        continue
+                    turno = int(r["NR_TURNO"] or 1)
+                    if turno_de.get(sq, 0) >= turno:
+                        continue
+                    turno_de[sq] = turno
+                    titulo = (r["NR_TITULO_ELEITORAL_CANDIDATO"] or "").strip()
+                    cpf = (r["NR_CPF_CANDIDATO"] or "").strip()
+                    chave = ("sq", sq)
+                    if len(titulo) == 12 and titulo.isdigit():
+                        chave = ("t", titulo)
+                    if len(cpf) == 11 and cpf.isdigit():
+                        if chave[0] == "sq":
+                            chave = ("c", cpf)
+                        else:
+                            grupos.unir(chave, ("c", cpf))
+                        cpf_de[cpf] = sq
+                    grupos.achar(chave)
+                    chave_de[sq] = chave
+                    ano_de[sq] = int(r["ANO_ELEICAO"])
+                    social = (r.get("NM_SOCIAL_CANDIDATO") or "").strip()
+                    nome_exib = social if social and social not in ("#NULO#", "#NULO", "#NE") else r["NM_CANDIDATO"]
+                    lote.append((sq, sq, int(r["ANO_ELEICAO"]), r["NM_TIPO_ELEICAO"], r["DS_ELEICAO"], r["SG_UF"],
+                                 r["SG_UE"], r["NM_UE"], r["DS_CARGO"], r["NR_CANDIDATO"], nome_exib,
+                                 r["NM_URNA_CANDIDATO"], r["SG_PARTIDO"], r["DS_SITUACAO_CANDIDATURA"],
+                                 r["DS_SIT_TOT_TURNO"], turno, fid))
+                    if len(lote) >= 50000:
+                        conn.executemany(sql, lote)
+                        lote = []
+        if lote:
+            conn.executemany(sql, lote)
+        log(f"  TSE {ano}: {len(chave_de)} candidaturas acumuladas")
+
+    # pessoa_id = SQ da candidatura mais antiga do grupo (número público e estável).
+    primeiro: dict = {}
+    for sq, chave in chave_de.items():
+        raiz = grupos.achar(chave)
+        k = (ano_de[sq], sq)
+        if raiz not in primeiro or k < primeiro[raiz]:
+            primeiro[raiz] = k
+    conn.executemany("UPDATE candidatura SET pessoa_id=? WHERE sq_candidato=?",
+                     ((primeiro[grupos.achar(chave)][1], sq) for sq, chave in chave_de.items()))
+    log(f"  TSE: {len(chave_de)} candidaturas de {len(primeiro)} pessoas")
+    return {cpf: primeiro[grupos.achar(chave_de[sq])][1] for cpf, sq in cpf_de.items()}
+
+
+def ligar_deputados(conn, store_camara: RawStore, cpf_pessoa: dict[str, str], src, log=print) -> None:
+    """Liga cada deputado à pessoa do TSE pelo CPF do cadastro da Câmara (só em memória)."""
+    from .base import read_csv
+    nome = "deputados.csv"
+    if not store_camara.path(nome).exists():
+        log("  deputados.csv ausente: deputados sem ligação com o TSE")
+        return
+    src(nome)
+    ligados = 0
+    ids = {r[0] for r in conn.execute("SELECT id FROM parlamentar")}
+    for r in read_csv(store_camara.path(nome), ["uri", "cpf", "siglaSexo"]):
+        dep = int(r["uri"].rstrip("/").rsplit("/", 1)[-1])
+        if dep not in ids:
+            continue
+        pessoa = cpf_pessoa.get((r["cpf"] or "").strip().zfill(11))
+        conn.execute("UPDATE parlamentar SET pessoa_id=?, sexo=? WHERE id=?", (pessoa, r["siglaSexo"] or None, dep))
+        ligados += bool(pessoa)
+    log(f"  deputados ligados ao TSE: {ligados} de {len(ids)}")
