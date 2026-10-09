@@ -150,7 +150,7 @@ def sanidade_senado(conn) -> None:
     for r in conn.execute("SELECT sigla, COUNT(*) n FROM sen_voto GROUP BY sigla ORDER BY n DESC"):
         print(f"    sigla de voto '{r['sigla']}': {r['n']}")
     tipos = compute_senado.tipos_comparecimento(conn)
-    desconhecidas = {r[0] for r in conn.execute("SELECT DISTINCT sigla FROM sen_voto")} - set(tipos) - senado.PRESENTE
+    desconhecidas = {r[0] for r in conn.execute("SELECT DISTINCT sigla FROM sen_voto")} - set(tipos) - senado.PRESENTE - set(senado.ALIAS)
     print(f"  siglas fora da tabela oficial: {sorted(s for s in desconhecidas if s)}")
     ate = compute.agora_iso()
     pres, sem_votos = [], 0

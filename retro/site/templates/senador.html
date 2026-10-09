@@ -69,7 +69,7 @@
       <div class="fato-topo"><span class="numero">{{ leis.principal|length }}</span><span class="fato-rotulo">{{ 'projeto virou lei' if leis.principal|length == 1 else 'projetos viraram lei' }}</span>{{ info('i-s3', 'O que conta como lei de autoria?') }}</div>
       {% if leis.principal %}<ul>{% for p in leis.principal[:3] %}<li>{{ p.ementa|truncate(110, True, '…') }}</li>{% endfor %}</ul>{% endif %}
       <div class="detalhe">Também foi coautor(a) de {{ leis.coautor|length }} e autor(a) de {{ leis.homenagem|length }} {{ 'lei' if leis.homenagem|length == 1 else 'leis' }} de homenagem.</div>
-      <div id="i-s3" class="info" hidden>Projetos apresentados desde {{ prop_desde|br }} em que o senador aparece como primeiro autor e que geraram uma norma jurídica, segundo o Senado. Leis de homenagem ficam à parte.</div>
+      <div id="i-s3" class="info" hidden>Projetos apresentados desde {{ prop_desde|br }} em que o senador aparece como primeiro autor e que geraram uma norma jurídica, segundo o Senado. Leis de homenagem e resoluções sobre o funcionamento interno do Senado (como a criação de grupos parlamentares) ficam à parte.</div>
     </div>
 
     <div class="fato">
@@ -131,6 +131,7 @@
       <h3 style="font-size:20px">Outras atuações</h3>
       <div class="linha"><span>Coautor(a) de leis aprovadas</span><strong>{{ leis.coautor|length }}</strong></div>
       <div class="linha"><span>Leis de homenagem</span><strong>{{ leis.homenagem|length }}</strong></div>
+      <div class="linha"><span>Resoluções internas do Senado aprovadas</span><strong>{{ leis.resolucoes|length }}</strong></div>
       <div class="linha"><span>Outros projetos apresentados como autor principal</span><strong>{{ leis.apresentadas_principal_nao_lei }}</strong></div>
       {% if leis.coautor %}
       <details><summary>Ver leis como coautor(a)</summary>
@@ -140,6 +141,11 @@
       {% if leis.homenagem %}
       <details><summary>Ver leis de homenagem</summary>
         <div class="lista-leis">{% for p in leis.homenagem %}<div><a class="num" href="https://www25.senado.leg.br/web/atividade/materias/-/materia/{{ p.codigo_materia }}">{{ p.identificacao }}</a><div class="small">{{ p.ementa }}</div></div>{% endfor %}</div>
+      </details>
+      {% endif %}
+      {% if leis.resolucoes %}
+      <details><summary>Ver resoluções internas</summary>
+        <div class="lista-leis">{% for p in leis.resolucoes %}<div><a class="num" href="https://www25.senado.leg.br/web/atividade/materias/-/materia/{{ p.codigo_materia }}">{{ p.identificacao }}</a><div class="small">{{ p.ementa }}</div></div>{% endfor %}</div>
       </details>
       {% endif %}
     </div>

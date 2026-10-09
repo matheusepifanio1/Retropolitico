@@ -138,11 +138,14 @@ FORA_DA_CONTA = {"AFO", "CAS", "DJ", "FAL", "IMP", "PER", "REN", "TER", "RET", "
                  "RR", "IL", "LCS"}
 # Sem informação suficiente para classificar.
 SEM_INFORMACAO = {"NA", "NR", "L7", "LL", ""}
+# Siglas usadas nas votações com grafia diferente da tabela oficial.
+ALIAS = {"MERC": "MER"}
 
 
 def classificar_voto(sigla: str | None, tipos: dict[str, str]) -> tuple[str, str | None]:
     """P presente, J ausência com motivo oficial, N não compareceu, U sem informação, X fora da conta."""
     s = (sigla or "").strip()
+    s = ALIAS.get(s, s) if ALIAS.get(s) in tipos else s
     if s in PRESENTE or s.startswith("Presidente"):
         return "P", None
     if s in SEM_JUSTIFICATIVA:
@@ -298,7 +301,7 @@ def load(conn, store: RawStore, cfg: dict, log=print) -> None:
             norma = vet.get("NormaGerada") or {}
             conn.execute("INSERT OR REPLACE INTO veto VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                          (int(v["Codigo"]), f"VET {mat.get('Numero')}/{mat.get('Ano')}", 1 if v.get("Total") == "Sim" else 0,
-                          v.get("DataPublicacao"), v.get("Assunto"), mat.get("Ementa"),
+                          v.get("DataPublicacao") or v.get("DataRecebimentoCongresso"), v.get("Assunto"), mat.get("Ementa"),
                           f"{vet.get('Sigla')} {vet.get('Numero')}/{vet.get('Ano')}", norma.get("NomeNorma"),
                           _get(v, "Mensagem", "UrlPlanalto"), int(v.get("QuantidadeDispositivos") or 0),
                           f"https://www.congressonacional.leg.br/materias/vetos/-/veto/detalhe/{v['Codigo']}", fid))

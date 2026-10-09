@@ -100,20 +100,24 @@ def leis(conn, cod: int) -> dict:
     rows = conn.execute(
         """SELECT p.*, a.principal FROM sen_autoria a JOIN sen_processo p ON p.id = a.processo_id
            WHERE a.codigo=? ORDER BY p.data_apresentacao DESC""", (cod,)).fetchall()
-    principal, coautor, homenagem, outros = [], [], [], 0
+    principal, coautor, homenagem, resolucoes, outros = [], [], [], [], 0
     for r in rows:
         virou = bool(r["norma"]) or is_lei(r["situacao"])
         if not virou:
             outros += bool(r["principal"])
             continue
         item = dict(r)
-        if is_homenagem(r["ementa"]):
+        if r["sigla_tipo"] == "PRS":
+            # Resoluções tratam do funcionamento interno do Senado (ex.: grupos parlamentares): não são leis.
+            resolucoes.append(item)
+        elif is_homenagem(r["ementa"]):
             homenagem.append(item)
         elif r["principal"]:
             principal.append(item)
         else:
             coautor.append(item)
-    return {"principal": principal, "coautor": coautor, "homenagem": homenagem, "apresentadas_principal_nao_lei": outros}
+    return {"principal": principal, "coautor": coautor, "homenagem": homenagem, "resolucoes": resolucoes,
+            "apresentadas_principal_nao_lei": outros}
 
 
 def cargos(conn, cod: int) -> dict:
