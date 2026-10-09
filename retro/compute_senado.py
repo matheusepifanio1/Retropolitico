@@ -145,11 +145,21 @@ def atos_presidente(conn, p: dict, hoje: str) -> dict | None:
     if p["inicio"] > hoje:
         return None  # mandato ainda não começou
     fim = min(p["fim"], hoje)
-    vetos = [dict(v) for v in conn.execute(
-        "SELECT * FROM veto WHERE data_publicacao BETWEEN ? AND ? ORDER BY data_publicacao DESC", (p["inicio"], fim))]
-    mpvs = [dict(m) for m in conn.execute(
-        "SELECT * FROM medida_provisoria WHERE data_apresentacao BETWEEN ? AND ? ORDER BY data_apresentacao DESC",
-        (p["inicio"], fim))]
+    vetos = []
+    for v in conn.execute("SELECT * FROM veto WHERE data_publicacao BETWEEN ? AND ? ORDER BY data_publicacao DESC",
+                          (p["inicio"], fim)):
+        v = dict(v)
+        u = v["url_planalto"] or ""
+        if "null" in u or "2147483647" in u:
+            v["url_planalto"] = None  # link malformado na fonte: usa a página do veto no Congresso
+        vetos.append(v)
+    # Uma MP pode aparecer com mais de um registro na Câmara: conta cada número/ano uma vez (o registro mais recente).
+    unicas: dict = {}
+    for m in conn.execute(
+            "SELECT * FROM medida_provisoria WHERE data_apresentacao BETWEEN ? AND ? ORDER BY id",
+            (p["inicio"], fim)):
+        unicas[(m["numero"], m["ano"])] = dict(m)
+    mpvs = sorted(unicas.values(), key=lambda m: (m["data_apresentacao"], m["numero"] or 0), reverse=True)
     situacoes = Counter((m["situacao"] or "Sem situação publicada") for m in mpvs).most_common()
     viraram = sum(1 for m in mpvs if is_lei(m["situacao"]))
     por_ano: dict[str, Counter] = {}

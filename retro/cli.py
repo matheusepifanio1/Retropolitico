@@ -177,8 +177,13 @@ def sanidade_senado(conn) -> None:
         print(f"    cargo '{r['cargo']}': {r['n']}")
     for r in conn.execute("SELECT substr(data_publicacao,1,4) a, COUNT(*) n, SUM(total) t FROM veto GROUP BY a"):
         print(f"  vetos {r['a']}: {r['n']} (totais {r['t']})")
-    for r in conn.execute("SELECT ano, COUNT(*) n FROM medida_provisoria GROUP BY ano"):
-        print(f"  MPs {r['ano']}: {r['n']}")
+    for r in conn.execute("SELECT ano, COUNT(*) n, COUNT(DISTINCT numero) d, MIN(numero) a, MAX(numero) b FROM medida_provisoria GROUP BY ano"):
+        print(f"  MPs {r['ano']}: {r['n']} registros, {r['d']} números distintos ({r['a']}–{r['b']})")
+    for r in conn.execute("""SELECT numero, ano, COUNT(*) n, GROUP_CONCAT(id) ids, GROUP_CONCAT(data_apresentacao) datas
+                             FROM medida_provisoria GROUP BY numero, ano HAVING n > 1 LIMIT 8"""):
+        print(f"    MP repetida {r['numero']}/{r['ano']}: ids {r['ids']} datas {r['datas']}")
+    for r in conn.execute("SELECT * FROM medida_provisoria WHERE numero < 870 OR numero IS NULL LIMIT 5"):
+        print(f"    MP fora da faixa esperada: {dict(r)}")
     for r in conn.execute("SELECT situacao, COUNT(*) n FROM medida_provisoria GROUP BY situacao ORDER BY n DESC LIMIT 10"):
         print(f"    MP situação '{r['situacao']}': {r['n']}")
     for p in compute_senado.presidentes(conn, 2018):
