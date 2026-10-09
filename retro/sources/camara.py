@@ -335,6 +335,13 @@ def _load_proposicoes(conn, store, src, ano: int, tipos: set[str]) -> None:
 
     for r in read_csv(store.path(n_prop), CSV_FILES["proposicoes"]):
         pid = _int(r["id"])
+        if r["siglaTipo"] == "MPV":
+            conn.execute(
+                """INSERT INTO medida_provisoria VALUES (?,?,?,?,?,?,?)
+                   ON CONFLICT(id) DO UPDATE SET situacao=excluded.situacao, fonte_id=excluded.fonte_id""",
+                (pid, _int(r["numero"]), _int(r["ano"]), r["ementa"], (r["dataApresentacao"] or "")[:10] or None,
+                 r["ultimoStatus_descricaoSituacao"] or None, fid_prop))
+            continue
         if pid not in autores or r["siglaTipo"] not in tipos:
             continue
         # Arquivos mais recentes trazem o status mais novo: sobrescreve.

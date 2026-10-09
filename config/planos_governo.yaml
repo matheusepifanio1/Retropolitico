@@ -1,0 +1,21 @@
+# Planos de governo publicados pelo TSE.
+#
+# Só links para o documento oficial, sem resumo. Cada entrada é ligada à candidatura
+# pelo ano, cargo, UF ("BR" para presidente) e sigla do partido, como no arquivo do TSE.
+# Fonte da lista de 2026: https://www.tse.jus.br/eleicoes/eleicoes-2026-content/propostas-de-governo-dos-candidatos-ao-cargo-de-presidente-da-republica-eleicoes-2026
+# Conferido em 2026-10-08.
+
+planos:
+  - {ano: 2026, cargo: PRESIDENTE, uf: BR, partido: DC, url: "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/plano-de-governo-1"}
+  - {ano: 2026, cargo: PRESIDENTE, uf: BR, partido: PCB, url: "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/proposta-pcb"}
+  - {ano: 2026, cargo: PRESIDENTE, uf: BR, partido: AVANTE, url: "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/proposta-avante"}
+  - {ano: 2026, cargo: PRESIDENTE, uf: BR, partido: PL, url: "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/proposta-pl"}
+  - {ano: 2026, cargo: PRESIDENTE, uf: BR, partido: PSTU, url: "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/proposta-pstu"}
+  - {ano: 2026, cargo: PRESIDENTE, uf: BR, partido: PRTB, url: "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/proposta-prtb"}
+  - {ano: 2026, cargo: PRESIDENTE, uf: BR, partido: PT, url: "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/proposta-pt"}
+  - {ano: 2026, cargo: PRESIDENTE, uf: BR, partido: MISSÃO, url: "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/proposta-missao"}
+  - {ano: 2026, cargo: PRESIDENTE, uf: BR, partido: PSD, url: "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/proposta-psd"}
+  - {ano: 2026, cargo: PRESIDENTE, uf: BR, partido: PCO, url: "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/pcoprogramadegoverno2026-1"}
+  - {ano: 2026, cargo: PRESIDENTE, uf: BR, partido: UP, url: "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/proposta-up"}
+  - {ano: 2026, cargo: PRESIDENTE, uf: BR, partido: DEMOCRATA, url: "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/proposta-democrata"}
+  - {ano: 2026, cargo: PRESIDENTE, uf: BR, partido: NOVO, url: "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/proposta-novo"}

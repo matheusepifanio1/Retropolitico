@@ -17,7 +17,7 @@ import yaml
 
 from . import db
 from .site.build import CuradoriaError, build
-from .sources import camara, camara_site, tse
+from .sources import camara, camara_site, senado, tse
 from .sources.base import DownloadError, LayoutError, RawStore
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -136,6 +136,53 @@ def sanidade(conn) -> None:
         print(f"    histórico descrição [{r['situacao']}] '{r['descricao_status']}': {r['n']}")
     for r in conn.execute("SELECT titulo, COUNT(*) n FROM cargo GROUP BY titulo ORDER BY n DESC LIMIT 15"):
         print(f"    cargo '{r['titulo']}': {r['n']}")
+    sanidade_senado(conn)
+
+
+def sanidade_senado(conn) -> None:
+    from statistics import median
+    from . import compute, compute_senado
+    if not conn.execute("SELECT 1 FROM senador LIMIT 1").fetchone():
+        return
+    print("Senado:")
+    for r in conn.execute("SELECT substr(data,1,4) ano, COUNT(*) n, SUM(secreta) s FROM sen_votacao GROUP BY ano"):
+        print(f"  votações nominais {r['ano']}: {r['n']} (secretas: {r['s']})")
+    for r in conn.execute("SELECT sigla, COUNT(*) n FROM sen_voto GROUP BY sigla ORDER BY n DESC"):
+        print(f"    sigla de voto '{r['sigla']}': {r['n']}")
+    tipos = compute_senado.tipos_comparecimento(conn)
+    desconhecidas = {r[0] for r in conn.execute("SELECT DISTINCT sigla FROM sen_voto")} - set(tipos) - senado.PRESENTE
+    print(f"  siglas fora da tabela oficial: {sorted(s for s in desconhecidas if s)}")
+    ate = compute.agora_iso()
+    pres, sem_votos = [], 0
+    for s in conn.execute("SELECT * FROM senador WHERE em_exercicio=1"):
+        ps = compute_senado.periodos(conn, s["codigo"], "2019-02-01", ate)
+        p = compute_senado.presenca(compute_senado.registros(conn, s["codigo"], ps, tipos))
+        if not p:
+            sem_votos += 1
+            continue
+        pres.append(p["pct"])
+        if p["pct"] < 60:
+            print(f"  ATENÇÃO presença {p['pct']}%: {s['codigo']} {s['nome']} ({p['presentes']}/{p['total']}, "
+                  f"motivo {p['justificadas']}, NCom {p['nao_justificadas']}, sem info {p['sem_informacao']}) motivos={p['motivos'][:4]}")
+    if pres:
+        pres.sort()
+        print(f"  presença em votações (em exercício): n={len(pres)} min={pres[0]} mediana={median(pres)} max={pres[-1]}; sem votações: {sem_votos}")
+    print(f"  senadores: {conn.execute('SELECT COUNT(*) FROM senador').fetchone()[0]}, em exercício: "
+          f"{conn.execute('SELECT COUNT(*) FROM senador WHERE em_exercicio=1').fetchone()[0]}")
+    n_leis = conn.execute("SELECT COUNT(*) FROM sen_processo WHERE norma IS NOT NULL AND norma != ''").fetchone()[0]
+    print(f"  processos de senadores com norma gerada (desde a janela): {n_leis}")
+    for r in conn.execute("SELECT sigla_tipo, COUNT(*) n FROM sen_processo GROUP BY sigla_tipo"):
+        print(f"    tipo {r['sigla_tipo']}: {r['n']}")
+    for r in conn.execute("SELECT cargo, COUNT(*) n FROM sen_cargo GROUP BY cargo ORDER BY n DESC LIMIT 10"):
+        print(f"    cargo '{r['cargo']}': {r['n']}")
+    for r in conn.execute("SELECT substr(data_publicacao,1,4) a, COUNT(*) n, SUM(total) t FROM veto GROUP BY a"):
+        print(f"  vetos {r['a']}: {r['n']} (totais {r['t']})")
+    for r in conn.execute("SELECT ano, COUNT(*) n FROM medida_provisoria GROUP BY ano"):
+        print(f"  MPs {r['ano']}: {r['n']}")
+    for r in conn.execute("SELECT situacao, COUNT(*) n FROM medida_provisoria GROUP BY situacao ORDER BY n DESC LIMIT 10"):
+        print(f"    MP situação '{r['situacao']}': {r['n']}")
+    for p in compute_senado.presidentes(conn, 2018):
+        print(f"  presidente: {p['nome_urna']} ({p['partido']}) {p['inicio']}..{p['fim']} pessoa={p['pessoa_id']}")
 
 
 def candidatas(conn) -> None:
@@ -190,6 +237,16 @@ def main(argv: list[str] | None = None) -> int:
             camara_site.download(store, settings["camara"])
             print("Baixando candidaturas do TSE…")
             tse.download(RawStore(args.raw, "tse"), settings["tse"])
+            if settings.get("senado"):
+                print("Baixando dados do Senado e do Congresso…")
+                st = RawStore(args.raw, "senado")
+                try:
+                    senado.download(st, settings["senado"])
+                except DownloadError as exc:
+                    # O Senado fora do ar não derruba o resto: usa os arquivos da última coleta, se houver.
+                    print(f"  ATENÇÃO: falha no Senado ({exc}); seguindo com a coleta anterior")
+                finally:
+                    st.save_manifest()
         if args.etapa in ("carregar", "tudo"):
             print("Carregando no banco…")
             args.db.parent.mkdir(parents=True, exist_ok=True)
@@ -202,6 +259,12 @@ def main(argv: list[str] | None = None) -> int:
             tse.ligar_deputados(conn, store, cpf_pessoa,
                                 lambda nome: db.register_source(conn, "camara", store.entry(nome)))
             del cpf_pessoa
+            st = RawStore(args.raw, "senado")
+            if settings.get("senado") and st.path("senadores-mandatos.json").exists():
+                senado.load(conn, st, settings["senado"])
+                senado.ligar_tse(conn)
+            elif settings.get("senado"):
+                print("  ATENÇÃO: sem arquivos do Senado; perfis de senadores ficam de fora")
             conn.commit()
             sanidade(conn)
             conn.execute("VACUUM")
@@ -210,7 +273,8 @@ def main(argv: list[str] | None = None) -> int:
             print("Gerando o site…")
             conn = db.connect(args.db)
             info = build(conn, args.out, settings, args.config / "votacoes_chave.yaml", db_path=args.db)
-            print(f"  {info['deputados']} perfis de deputados, {info['pessoas']} pessoas na busca, "
+            print(f"  {info['deputados']} perfis de deputados, {info.get('senadores', 0)} de senadores, "
+                  f"{info.get('presidentes', 0)} de presidentes, {info['pessoas']} pessoas na busca, "
                   f"{info['votacoes_chave']} votações-chave → {args.out}")
     except (LayoutError, CuradoriaError) as exc:
         print(f"ERRO: {exc}", file=sys.stderr)

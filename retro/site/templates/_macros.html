@@ -43,3 +43,25 @@
   </div>
 </article>
 {%- endmacro -%}
+
+{%- macro card_voto_senado(v, base) -%}
+<article class="voto-card" data-data="{{ v.data }}">
+  <div class="voto-lado">
+    <span class="voto {{ classe_voto(v.sigla) }}">{{ icone_voto(v.sigla) }}{{ v.rotulo }}</span>
+    <span class="xsmall muted">{{ v.data|br }}</span>
+  </div>
+  <div class="voto-corpo">
+    <div class="etiquetas">
+      {% if v.materia %}<span class="etiqueta">{{ v.materia }}</span>{% endif %}
+      {% if v.secreta %}<span class="etiqueta">Votação secreta</span>{% endif %}
+    </div>
+    <h3>{{ v.ementa or v.descricao }}</h3>
+    {% if v.motivo %}<p class="oficial">Motivo oficial da ausência: {{ v.motivo }}</p>{% endif %}
+    <p class="oficial">Texto oficial do Senado: “{{ v.descricao }}”</p>
+    <div class="voto-rodape">
+      <span class="placar">Resultado: <strong>{{ {'A': 'aprovada', 'R': 'rejeitada'}.get(v.resultado, v.resultado or 'não informado') }}</strong></span>
+      <span class="links">{% if v.codigo_materia %}<a href="https://www25.senado.leg.br/web/atividade/materias/-/materia/{{ v.codigo_materia }}">Ver no Senado</a>{% endif %}</span>
+    </div>
+  </div>
+</article>
+{%- endmacro -%}

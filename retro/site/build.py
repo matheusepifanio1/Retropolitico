@@ -13,7 +13,7 @@ from pathlib import Path
 import yaml
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 
-from .. import compute
+from .. import compute, compute_senado
 from . import pessoas
 
 HERE = Path(__file__).parent
@@ -144,6 +144,101 @@ def cargo_destaque(direcao: list[dict]) -> dict | None:
             + (f"a {mes_ano(c['data_fim'])}." if c["data_fim"] else "até hoje.")}
 
 
+def frase_senador(sen, exercicios: list[dict]) -> str:
+    cargo = {"F": "Senadora", "M": "Senador"}.get(sen["sexo"] or "", "Senador(a)")
+    partido = f"pelo {sen['partido']} " if sen["partido"] else ""
+    frase = f"{cargo} {partido}{UF_NOME.get(sen['uf'], '')}".strip() + "."
+    if exercicios:
+        ini = min(e["inicio"] for e in exercicios)
+        if sen["em_exercicio"]:
+            frase += f" Em exercício desde {mes_ano(ini)}"
+            frase += f", com {len(exercicios)} períodos de exercício." if len(exercicios) > 1 else "."
+        else:
+            fim = max((e["fim"] or "") for e in exercicios)
+            frase += f" Exerceu o mandato de {mes_ano(ini)}" + (f" a {mes_ano(fim)}." if fim else ".")
+    return frase
+
+
+RANK_SEN = ["presidente", "vice-presidente", "relator", "relator-geral", "relatora"]
+
+
+def build_senado(conn, render, settings: dict, ate: str) -> list[dict]:
+    cfg = settings.get("senado")
+    if not cfg or not conn.execute("SELECT 1 FROM senador LIMIT 1").fetchone():
+        return []
+    tipos = compute_senado.tipos_comparecimento(conn)
+    deputado_de = {r["pessoa_id"]: r["id"] for r in conn.execute("SELECT id, pessoa_id FROM parlamentar WHERE pessoa_id IS NOT NULL")}
+    senadores = conn.execute("SELECT * FROM senador ORDER BY nome COLLATE NOCASE").fetchall()
+    for sen in senadores:
+        ps = compute_senado.periodos(conn, sen["codigo"], cfg["inicio"], ate)
+        regs = compute_senado.registros(conn, sen["codigo"], ps, tipos)
+        for r in regs:
+            r["rotulo"] = compute_senado.rotulo(r, tipos)
+        pres = compute_senado.presenca(regs)
+        votos = compute_senado.resumo_votos(regs)
+        leis = compute_senado.leis(conn, sen["codigo"])
+        cargos = compute_senado.cargos(conn, sen["codigo"])
+        direcao = sorted(cargos["direcao"], key=lambda c: (
+            RANK_SEN.index(compute.norm(c["cargo"])) if compute.norm(c["cargo"]) in RANK_SEN else 9,
+            "".join(chr(255 - ord(ch)) for ch in (c["inicio"] or ""))))
+        exercicios = [dict(e) for e in conn.execute("SELECT * FROM sen_exercicio WHERE codigo=? ORDER BY inicio DESC", (sen["codigo"],))]
+        recentes = [r for r in reversed(regs) if not r["secreta"]][:8]
+        cob = [
+            {"nome": "Presença em votações", "ok": pres is not None},
+            {"nome": "Votações nominais", "ok": bool(votos["total"])},
+            {"nome": "Leis e proposições", "ok": True},
+            {"nome": "Emendas orçamentárias", "ok": False},
+            {"nome": "Promessas de campanha", "ok": False},
+        ]
+        render(f"senador/{sen['codigo']}/index.html", "senador.html", pagina="perfil", sen=sen, presenca=pres,
+               votos=votos, leis=leis, cargos=cargos, destaque=direcao[0] if direcao else None,
+               n_comissoes=len({c["sigla_comissao"] for c in cargos["membro"]}), recentes=recentes,
+               exercicios=exercicios, mandatos=[dict(m) for m in conn.execute(
+                   "SELECT * FROM sen_mandato WHERE codigo=? ORDER BY inicio DESC", (sen["codigo"],))],
+               partidos=[dict(p) for p in conn.execute(
+                   "SELECT * FROM sen_partido WHERE codigo=? AND (fim IS NULL OR fim>=?) ORDER BY inicio DESC",
+                   (sen["codigo"], cfg["inicio"]))],
+               frase=frase_senador(sen, exercicios), cobertura=cob, janela=cfg["inicio"],
+               prop_desde=cfg["proposicoes_desde"], deputado_id=deputado_de.get(sen["pessoa_id"]))
+        render(f"senador/{sen['codigo']}/votos/index.html", "senador_votos.html", pagina="perfil", sen=sen,
+               regs=list(reversed(regs)))
+    return [dict(s) for s in senadores]
+
+
+def build_presidencia(conn, render, settings: dict, ate: str) -> dict[str, list]:
+    cfg = settings.get("presidencia")
+    if not cfg:
+        return {}
+    por_pessoa: dict[str, list] = {}
+    for p in compute_senado.presidentes(conn, cfg["eleicoes_desde"]):
+        por_pessoa.setdefault(p["pessoa_id"], []).append({"p": p, "atos": compute_senado.atos_presidente(conn, p, ate[:10])})
+    for pid, mandatos in por_pessoa.items():
+        outros = []
+        d = conn.execute("SELECT id FROM parlamentar WHERE pessoa_id=?", (pid,)).fetchone()
+        if d:
+            outros.append({"href": f"deputado/{d['id']}/", "rotulo": "Mandato de deputado federal"})
+        s = conn.execute("SELECT codigo FROM senador WHERE pessoa_id=?", (pid,)).fetchone()
+        if s:
+            outros.append({"href": f"senador/{s['codigo']}/", "rotulo": "Mandato de senador"})
+        render(f"presidente/{pid}/index.html", "presidente.html", pagina="perfil", p=mandatos[-1]["p"],
+               mandatos=list(reversed(mandatos)), outros_perfis=outros)
+    return por_pessoa
+
+
+def load_planos(path: Path) -> dict:
+    """Planos de governo publicados pelo TSE, conferidos por uma pessoa (config/planos_governo.yaml)."""
+    if not path.exists():
+        return {}
+    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    out = {}
+    for item in raw.get("planos") or []:
+        for c in ("ano", "cargo", "uf", "partido", "url"):
+            if not item.get(c):
+                raise CuradoriaError(f"plano de governo {item}: campo '{c}' faltando")
+        out[(int(item["ano"]), item["cargo"].upper(), item["uf"].upper(), item["partido"].upper())] = item["url"]
+    return out
+
+
 def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path, db_path: Path | None = None) -> dict:
     cam, site = settings["camara"], settings["site"]
     base = (site.get("url_base") or "").rstrip("/")
@@ -245,15 +340,25 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
         contagem = Counter(r["voto_label"] for r in rows).most_common()
         render(f"votacao/{v['id']}/index.html", "votacao.html", pagina="votacoes", v=v, votos=rows, contagem=contagem)
 
+    senadores = build_senado(conn, render, settings, ate)
+    presid = build_presidencia(conn, render, settings, ate)
+    planos = load_planos(chave_path.with_name("planos_governo.yaml"))
+
     tse_anos = settings.get("tse", {}).get("anos", [])
-    info_pessoas = pessoas.gerar(conn, out, max(tse_anos) if tse_anos else agora.year)
+    info_pessoas = pessoas.gerar(conn, out, max(tse_anos) if tse_anos else agora.year,
+                                 presidentes=set(presid), planos=planos)
     render("pessoa/index.html", "pessoa.html", pagina="pessoa", tse_anos=tse_anos or [agora.year])
 
     ufs = sorted({d["uf"] for d in deputados if d["uf"]})
     por_uf = [(uf, [d for d in deputados if d["uf"] == uf]) for uf in ufs]
     render("index.html", "index.html", pagina="inicio", ufs=ufs, segundo=info_pessoas["segundo_turno"],
-           n_pessoas=info_pessoas["pessoas"], ano_tse=max(tse_anos) if tse_anos else agora.year)
+           n_pessoas=info_pessoas["pessoas"], ano_tse=max(tse_anos) if tse_anos else agora.year,
+           tem_senado=bool(senadores))
     render("deputados/index.html", "lista.html", pagina="inicio", por_uf=por_uf)
+    if senadores:
+        sen_ufs = sorted({x["uf"] for x in senadores if x["uf"]})
+        render("senadores/index.html", "lista_senado.html", pagina="inicio",
+               por_uf=[(uf, [x for x in senadores if x["uf"] == uf]) for uf in sen_ufs])
     render("votacoes/index.html", "votacoes.html", pagina="votacoes", chave=chave)
     render("metodologia/index.html", "metodologia.html", pagina="metodologia")
 
@@ -265,4 +370,5 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
             shutil.copyfileobj(src, dst)
     render("dados/index.html", "dados.html", pagina="dados", fontes=fontes)
     (out / ".nojekyll").write_text("")
-    return {"deputados": len(deputados), "votacoes_chave": len(chave), "pessoas": info_pessoas["pessoas"]}
+    return {"deputados": len(deputados), "votacoes_chave": len(chave), "pessoas": info_pessoas["pessoas"],
+            **({"senadores": len(senadores)} if senadores else {}), **({"presidentes": len(presid)} if presid else {})}

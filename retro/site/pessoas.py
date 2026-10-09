@@ -49,9 +49,16 @@ def rotulo_resultado(resultado: str | None, situacao: str | None, ano: int, ano_
     return "Sem resultado publicado"
 
 
-def gerar(conn: sqlite3.Connection, out: Path, ano_atual: int) -> dict:
+def gerar(conn: sqlite3.Connection, out: Path, ano_atual: int, presidentes: set | None = None,
+          planos: dict | None = None) -> dict:
+    presidentes, planos = presidentes or set(), planos or {}
     deputado_de = {r["pessoa_id"]: r["id"] for r in conn.execute(
         "SELECT id, pessoa_id FROM parlamentar WHERE pessoa_id IS NOT NULL")}
+    try:
+        senador_de = {r["pessoa_id"]: r["codigo"] for r in conn.execute(
+            "SELECT codigo, pessoa_id FROM senador WHERE pessoa_id IS NOT NULL")}
+    except sqlite3.OperationalError:
+        senador_de = {}
     baldes: dict[int, dict] = defaultdict(dict)
     indice: dict[str, list[int]] = defaultdict(list)
     n_pessoas = n_cand = 0
@@ -68,15 +75,21 @@ def gerar(conn: sqlite3.Connection, out: Path, ano_atual: int) -> dict:
             eleito += rot == "Eleito(a)"
             # cargos estaduais e federais têm a UF como unidade eleitoral: não repetir o nome do estado
             local = r["nm_ue"] if r["nm_ue"] and (r["ue"] or "") not in (r["uf"], "BR") else ""
+            plano = planos.get((r["ano"], (r["cargo"] or "").upper(), (r["uf"] or "").upper(), (r["partido"] or "").upper()), "")
             cands.append([r["ano"], r["cargo"], r["uf"], local, r["partido"], r["numero"], rot,
-                          r["sq_candidato"], int("SUPLEMENTAR" in (r["tipo_eleicao"] or "").upper())])
+                          r["sq_candidato"], int("SUPLEMENTAR" in (r["tipo_eleicao"] or "").upper()), plano])
         rec = {"n": ultimo["nome"], "u": ultimo["nome_urna"], "c": cands}
         dep = deputado_de.get(pid)
         if dep:
             rec["d"] = dep
+        sen = senador_de.get(pid)
+        if sen:
+            rec["s"] = sen
+        if pid in presidentes:
+            rec["e"] = 1
         baldes[int(pid) % BALDES][pid] = rec
         # relevância: tem perfil completo, já foi eleito, candidatura mais recente
-        score = (5 if dep else 0) * 100000 + min(eleito, 9) * 10000 + ultimo["ano"]
+        score = (5 if (dep or sen or pid in presidentes) else 0) * 100000 + min(eleito, 9) * 10000 + ultimo["ano"]
         chave = score * 10**13 + int(pid)
         for t in tokens(ultimo["nome"], ultimo["nome_urna"]):
             indice[t].append(chave)

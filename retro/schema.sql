@@ -171,3 +171,131 @@ CREATE INDEX IF NOT EXISTS idx_voto_parl ON voto(parlamentar_id);
 CREATE INDEX IF NOT EXISTS idx_autoria_parl ON autoria(parlamentar_id);
 CREATE INDEX IF NOT EXISTS idx_presenca_parl ON presenca(parlamentar_id);
 CREATE INDEX IF NOT EXISTS idx_votacao_orgao ON votacao(sigla_orgao);
+
+-- ---------------------------------------------------------------- Senado Federal
+CREATE TABLE IF NOT EXISTS senador (
+    codigo        INTEGER PRIMARY KEY,      -- código oficial do Senado
+    nome          TEXT NOT NULL,            -- nome parlamentar
+    nome_completo TEXT,
+    sexo          TEXT,                     -- M/F (só para concordância de gênero no texto)
+    partido       TEXT,
+    uf            TEXT,
+    url_foto      TEXT,
+    url_pagina    TEXT,
+    em_exercicio  INTEGER NOT NULL DEFAULT 0,
+    pessoa_id     TEXT,                     -- ligação com candidatura.pessoa_id (TSE)
+    fonte_id      INTEGER REFERENCES fonte_arquivo(id)
+);
+CREATE TABLE IF NOT EXISTS sen_mandato (
+    codigo        INTEGER NOT NULL,
+    mandato       TEXT NOT NULL,
+    uf            TEXT,
+    participacao  TEXT,                     -- Titular, 1º Suplente...
+    inicio        TEXT,
+    fim           TEXT,
+    fonte_id      INTEGER REFERENCES fonte_arquivo(id),
+    PRIMARY KEY (codigo, mandato)
+);
+-- Períodos em que o senador estava de fato no cargo (o suplente assume quando o titular se afasta).
+CREATE TABLE IF NOT EXISTS sen_exercicio (
+    codigo        INTEGER NOT NULL,
+    inicio        TEXT NOT NULL,
+    fim           TEXT,                     -- inclusivo; NULL = em exercício
+    causa_sigla   TEXT,
+    causa         TEXT,                     -- motivo oficial do afastamento
+    fonte_id      INTEGER REFERENCES fonte_arquivo(id),
+    PRIMARY KEY (codigo, inicio)
+);
+CREATE TABLE IF NOT EXISTS sen_partido (
+    codigo        INTEGER NOT NULL,
+    sigla         TEXT,
+    nome          TEXT,
+    inicio        TEXT,
+    fim           TEXT,
+    fonte_id      INTEGER REFERENCES fonte_arquivo(id),
+    PRIMARY KEY (codigo, sigla, inicio)
+);
+CREATE TABLE IF NOT EXISTS sen_cargo (
+    codigo        INTEGER NOT NULL,
+    sigla_comissao TEXT,
+    nome_comissao TEXT,
+    casa          TEXT,                     -- SF ou CN
+    cargo         TEXT,
+    inicio        TEXT,
+    fim           TEXT,
+    fonte_id      INTEGER REFERENCES fonte_arquivo(id),
+    PRIMARY KEY (codigo, sigla_comissao, cargo, inicio)
+);
+CREATE TABLE IF NOT EXISTS sen_processo (
+    id                INTEGER PRIMARY KEY,
+    identificacao     TEXT,                 -- ex.: PL 1234/2023
+    sigla_tipo        TEXT,
+    ementa            TEXT,
+    data_apresentacao TEXT,
+    situacao          TEXT,
+    norma             TEXT,                 -- norma gerada, ex.: Lei nº 14.000 de ...
+    autoria           TEXT,                 -- texto oficial de autoria
+    codigo_materia    TEXT,
+    fonte_id          INTEGER REFERENCES fonte_arquivo(id)
+);
+CREATE TABLE IF NOT EXISTS sen_autoria (
+    processo_id   INTEGER NOT NULL,
+    codigo        INTEGER NOT NULL,
+    principal     INTEGER NOT NULL,         -- 1 se é o primeiro autor no texto oficial
+    fonte_id      INTEGER REFERENCES fonte_arquivo(id),
+    PRIMARY KEY (processo_id, codigo)
+);
+CREATE TABLE IF NOT EXISTS sen_votacao (
+    id            INTEGER PRIMARY KEY,      -- codigoSessaoVotacao
+    data          TEXT,
+    materia       TEXT,                     -- ex.: PEC 81/2015
+    ementa        TEXT,
+    descricao     TEXT,
+    resultado     TEXT,                     -- A aprovada, R rejeitada (sigla oficial)
+    secreta       INTEGER NOT NULL DEFAULT 0,
+    codigo_materia TEXT,
+    id_processo   TEXT,
+    informe       TEXT,
+    fonte_id      INTEGER REFERENCES fonte_arquivo(id)
+);
+CREATE TABLE IF NOT EXISTS sen_voto (
+    votacao_id    INTEGER NOT NULL,
+    codigo        INTEGER NOT NULL,
+    sigla         TEXT,                     -- Sim, Não, Abstenção, Votou (secreta), NCom, LS, MIS...
+    partido       TEXT,
+    uf            TEXT,
+    fonte_id      INTEGER REFERENCES fonte_arquivo(id),
+    PRIMARY KEY (votacao_id, codigo)
+);
+CREATE INDEX IF NOT EXISTS idx_sen_voto ON sen_voto(codigo);
+CREATE TABLE IF NOT EXISTS sen_tipo_comparecimento (
+    sigla         TEXT PRIMARY KEY,
+    descricao     TEXT,
+    fonte_id      INTEGER REFERENCES fonte_arquivo(id)
+);
+
+-- ---------------------------------------------------------------- Presidência
+CREATE TABLE IF NOT EXISTS veto (
+    codigo            INTEGER PRIMARY KEY,
+    identificacao     TEXT,                 -- VET 51/2025
+    total             INTEGER,              -- 1 veto total, 0 parcial
+    data_publicacao   TEXT,
+    assunto           TEXT,
+    ementa            TEXT,
+    materia_vetada    TEXT,
+    norma             TEXT,
+    url_planalto      TEXT,
+    dispositivos      INTEGER,
+    url               TEXT,
+    fonte_id          INTEGER REFERENCES fonte_arquivo(id)
+);
+-- Medidas provisórias (proposições MPV dos arquivos da Câmara; autor: Poder Executivo).
+CREATE TABLE IF NOT EXISTS medida_provisoria (
+    id                INTEGER PRIMARY KEY,  -- id da proposição na Câmara
+    numero            INTEGER,
+    ano               INTEGER,
+    ementa            TEXT,
+    data_apresentacao TEXT,
+    situacao          TEXT,
+    fonte_id          INTEGER REFERENCES fonte_arquivo(id)
+);

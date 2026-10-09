@@ -24,7 +24,13 @@ const RETRO = (() => {
   };
   const BALDES = 4096;
   const pessoa = async (id) => (await json(`${base}/pessoas/${Number(BigInt(id) % BigInt(BALDES))}.json`))[id];
-  return { base, norm, esc, titulo, json, pessoa };
+  // Perfis completos ligados à pessoa (deputado federal, senador, presidente).
+  const perfis = (p, id) => [
+    p.s && { href: `${base}/senador/${p.s}/`, rotulo: "Ver votos, presença e leis no Senado" },
+    p.d && { href: `${base}/deputado/${p.d}/`, rotulo: "Ver votos, presença e leis na Câmara" },
+    p.e && { href: `${base}/presidente/${id}/`, rotulo: "Ver medidas provisórias e vetos na Presidência" },
+  ].filter(Boolean);
+  return { base, norm, esc, titulo, json, pessoa, perfis };
 })();
 
 // Busca da página inicial: índice dividido pelas 3 primeiras letras de cada palavra do nome.
@@ -81,8 +87,10 @@ const RETRO = (() => {
       }
     }
     lista.innerHTML = achados.slice(0, 25).map(([id, p]) => {
-      const href = p.d ? `${base}/deputado/${p.d}/` : `${base}/pessoa/?id=${id}`;
-      const selo = p.d ? '<span class="selo-res completo">Votos e presença</span>' : '<span class="selo-res eleitoral">Candidaturas</span>';
+      const perfis = RETRO.perfis(p, id);
+      const href = perfis.length === 1 ? perfis[0].href : `${base}/pessoa/?id=${id}`;
+      const selo = (p.d || p.s) ? '<span class="selo-res completo">Votos e presença</span>'
+        : p.e ? '<span class="selo-res completo">Vetos e MPs</span>' : '<span class="selo-res eleitoral">Candidaturas</span>';
       const eleito = p.c.find((c) => c[6] === "Eleito(a)");
       const linha = eleito ? `Eleito(a) ${titulo(eleito[1]).toLowerCase()} em ${eleito[0]}${eleito[3] ? `, ${titulo(eleito[3])}` : ""} (${eleito[2]})` : `Candidato(a) a ${rotuloCand(p.c[0]).replace(/^(.)/, (m) => m.toLowerCase())}`;
       return `<a class="resultado" href="${href}">
@@ -129,21 +137,23 @@ const RETRO = (() => {
   document.getElementById("p-frase").textContent =
     `${titulo(p.n)}. ${eleicoes} ${eleicoes === 1 ? "candidatura" : "candidaturas"} registradas no TSE entre ${Math.min(...anos)} e ${Math.max(...anos)}` +
     (eleito ? `. Eleito(a) ${eleito} ${eleito === 1 ? "vez" : "vezes"}.` : ".");
-  document.getElementById("p-chips").innerHTML = p.d
-    ? `<a class="chip forte" href="${base}/deputado/${p.d}/">Ver votos, presença e leis na Câmara</a>`
-    : "";
-  const segs = p.d ? 3 : 1;
+  const perfis = RETRO.perfis(p, id);
+  document.getElementById("p-chips").innerHTML = perfis
+    .map((x) => `<a class="chip forte" href="${x.href}">${esc(x.rotulo)}</a>`).join("");
+  const segs = (p.d || p.s) ? 3 : p.e ? 2 : 1;
+  const mandatos = [p.d && "deputado federal", p.s && "senador", p.e && "presidente"].filter(Boolean);
   document.getElementById("p-cobertura").innerHTML =
     `<div class="segs" aria-hidden="true">${[0, 1, 2, 3, 4].map((i) => `<i class="${i < segs ? "on" : ""}"></i>`).join("")}</div>
-     <span><strong>${p.d ? "Dados em 3 de 5 áreas." : "Só dados eleitorais."}</strong> ${p.d ? "Candidaturas e mandato de deputado federal." : "Para este cargo ainda não há votos ou presença em formato aberto."}</span>`;
+     <span><strong>${mandatos.length ? `Dados em ${segs} de 5 áreas.` : "Só dados eleitorais."}</strong> ${mandatos.length ? `Candidaturas e mandato de ${mandatos.join(", ")}.` : "Para este cargo ainda não há votos ou presença em formato aberto."}</span>`;
   const classe = (r) => r === "Eleito(a)" ? "sim" : r === "Não eleito(a)" ? "nao" : r.includes("turno") ? "outro" : "ausente";
   document.getElementById("p-lista").innerHTML = p.c.map((c) => {
-    const [ano, cargo, uf, local, partido, numero, resultado, , suplementar] = c;
+    const [ano, cargo, uf, local, partido, numero, resultado, , suplementar, plano] = c;
     return `<article class="voto-card">
       <div class="voto-lado"><span class="voto ${classe(resultado)}">${esc(resultado)}</span><span class="xsmall muted">${ano}</span></div>
       <div class="voto-corpo">
         <div class="etiquetas"><span class="etiqueta">${esc(partido)}</span><span class="etiqueta">Número ${esc(numero)}</span>${suplementar ? '<span class="etiqueta">Eleição suplementar</span>' : ""}</div>
         <h3>${esc(titulo(cargo))}${local ? ` em ${esc(titulo(local))}` : ""} (${esc(uf)})</h3>
+        ${plano ? `<p><a class="chip" href="${esc(plano)}">Plano de governo entregue ao TSE (PDF)</a></p>` : ""}
         <p class="oficial"><a href="https://dadosabertos.tse.jus.br/dataset/candidatos-${ano}">Arquivo de candidatos ${ano} no TSE</a></p>
       </div></article>`;
   }).join("");

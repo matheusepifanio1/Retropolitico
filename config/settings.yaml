@@ -24,3 +24,15 @@ site:
   # Localmente, vazio funciona com `python -m http.server`.
   url_base: ""
   repositorio: "https://github.com/matheusepifanio1/Retropolitico"
+
+senado:
+  # Legislaturas 56 (2019–2023) e 57 (2023–2027).
+  legislaturas: [56, 57]
+  # Janela de votações e de exercício contada no perfil.
+  inicio: "2019-02-01"
+  # Projetos apresentados a partir desta data entram em "viraram lei".
+  proposicoes_desde: "2019-02-01"
+
+presidencia:
+  # Presidentes eleitos a partir desta eleição (mandatos de 2019 em diante).
+  eleicoes_desde: 2018

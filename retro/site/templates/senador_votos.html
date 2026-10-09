@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Votações de {{ sen.nome }} · {{ site.titulo }}{% endblock %}
+{% block description %}Todas as votações nominais de {{ sen.nome }} no Senado.{% endblock %}
+{% block main %}
+<p><a href="{{ base }}/senador/{{ sen.codigo }}/">← {{ sen.nome }}</a></p>
+<h1 style="font-size:32px;margin:0 0 8px">Votações nominais de {{ sen.nome }}</h1>
+<p class="muted">{{ regs|length }} votações do Plenário do Senado no período em exercício, da mais recente para a mais antiga.</p>
+<div class="table-box">
+  <table>
+    <thead><tr><th>Data</th><th>Matéria</th><th>Registro</th><th>Resultado</th></tr></thead>
+    <tbody>
+    {% for v in regs %}
+    <tr><td class="mono small" style="white-space:nowrap">{{ v.data|br }}</td>
+      <td class="small">{% if v.codigo_materia %}<a href="https://www25.senado.leg.br/web/atividade/materias/-/materia/{{ v.codigo_materia }}">{{ v.materia or 'Matéria' }}</a>{% else %}{{ v.materia or '—' }}{% endif %}<div class="muted">{{ (v.ementa or v.descricao or '')|truncate(160, True, '…') }}</div></td>
+      <td class="small"><strong>{{ v.rotulo }}</strong></td>
+      <td class="small">{{ {'A': 'Aprovada', 'R': 'Rejeitada'}.get(v.resultado, v.resultado or '—') }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="nota">Fonte: <a href="https://legis.senado.leg.br/dadosabertos/votacao?codigoParlamentar={{ sen.codigo }}">votações do senador nos dados abertos do Senado</a>.</p>
+{% endblock %}

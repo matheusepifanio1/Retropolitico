@@ -23,7 +23,7 @@
     <div id="sem-resultados" class="vazio" hidden>Ninguém encontrado com esse nome. Confira a grafia, tente só o sobrenome ou tire os filtros.</div>
     <p class="nota" id="busca-dica">Digite pelo menos 3 letras de um nome.</p>
     <noscript><div class="vazio">A busca precisa de JavaScript. Use a <a href="{{ base }}/deputados/">lista completa por estado</a>.</div></noscript>
-    <a href="{{ base }}/deputados/" class="small">Ver todos os deputados federais por estado</a>
+    <a href="{{ base }}/deputados/" class="small">Ver todos os deputados federais por estado</a>{% if tem_senado %} · <a href="{{ base }}/senadores/" class="small">Ver todos os senadores por estado</a>{% endif %}
   </div>
 </section>
 {% endblock %}

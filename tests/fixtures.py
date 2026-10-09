@@ -174,6 +174,11 @@ def write_raw(root: Path, *, drop_column: str | None = None) -> RawStore:
          "dataApresentacao": "2024-02-03T10:00", "ultimoStatus_descricaoSituacao": "Aguardando Parecer"},
         {"id": "5005", "siglaTipo": "REQ", "numero": "5", "ano": "2024", "ementa": "Requer audiência.",
          "dataApresentacao": "2024-02-04T10:00", "ultimoStatus_descricaoSituacao": "Transformado em Norma Jurídica"},
+        # Medidas provisórias: autor é o Poder Executivo, vão para a tabela própria.
+        {"id": "6001", "siglaTipo": "MPV", "numero": "1200", "ano": "2024", "ementa": "Abre crédito extraordinário.",
+         "dataApresentacao": "2024-03-01T10:00", "ultimoStatus_descricaoSituacao": "Transformado em Norma Jurídica"},
+        {"id": "6002", "siglaTipo": "MPV", "numero": "1201", "ano": "2024", "ementa": "Altera regra tributária.",
+         "dataApresentacao": "2024-04-01T10:00", "ultimoStatus_descricaoSituacao": "Perda de Eficácia"},
     ])
     _csv(d / f"proposicoesAutores-{ANO}.csv",
          ["idProposicao", "uriProposicao", "idDeputadoAutor", "uriAutor", "codTipoAutor", "tipoAutor", "nomeAutor",
