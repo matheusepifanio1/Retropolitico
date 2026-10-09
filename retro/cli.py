@@ -159,7 +159,7 @@ def candidatas(conn) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="retro", description="Retrospectiva Política")
-    p.add_argument("etapa", choices=["baixar", "carregar", "site", "tudo", "inspecionar", "candidatas"])
+    p.add_argument("etapa", choices=["baixar", "carregar", "site", "tudo", "inspecionar", "candidatas", "sondar"])
     p.add_argument("--raw", type=Path, default=ROOT / "data" / "raw")
     p.add_argument("--db", type=Path, default=ROOT / "data" / "retrospectiva.sqlite")
     p.add_argument("--out", type=Path, default=ROOT / "_site")
@@ -170,6 +170,10 @@ def main(argv: list[str] | None = None) -> int:
     if "RETRO_URL_BASE" in os.environ:
         settings["site"]["url_base"] = os.environ["RETRO_URL_BASE"]
     store = RawStore(args.raw, "camara")
+    if args.etapa == "sondar":
+        from . import sondar
+        sondar.main(args.raw)
+        return 0
     if args.etapa == "candidatas":
         candidatas(db.connect(args.db))
         return 0
