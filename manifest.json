@@ -1,0 +1,1157 @@
+[
+  {
+    "nome": "cn-vetos-2019.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/materia/vetos/2019",
+    "sha256": "eb25a7fa72c51165a51eaab6a64b793972f2a29a6e329089df69ad45564511c7",
+    "bytes": 134631,
+    "baixado_em": "2026-10-09T02:16:12Z"
+  },
+  {
+    "nome": "cn-vetos-2020.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/materia/vetos/2020",
+    "sha256": "22e45000b9c44399858e8e8b1f5e17be062b9c15e4a998e54b015c8c3ffac033",
+    "bytes": 137105,
+    "baixado_em": "2026-10-09T02:16:13Z"
+  },
+  {
+    "nome": "cn-vetos-2021.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/materia/vetos/2021",
+    "sha256": "292c2025a7ce3526c9756db056c6a8c96e0924dbe8e76acd1485825c261d5bae",
+    "bytes": 165860,
+    "baixado_em": "2026-10-09T02:16:13Z"
+  },
+  {
+    "nome": "cn-vetos-2022.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/materia/vetos/2022",
+    "sha256": "292b36e4a3b6f2e30d60892b0baa21330381136bc87f8a82efcd0cbaba01149c",
+    "bytes": 148415,
+    "baixado_em": "2026-10-09T02:16:14Z"
+  },
+  {
+    "nome": "cn-vetos-2023.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/materia/vetos/2023",
+    "sha256": "68c475f3cef588a626c0497b4d2a77dec7ffc87ed01f2f372c7b6fc4c48cf588",
+    "bytes": 121404,
+    "baixado_em": "2026-10-09T02:16:14Z"
+  },
+  {
+    "nome": "cn-vetos-2024.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/materia/vetos/2024",
+    "sha256": "3b5ffb0fb4b9f0d402a7309f597a3f0e247d819ea0ab151c38f47c8e37ec6a68",
+    "bytes": 118799,
+    "baixado_em": "2026-10-09T02:16:14Z"
+  },
+  {
+    "nome": "cn-vetos-2025.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/materia/vetos/2025",
+    "sha256": "b179231aadcd8a3b0ce034084481b97c38976f14d2a992ebac1548a7358ca0a2",
+    "bytes": 130309,
+    "baixado_em": "2026-10-10T15:40:29Z"
+  },
+  {
+    "nome": "cn-vetos-2026.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/materia/vetos/2026",
+    "sha256": "e152ada7cb6d76a1bca8ad65c2a4ce141d101a2be5df9bf54a74260417a733d7",
+    "bytes": 138048,
+    "baixado_em": "2026-10-10T15:40:30Z"
+  },
+  {
+    "nome": "consulta_cand_2014.zip",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2014.zip",
+    "sha256": "ad31cc36d9a6c89eac3d034533fffe1964aaf038697acaf32320cb9a09151087",
+    "bytes": 4530527,
+    "baixado_em": "2026-10-08T22:40:46Z"
+  },
+  {
+    "nome": "consulta_cand_2016.zip",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2016.zip",
+    "sha256": "9fd0066979b45172870eca4f5434131d019d87f6018002a241e91d2c91658be1",
+    "bytes": 140136131,
+    "baixado_em": "2026-10-08T22:40:47Z"
+  },
+  {
+    "nome": "consulta_cand_2018.zip",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2018.zip",
+    "sha256": "57f6881f1aa036142886ae548afd275e7ee6695643a2ab62826f2ee232d3fd44",
+    "bytes": 4722704,
+    "baixado_em": "2026-10-08T22:40:47Z"
+  },
+  {
+    "nome": "consulta_cand_2020.zip",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2020.zip",
+    "sha256": "8079b01adfa406ebe38ff1617abc835f0f5f8d09d18032c410fee04427baea26",
+    "bytes": 85384126,
+    "baixado_em": "2026-10-08T22:40:48Z"
+  },
+  {
+    "nome": "consulta_cand_2022.zip",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2022.zip",
+    "sha256": "018034da2f251548eacdcf20ac03255743c738556ad83f9a4528ccbbd8b06f71",
+    "bytes": 4391465,
+    "baixado_em": "2026-10-08T22:40:48Z"
+  },
+  {
+    "nome": "consulta_cand_2024.zip",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2024.zip",
+    "sha256": "2f8c2ba80a78eb134eeb7afa5f8e8877123e487ea5528d1fb6a94c3efe5431a4",
+    "bytes": 63915126,
+    "baixado_em": "2026-10-08T22:40:48Z"
+  },
+  {
+    "nome": "consulta_cand_2026.zip",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2026.zip",
+    "sha256": "79b431187269a90a72516763b7469eb490bb9edaf082beda6140c6d34eda1f5e",
+    "bytes": 3245833,
+    "baixado_em": "2026-10-10T15:33:35Z"
+  },
+  {
+    "nome": "deputados-em-exercicio.json",
+    "url": "https://dadosabertos.camara.leg.br/api/v2/deputados?itens=100&ordem=ASC&ordenarPor=nome",
+    "sha256": "b8970f54c60c93635504aa4ff8d2e73e28f7510044c84aa01f058ed316739a5b",
+    "bytes": 188219,
+    "baixado_em": "2026-10-10T15:23:18Z"
+  },
+  {
+    "nome": "deputados-historico.json",
+    "url": "https://dadosabertos.camara.leg.br/api/v2/deputados/{id}/historico",
+    "sha256": "d92298715a1293360958acf12cbdbb2154e1b40074278a6eae501f6e5d7eca9e",
+    "bytes": 3720364,
+    "baixado_em": "2026-10-10T15:28:47Z"
+  },
+  {
+    "nome": "deputados-legislatura.json",
+    "url": "https://dadosabertos.camara.leg.br/api/v2/deputados?idLegislatura=57&itens=100&ordem=ASC&ordenarPor=nome",
+    "sha256": "f1ebef56ec07aa3a846cae099c0334edbbeb06892a78b513b768bc1cd5708731",
+    "bytes": 318881,
+    "baixado_em": "2026-10-10T15:23:16Z"
+  },
+  {
+    "nome": "deputados-orgaos.json",
+    "url": "https://dadosabertos.camara.leg.br/api/v2/deputados/{id}/orgaos?dataInicio=2023-02-01",
+    "sha256": "1af1a83b1d951b1328cc74e93fcf8446e167401f9d6b0422012b58ef2e96577b",
+    "bytes": 5598673,
+    "baixado_em": "2026-10-10T15:28:47Z"
+  },
+  {
+    "nome": "deputados.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/deputados/csv/deputados.csv",
+    "sha256": "a0aed6603995afe97774b73c8fc82473dd2ab3542a6cbc50316a6cb93d7532e2",
+    "bytes": 1372072,
+    "baixado_em": "2026-10-10T15:23:01Z"
+  },
+  {
+    "nome": "eventos-2023.json",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/eventos/json/eventos-2023.json",
+    "sha256": "a7bfed546d701b882af030084ad56e46ce258ea0e9de5b206a273079cc2805c5",
+    "bytes": 3460260,
+    "baixado_em": "2026-10-08T21:06:55Z"
+  },
+  {
+    "nome": "eventos-2024.json",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/eventos/json/eventos-2024.json",
+    "sha256": "79255e197afb6685e2fc62b477a24ef8c6ce8b059ab14208791ac11d5e7f6cda",
+    "bytes": 2463970,
+    "baixado_em": "2026-10-08T21:06:59Z"
+  },
+  {
+    "nome": "eventos-2025.json",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/eventos/json/eventos-2025.json",
+    "sha256": "299e8b00fae63fe8be13c1306e169888078d23a946188ac0ca5cd36f3f08c657",
+    "bytes": 3475294,
+    "baixado_em": "2026-10-08T21:07:04Z"
+  },
+  {
+    "nome": "eventos-2026.json",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/eventos/json/eventos-2026.json",
+    "sha256": "8cbaf5e128e335bc87c8a97f692025f376d906140395a5f71eb304a4a9f582f3",
+    "bytes": 1560770,
+    "baixado_em": "2026-10-10T15:22:29Z"
+  },
+  {
+    "nome": "eventosOrgaos-2023.json",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/eventosOrgaos/json/eventosOrgaos-2023.json",
+    "sha256": "8f545fdab92bc5780b8e4fbda10353e4fe24892cfbaade15c25db974214be790",
+    "bytes": 832547,
+    "baixado_em": "2026-10-08T21:06:55Z"
+  },
+  {
+    "nome": "eventosOrgaos-2024.json",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/eventosOrgaos/json/eventosOrgaos-2024.json",
+    "sha256": "ee8c89dcc3580bf6b3030d4f73092a943932ec389919bb8521879179f1cdcc66",
+    "bytes": 588194,
+    "baixado_em": "2026-10-08T21:06:59Z"
+  },
+  {
+    "nome": "eventosOrgaos-2025.json",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/eventosOrgaos/json/eventosOrgaos-2025.json",
+    "sha256": "4fbea1dfc467aedeccc19a6b49cb8431167c3b3c094eea37f9b3228e681d1171",
+    "bytes": 785632,
+    "baixado_em": "2026-10-08T21:07:04Z"
+  },
+  {
+    "nome": "eventosOrgaos-2026.json",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/eventosOrgaos/json/eventosOrgaos-2026.json",
+    "sha256": "843c3c42525210151ec035dc07dd33bbbf51d6015b48e2960354dbbbab98edfc",
+    "bytes": 381088,
+    "baixado_em": "2026-10-10T15:22:30Z"
+  },
+  {
+    "nome": "eventosPresencaDeputados-2023.json",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/eventosPresencaDeputados/json/eventosPresencaDeputados-2023.json",
+    "sha256": "b8e5aabd5d7cbb97ef5b211141c4b4dee91d3acf5afb294cfe7d2ece4f1b43aa",
+    "bytes": 29400444,
+    "baixado_em": "2026-10-08T21:06:55Z"
+  },
+  {
+    "nome": "eventosPresencaDeputados-2024.json",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/eventosPresencaDeputados/json/eventosPresencaDeputados-2024.json",
+    "sha256": "4e18984784e65f9c38784109ec69d397394edb3e0053de9b7ad3547549e80dd2",
+    "bytes": 21186402,
+    "baixado_em": "2026-10-08T21:06:59Z"
+  },
+  {
+    "nome": "eventosPresencaDeputados-2025.json",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/eventosPresencaDeputados/json/eventosPresencaDeputados-2025.json",
+    "sha256": "045eb23055981ad7599e825b1437574154a000016fb74bc06e8eebb9d85efc3d",
+    "bytes": 30004520,
+    "baixado_em": "2026-10-08T21:07:04Z"
+  },
+  {
+    "nome": "eventosPresencaDeputados-2026.json",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/eventosPresencaDeputados/json/eventosPresencaDeputados-2026.json",
+    "sha256": "d5ba02cec82079b387c09c1b306b92475252ad09f5d3d956d1041e545d135c1f",
+    "bytes": 16027127,
+    "baixado_em": "2026-10-10T15:22:30Z"
+  },
+  {
+    "nome": "presenca-plenario-site.json",
+    "url": "https://www.camara.leg.br/deputados/{id}/presenca-plenario/{ano}",
+    "sha256": "81509836e45aa2444cd8fee386b538a752e9f2413688277e2ef4242bcba0904e",
+    "bytes": 21574463,
+    "baixado_em": "2026-10-10T15:33:35Z"
+  },
+  {
+    "nome": "proposicoes-2019.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoes/csv/proposicoes-2019.csv",
+    "sha256": "d66628fe90c3bbe1e2c3338bfce0fb94a02abe410abff0653def3fb88a2b129d",
+    "bytes": 33296667,
+    "baixado_em": "2026-10-10T15:22:32Z"
+  },
+  {
+    "nome": "proposicoes-2020.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoes/csv/proposicoes-2020.csv",
+    "sha256": "89c92278d82c2d5fe068117412c96d5a97fe63596014a5d93d16fc28c880bb92",
+    "bytes": 25259153,
+    "baixado_em": "2026-10-10T15:22:35Z"
+  },
+  {
+    "nome": "proposicoes-2021.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoes/csv/proposicoes-2021.csv",
+    "sha256": "9658a916612de41babfa9a81a3748d2d08d0cca2c268b6b39b265430d1da6518",
+    "bytes": 34593468,
+    "baixado_em": "2026-10-10T15:22:38Z"
+  },
+  {
+    "nome": "proposicoes-2022.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoes/csv/proposicoes-2022.csv",
+    "sha256": "eee738d60d0da306c19e20ecc76f7c1d25fa11ca4e1e700914be154346913a79",
+    "bytes": 23192226,
+    "baixado_em": "2026-10-10T15:22:40Z"
+  },
+  {
+    "nome": "proposicoes-2023.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoes/csv/proposicoes-2023.csv",
+    "sha256": "240d442d7a158f6871b65e73997bac7734d2f5b3b238e74899d80fd3f517fec8",
+    "bytes": 52260211,
+    "baixado_em": "2026-10-10T15:22:44Z"
+  },
+  {
+    "nome": "proposicoes-2024.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoes/csv/proposicoes-2024.csv",
+    "sha256": "53bc90a287af96be3b00699dfe80bb337cf02f63315fcb5a3134f4ed5315b84a",
+    "bytes": 53087737,
+    "baixado_em": "2026-10-10T15:22:49Z"
+  },
+  {
+    "nome": "proposicoes-2025.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoes/csv/proposicoes-2025.csv",
+    "sha256": "8d259f36009f35c321e63b11b89672627d27c23cc884ada6affeaff798df7308",
+    "bytes": 90184106,
+    "baixado_em": "2026-10-10T15:22:55Z"
+  },
+  {
+    "nome": "proposicoes-2026.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoes/csv/proposicoes-2026.csv",
+    "sha256": "c4b287f1190ce613ccd6285cef00be417ab96af674183810aa73231fa727eb8a",
+    "bytes": 39737910,
+    "baixado_em": "2026-10-10T15:23:00Z"
+  },
+  {
+    "nome": "proposicoesAutores-2019.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoesAutores/csv/proposicoesAutores-2019.csv",
+    "sha256": "b612feab9e09117895c0af0c2186f193417c8bb5030e0f5a0e393c59c470992d",
+    "bytes": 32918667,
+    "baixado_em": "2026-10-10T15:22:34Z"
+  },
+  {
+    "nome": "proposicoesAutores-2020.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoesAutores/csv/proposicoesAutores-2020.csv",
+    "sha256": "a572a95c45faac22d72cc54086656e8b87505325b6f892bcd758ab6b55581db4",
+    "bytes": 14165100,
+    "baixado_em": "2026-10-10T15:22:36Z"
+  },
+  {
+    "nome": "proposicoesAutores-2021.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoesAutores/csv/proposicoesAutores-2021.csv",
+    "sha256": "daad0a05354665894ee38310939a188335888f0b99dd7500f41c0263768fb710",
+    "bytes": 19442789,
+    "baixado_em": "2026-10-10T15:22:39Z"
+  },
+  {
+    "nome": "proposicoesAutores-2022.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoesAutores/csv/proposicoesAutores-2022.csv",
+    "sha256": "7b74ae1f2bb8db727ad032fb9b6e8a19d5d02c4bd00809ff4aacc244a06845e8",
+    "bytes": 11093939,
+    "baixado_em": "2026-10-10T15:22:41Z"
+  },
+  {
+    "nome": "proposicoesAutores-2023.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoesAutores/csv/proposicoesAutores-2023.csv",
+    "sha256": "c212d8bd89764a83258166b335d6ac057b608f2bc1c6b7b4f7c0a06c6cc2625b",
+    "bytes": 42276306,
+    "baixado_em": "2026-10-10T15:22:46Z"
+  },
+  {
+    "nome": "proposicoesAutores-2024.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoesAutores/csv/proposicoesAutores-2024.csv",
+    "sha256": "225ae7cd995d2221899cbea70e428f617003c41238dfe282fb4586ecabd26727",
+    "bytes": 24401498,
+    "baixado_em": "2026-10-10T15:22:50Z"
+  },
+  {
+    "nome": "proposicoesAutores-2025.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoesAutores/csv/proposicoesAutores-2025.csv",
+    "sha256": "d17c860a16231880778d92c69ae67c86589603c647d16d31ed9fc18f729bfc90",
+    "bytes": 38939258,
+    "baixado_em": "2026-10-10T15:22:57Z"
+  },
+  {
+    "nome": "proposicoesAutores-2026.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/proposicoesAutores/csv/proposicoesAutores-2026.csv",
+    "sha256": "dff1707de5e0e86dbd4b393977392345167a17623faf7c202eaad892667c8870",
+    "bytes": 14213544,
+    "baixado_em": "2026-10-10T15:23:00Z"
+  },
+  {
+    "nome": "senado-tipos-comparecimento.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/plenario/lista/tiposComparecimento",
+    "sha256": "367202f1e86db7c9e072363d04d7044fd7f65ba67d534da458ea3d1897b0f0b8",
+    "bytes": 3706,
+    "baixado_em": "2026-10-10T15:40:30Z"
+  },
+  {
+    "nome": "senado-votacoes-2019-02.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2019-02-01&dataFim=2019-02-28",
+    "sha256": "46e7faf5a29056864f5e7b585ed39c574f8482a584659b95ee5af7f9eb08b668",
+    "bytes": 79874,
+    "baixado_em": "2026-10-09T02:15:07Z"
+  },
+  {
+    "nome": "senado-votacoes-2019-03.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2019-03-01&dataFim=2019-03-31",
+    "sha256": "98b22845264109181bb9a27c99f6240617aabb51fb4ec59594db44a7926443f7",
+    "bytes": 99218,
+    "baixado_em": "2026-10-09T02:15:07Z"
+  },
+  {
+    "nome": "senado-votacoes-2019-04.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2019-04-01&dataFim=2019-04-30",
+    "sha256": "4cdceb9893fa872c97b38bde5cbb9c01a4ec34bef1932156722207468c3e4b9c",
+    "bytes": 167566,
+    "baixado_em": "2026-10-09T02:15:07Z"
+  },
+  {
+    "nome": "senado-votacoes-2019-05.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2019-05-01&dataFim=2019-05-31",
+    "sha256": "84d715daf35d10eeb4ca86aa268933112a3930c8167b7a243e9d1863a4849aac",
+    "bytes": 81102,
+    "baixado_em": "2026-10-09T02:15:08Z"
+  },
+  {
+    "nome": "senado-votacoes-2019-06.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2019-06-01&dataFim=2019-06-30",
+    "sha256": "d6d8ebaeb044973f5504f6a9bf7f06bef4abf3e0aa466b626e786b3f2b4c6add",
+    "bytes": 384936,
+    "baixado_em": "2026-10-09T02:15:08Z"
+  },
+  {
+    "nome": "senado-votacoes-2019-07.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2019-07-01&dataFim=2019-07-31",
+    "sha256": "f14f337576f9b61808860f41d55ff04aa8605dc84a556d731f490707a4c9ceea",
+    "bytes": 157289,
+    "baixado_em": "2026-10-09T02:15:08Z"
+  },
+  {
+    "nome": "senado-votacoes-2019-08.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2019-08-01&dataFim=2019-08-31",
+    "sha256": "914ae8b9c05a532dd50eef76f20a72455d8cba1288380705f2bb346630ebbf10",
+    "bytes": 258561,
+    "baixado_em": "2026-10-09T02:15:09Z"
+  },
+  {
+    "nome": "senado-votacoes-2019-09.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2019-09-01&dataFim=2019-09-30",
+    "sha256": "01256da3eb13e89be6916eab661c5a9ced2a7d9b7c866e06a6b7f8db4040c1fb",
+    "bytes": 340469,
+    "baixado_em": "2026-10-09T02:15:09Z"
+  },
+  {
+    "nome": "senado-votacoes-2019-10.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2019-10-01&dataFim=2019-10-31",
+    "sha256": "e920840ff6d760f8e1269c2f76f84bce0ca86784ec39da7dae8768b1f156fabf",
+    "bytes": 613602,
+    "baixado_em": "2026-10-09T02:15:09Z"
+  },
+  {
+    "nome": "senado-votacoes-2019-11.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2019-11-01&dataFim=2019-11-30",
+    "sha256": "535c3b9c27df37b51c38070a330b7e62a66eaa845ab6ec9965805283420f1230",
+    "bytes": 224808,
+    "baixado_em": "2026-10-09T02:15:10Z"
+  },
+  {
+    "nome": "senado-votacoes-2019-12.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2019-12-01&dataFim=2019-12-31",
+    "sha256": "b2b7147084d47ba6fdcf97e58aabcde0ebecb6a2cb61af9331e5978930874587",
+    "bytes": 241348,
+    "baixado_em": "2026-10-09T02:15:10Z"
+  },
+  {
+    "nome": "senado-votacoes-2020-01.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2020-01-01&dataFim=2020-01-31",
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "bytes": 2,
+    "baixado_em": "2026-10-09T02:15:10Z"
+  },
+  {
+    "nome": "senado-votacoes-2020-02.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2020-02-01&dataFim=2020-02-29",
+    "sha256": "47c4be1af4edf1f72d012865bff23419a06e0a1928e9c8e87bf1ba40c0cffcd0",
+    "bytes": 19573,
+    "baixado_em": "2026-10-09T02:15:11Z"
+  },
+  {
+    "nome": "senado-votacoes-2020-03.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2020-03-01&dataFim=2020-03-31",
+    "sha256": "8a1b30955552ba6696f12fddeec69a5d49b4555e4dc00252a885e5ed71dbfeef",
+    "bytes": 119386,
+    "baixado_em": "2026-10-09T02:15:11Z"
+  },
+  {
+    "nome": "senado-votacoes-2020-04.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2020-04-01&dataFim=2020-04-30",
+    "sha256": "bb04a9b0ddfddf9f29a7765d22ee8c7dce4eb636e03c9dc396464073dfc570e6",
+    "bytes": 343748,
+    "baixado_em": "2026-10-09T02:15:11Z"
+  },
+  {
+    "nome": "senado-votacoes-2020-05.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2020-05-01&dataFim=2020-05-31",
+    "sha256": "8aa843ef58978aa92ae70cdabe86211f4dd5f02d97164b4ed64e5b4d890e5e15",
+    "bytes": 557118,
+    "baixado_em": "2026-10-09T02:15:12Z"
+  },
+  {
+    "nome": "senado-votacoes-2020-06.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2020-06-01&dataFim=2020-06-30",
+    "sha256": "48ba079382d61873f7ef994571d34b88ff817dee39d19f371eeedff21f5b6b75",
+    "bytes": 483251,
+    "baixado_em": "2026-10-09T02:15:12Z"
+  },
+  {
+    "nome": "senado-votacoes-2020-07.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2020-07-01&dataFim=2020-07-31",
+    "sha256": "2edee37237e79bc41852eb090bc241352c5f0f99d079eb39d56d6cc11d44c0ab",
+    "bytes": 271411,
+    "baixado_em": "2026-10-09T02:15:13Z"
+  },
+  {
+    "nome": "senado-votacoes-2020-08.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2020-08-01&dataFim=2020-08-31",
+    "sha256": "97b82846751de500a102f7b96af1417f6c480e51406e8651ef20ec618e626b2b",
+    "bytes": 209883,
+    "baixado_em": "2026-10-09T02:15:13Z"
+  },
+  {
+    "nome": "senado-votacoes-2020-09.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2020-09-01&dataFim=2020-09-30",
+    "sha256": "01a8ff902315868e0c35f6b611cb6a59cfccb1b1b7254f8351e477bf5dcaf733",
+    "bytes": 989061,
+    "baixado_em": "2026-10-09T02:15:13Z"
+  },
+  {
+    "nome": "senado-votacoes-2020-10.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2020-10-01&dataFim=2020-10-31",
+    "sha256": "4cd926cdfd97ffb42fe810ced44b602b4b2f0ace81ba1849d2756d78fbeb19e5",
+    "bytes": 519509,
+    "baixado_em": "2026-10-09T02:15:14Z"
+  },
+  {
+    "nome": "senado-votacoes-2020-11.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2020-11-01&dataFim=2020-11-30",
+    "sha256": "88b4716bc4f96d512c62d8737388021e4aa7d1902862b50df51289cc6d9250fc",
+    "bytes": 142994,
+    "baixado_em": "2026-10-09T02:15:14Z"
+  },
+  {
+    "nome": "senado-votacoes-2020-12.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2020-12-01&dataFim=2020-12-31",
+    "sha256": "aeb8001a8b3d55cbf170c8188c7ff75b914af4e70150f688e50854bd31121031",
+    "bytes": 343237,
+    "baixado_em": "2026-10-09T02:15:14Z"
+  },
+  {
+    "nome": "senado-votacoes-2021-01.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2021-01-01&dataFim=2021-01-31",
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "bytes": 2,
+    "baixado_em": "2026-10-09T02:15:15Z"
+  },
+  {
+    "nome": "senado-votacoes-2021-02.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2021-02-01&dataFim=2021-02-28",
+    "sha256": "2bf3a6f5bc0bb6a1de1e0b193832b04cbca77e6644596fce5183057515a01c3a",
+    "bytes": 118312,
+    "baixado_em": "2026-10-09T02:15:15Z"
+  },
+  {
+    "nome": "senado-votacoes-2021-03.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2021-03-01&dataFim=2021-03-31",
+    "sha256": "cc67ae7e38b317c9179940827335fc56d5187cafa1164a1566c4709acc8b6273",
+    "bytes": 421627,
+    "baixado_em": "2026-10-09T02:15:15Z"
+  },
+  {
+    "nome": "senado-votacoes-2021-04.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2021-04-01&dataFim=2021-04-30",
+    "sha256": "75325c4b55702a246f132e06701f1d606f9dde0b5e094c4d6aa247b12fc5fc49",
+    "bytes": 241444,
+    "baixado_em": "2026-10-09T02:15:16Z"
+  },
+  {
+    "nome": "senado-votacoes-2021-05.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2021-05-01&dataFim=2021-05-31",
+    "sha256": "6254f28595cdf59a9eff714579468105ee6b8dbb5bca3c96b122bc582ee9ad29",
+    "bytes": 271126,
+    "baixado_em": "2026-10-09T02:15:16Z"
+  },
+  {
+    "nome": "senado-votacoes-2021-06.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2021-06-01&dataFim=2021-06-30",
+    "sha256": "1ebaf519c192847a8777b56a46cd95e5970b86c653e689c24f5979f58efb1b26",
+    "bytes": 398509,
+    "baixado_em": "2026-10-09T02:15:16Z"
+  },
+  {
+    "nome": "senado-votacoes-2021-07.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2021-07-01&dataFim=2021-07-31",
+    "sha256": "0cb22308fd05c2e50b1eff39880993b5c665f6814cc08d371e433d2b1bfca0bd",
+    "bytes": 726177,
+    "baixado_em": "2026-10-09T02:15:17Z"
+  },
+  {
+    "nome": "senado-votacoes-2021-08.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2021-08-01&dataFim=2021-08-31",
+    "sha256": "1ffe4acd82aff46345c577cc0fb5f7077d96a5ef1910a2e15c5db07d6c474bb6",
+    "bytes": 341974,
+    "baixado_em": "2026-10-09T02:15:17Z"
+  },
+  {
+    "nome": "senado-votacoes-2021-09.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2021-09-01&dataFim=2021-09-30",
+    "sha256": "f0743ca4775aacfec2ec18f234e78689b4254f63f8ee072d72ba72087f7053fb",
+    "bytes": 366832,
+    "baixado_em": "2026-10-09T02:15:18Z"
+  },
+  {
+    "nome": "senado-votacoes-2021-10.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2021-10-01&dataFim=2021-10-31",
+    "sha256": "130e5be5d17d265ca86b64eea1e5273e5ed9ea80e466a9c772860cc63de90146",
+    "bytes": 197965,
+    "baixado_em": "2026-10-09T02:15:18Z"
+  },
+  {
+    "nome": "senado-votacoes-2021-11.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2021-11-01&dataFim=2021-11-30",
+    "sha256": "da4cfe635d60a46be0f8b14bc6ac7621137b947c243b1eaf6bfa87c3e816d3c2",
+    "bytes": 640720,
+    "baixado_em": "2026-10-09T02:15:18Z"
+  },
+  {
+    "nome": "senado-votacoes-2021-12.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2021-12-01&dataFim=2021-12-31",
+    "sha256": "e42d3eb3602a42af98f804fc316e8b8bc5addaaa2f821c7d9c109994507eb62a",
+    "bytes": 858134,
+    "baixado_em": "2026-10-09T02:15:19Z"
+  },
+  {
+    "nome": "senado-votacoes-2022-01.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2022-01-01&dataFim=2022-01-31",
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "bytes": 2,
+    "baixado_em": "2026-10-09T02:15:19Z"
+  },
+  {
+    "nome": "senado-votacoes-2022-02.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2022-02-01&dataFim=2022-02-28",
+    "sha256": "2d6344645b94491ead491208e78a0f01455fc79e7f30df3dc2e5a0a5232d526e",
+    "bytes": 100242,
+    "baixado_em": "2026-10-09T02:15:20Z"
+  },
+  {
+    "nome": "senado-votacoes-2022-03.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2022-03-01&dataFim=2022-03-31",
+    "sha256": "cfca7685ee0614744d903affa67c3ecd3e7e805c987226adcf983b36a158298b",
+    "bytes": 217582,
+    "baixado_em": "2026-10-09T02:15:20Z"
+  },
+  {
+    "nome": "senado-votacoes-2022-04.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2022-04-01&dataFim=2022-04-30",
+    "sha256": "b2aec28931de3a7c5bdc9860b471a9fd5978d9a5a0b1226074d949c6fe8bc0c5",
+    "bytes": 827709,
+    "baixado_em": "2026-10-09T02:15:20Z"
+  },
+  {
+    "nome": "senado-votacoes-2022-05.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2022-05-01&dataFim=2022-05-31",
+    "sha256": "9ef9e75570ca468fcbcae5f64cb7c7dfa982dd03d00785064f70e8a00f84a364",
+    "bytes": 709135,
+    "baixado_em": "2026-10-09T02:15:21Z"
+  },
+  {
+    "nome": "senado-votacoes-2022-06.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2022-06-01&dataFim=2022-06-30",
+    "sha256": "8d617e85e656e2dfd6941bc1e6ff85c8207ffee7e4c6d309d7a17f63799e63c5",
+    "bytes": 554482,
+    "baixado_em": "2026-10-09T02:15:21Z"
+  },
+  {
+    "nome": "senado-votacoes-2022-07.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2022-07-01&dataFim=2022-07-31",
+    "sha256": "6c1e9d570908b0017c992d2a33f97f804b1467aef51552ec1643d355eef7472f",
+    "bytes": 39447,
+    "baixado_em": "2026-10-09T02:15:21Z"
+  },
+  {
+    "nome": "senado-votacoes-2022-08.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2022-08-01&dataFim=2022-08-31",
+    "sha256": "3ce59561ca25040a52dd0cb11e50c0bd761c8eef4cbc576978de277fa1ac64dc",
+    "bytes": 145569,
+    "baixado_em": "2026-10-09T02:15:22Z"
+  },
+  {
+    "nome": "senado-votacoes-2022-09.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2022-09-01&dataFim=2022-09-30",
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "bytes": 2,
+    "baixado_em": "2026-10-09T02:15:22Z"
+  },
+  {
+    "nome": "senado-votacoes-2022-10.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2022-10-01&dataFim=2022-10-31",
+    "sha256": "694711321577fd102c08f3a4684deff30ce0b68e9bdad249aadb1e3e06df4c2f",
+    "bytes": 38398,
+    "baixado_em": "2026-10-09T02:15:22Z"
+  },
+  {
+    "nome": "senado-votacoes-2022-11.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2022-11-01&dataFim=2022-11-30",
+    "sha256": "87fab53ada0a9ca6bb5bdc6448de828de6334b3c303c8c7f2e256fbb495ea1cc",
+    "bytes": 505051,
+    "baixado_em": "2026-10-09T02:15:23Z"
+  },
+  {
+    "nome": "senado-votacoes-2022-12.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2022-12-01&dataFim=2022-12-31",
+    "sha256": "6adb3e9570367b1d0fb331eef63802dd3af65815a73051128364b5a7322363b1",
+    "bytes": 288320,
+    "baixado_em": "2026-10-09T02:15:23Z"
+  },
+  {
+    "nome": "senado-votacoes-2023-01.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2023-01-01&dataFim=2023-01-31",
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "bytes": 2,
+    "baixado_em": "2026-10-09T02:15:23Z"
+  },
+  {
+    "nome": "senado-votacoes-2023-02.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2023-02-01&dataFim=2023-02-28",
+    "sha256": "4f5f683856ff25297755846109dc7fd01cf10e80c70a5eb948fe79ddea0ea438",
+    "bytes": 19396,
+    "baixado_em": "2026-10-09T02:15:24Z"
+  },
+  {
+    "nome": "senado-votacoes-2023-03.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2023-03-01&dataFim=2023-03-31",
+    "sha256": "f283b65771cf7f8ba54afe13def6794379b7717aa184640b9c2692787ad39e61",
+    "bytes": 19663,
+    "baixado_em": "2026-10-09T02:15:35Z"
+  },
+  {
+    "nome": "senado-votacoes-2023-04.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2023-04-01&dataFim=2023-04-30",
+    "sha256": "d3c58ea1c9ddbb34eff33a2929c06801e0da1ddf4c9f5950f58d64b56b670fdd",
+    "bytes": 19581,
+    "baixado_em": "2026-10-09T02:15:36Z"
+  },
+  {
+    "nome": "senado-votacoes-2023-05.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2023-05-01&dataFim=2023-05-31",
+    "sha256": "4b37a739e314d5974719ede906da4b3f4aff949c5f980d5aefee444779c98f14",
+    "bytes": 547871,
+    "baixado_em": "2026-10-09T02:15:36Z"
+  },
+  {
+    "nome": "senado-votacoes-2023-06.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2023-06-01&dataFim=2023-06-30",
+    "sha256": "f0a9ff7447765afc95928edaab3115f8d26f1ef77982c019e77fbf3e8354a44f",
+    "bytes": 266147,
+    "baixado_em": "2026-10-09T02:15:36Z"
+  },
+  {
+    "nome": "senado-votacoes-2023-07.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2023-07-01&dataFim=2023-07-31",
+    "sha256": "108fbe3589862c9c8787ffc821719879f9b2ae755d28ba59fb396e722183ae11",
+    "bytes": 282217,
+    "baixado_em": "2026-10-09T02:15:37Z"
+  },
+  {
+    "nome": "senado-votacoes-2023-08.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2023-08-01&dataFim=2023-08-31",
+    "sha256": "3420f5bb66544cc559ae3516d806bf56cb240189962b0088428430b97fbf9c2d",
+    "bytes": 280105,
+    "baixado_em": "2026-10-09T02:15:37Z"
+  },
+  {
+    "nome": "senado-votacoes-2023-09.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2023-09-01&dataFim=2023-09-30",
+    "sha256": "eacf0691b6d6b09e6aa731e991bcf6ebd84b07f06aad95e643429af708dc9f55",
+    "bytes": 265130,
+    "baixado_em": "2026-10-09T02:15:38Z"
+  },
+  {
+    "nome": "senado-votacoes-2023-10.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2023-10-01&dataFim=2023-10-31",
+    "sha256": "f59c7ae3990a43cb0b9d1b84a0a025cae174b4298ed26f332eb7321a7374a868",
+    "bytes": 199746,
+    "baixado_em": "2026-10-09T02:15:38Z"
+  },
+  {
+    "nome": "senado-votacoes-2023-11.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2023-11-01&dataFim=2023-11-30",
+    "sha256": "a36b1e3df568506099d82d2f14ddc17df9e233446eb90685624b4a2feb338591",
+    "bytes": 275746,
+    "baixado_em": "2026-10-09T02:15:38Z"
+  },
+  {
+    "nome": "senado-votacoes-2023-12.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2023-12-01&dataFim=2023-12-31",
+    "sha256": "f1ea75dedbf849942a31158c5f5368c532968c822523c4bee56fd4942ee6ee20",
+    "bytes": 679532,
+    "baixado_em": "2026-10-09T02:15:38Z"
+  },
+  {
+    "nome": "senado-votacoes-2024-01.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2024-01-01&dataFim=2024-01-31",
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "bytes": 2,
+    "baixado_em": "2026-10-09T02:15:39Z"
+  },
+  {
+    "nome": "senado-votacoes-2024-02.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2024-02-01&dataFim=2024-02-29",
+    "sha256": "5627e0a96409f9b8e304d99e0f4462d81651979de2d448e98c5c2e1c85f9a748",
+    "bytes": 41541,
+    "baixado_em": "2026-10-09T02:15:39Z"
+  },
+  {
+    "nome": "senado-votacoes-2024-03.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2024-03-01&dataFim=2024-03-31",
+    "sha256": "2f7746936ad3c6b4db62aae81dea882fa696ed61b6da37eb8931c53386b7570d",
+    "bytes": 60299,
+    "baixado_em": "2026-10-09T02:15:39Z"
+  },
+  {
+    "nome": "senado-votacoes-2024-04.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2024-04-01&dataFim=2024-04-30",
+    "sha256": "2340287538e50df60edee9881d4b6c1196a87db8386ee7c704162756906087bc",
+    "bytes": 80143,
+    "baixado_em": "2026-10-09T02:15:40Z"
+  },
+  {
+    "nome": "senado-votacoes-2024-05.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2024-05-01&dataFim=2024-05-31",
+    "sha256": "36f8c5d9e6bbbbd0dbf352ef5e8c48d93b5a9d89aa7e57a6ba81a0b30935866b",
+    "bytes": 185651,
+    "baixado_em": "2026-10-09T02:15:40Z"
+  },
+  {
+    "nome": "senado-votacoes-2024-06.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2024-06-01&dataFim=2024-06-30",
+    "sha256": "09c37de6439544be350418e25bad73536afd0721aff7fdf00150368b56b890e3",
+    "bytes": 182981,
+    "baixado_em": "2026-10-09T02:15:40Z"
+  },
+  {
+    "nome": "senado-votacoes-2024-07.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2024-07-01&dataFim=2024-07-31",
+    "sha256": "3683c42abf23fc25e886b6a2a93a76fc3eb7e850ed2fd1822916f0d69833187d",
+    "bytes": 285212,
+    "baixado_em": "2026-10-09T02:15:40Z"
+  },
+  {
+    "nome": "senado-votacoes-2024-08.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2024-08-01&dataFim=2024-08-31",
+    "sha256": "4374e36c6041f55ded902c75d2125f269eb778da58c6986a61e3137774625310",
+    "bytes": 225095,
+    "baixado_em": "2026-10-09T02:15:52Z"
+  },
+  {
+    "nome": "senado-votacoes-2024-09.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2024-09-01&dataFim=2024-09-30",
+    "sha256": "bf8d6a7a7cf1f3e29e6aaca6a214c050ddfc1fa54e9d0d2153429e0ec0e7e779",
+    "bytes": 21127,
+    "baixado_em": "2026-10-09T02:15:52Z"
+  },
+  {
+    "nome": "senado-votacoes-2024-10.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2024-10-01&dataFim=2024-10-31",
+    "sha256": "795f6e5c043e9731c176637fa4f0c0c7e278b5dc137636ab9a868ff1535e4612",
+    "bytes": 19571,
+    "baixado_em": "2026-10-09T02:15:53Z"
+  },
+  {
+    "nome": "senado-votacoes-2024-11.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2024-11-01&dataFim=2024-11-30",
+    "sha256": "d3dc1fb8ead47f8d11f7ea27d956d38d85614055761b5239aca67c418c58296b",
+    "bytes": 124697,
+    "baixado_em": "2026-10-09T02:15:53Z"
+  },
+  {
+    "nome": "senado-votacoes-2024-12.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2024-12-01&dataFim=2024-12-31",
+    "sha256": "7a11a82cd3cf9e2b8f23852bec318cbb69489b3fb06679ab14ca75e80ef93aee",
+    "bytes": 723207,
+    "baixado_em": "2026-10-09T02:16:05Z"
+  },
+  {
+    "nome": "senado-votacoes-2025-01.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2025-01-01&dataFim=2025-01-31",
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "bytes": 2,
+    "baixado_em": "2026-10-09T02:16:05Z"
+  },
+  {
+    "nome": "senado-votacoes-2025-02.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2025-02-01&dataFim=2025-02-28",
+    "sha256": "2798e4b1a701f43a05d6be2bc3fd0896ddf8fd3a42ebb89c048dba496664437e",
+    "bytes": 19975,
+    "baixado_em": "2026-10-09T02:16:05Z"
+  },
+  {
+    "nome": "senado-votacoes-2025-03.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2025-03-01&dataFim=2025-03-31",
+    "sha256": "2824bad88f55883d859af1fa8bd0bcfbaace4d41223cc7d2fa0e8ab2e81a7b10",
+    "bytes": 79464,
+    "baixado_em": "2026-10-09T02:16:06Z"
+  },
+  {
+    "nome": "senado-votacoes-2025-04.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2025-04-01&dataFim=2025-04-30",
+    "sha256": "a5a02f0c2282859568dc0486184231ac404157230ccb24393cb7e520152f6c46",
+    "bytes": 100151,
+    "baixado_em": "2026-10-09T02:16:06Z"
+  },
+  {
+    "nome": "senado-votacoes-2025-05.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2025-05-01&dataFim=2025-05-31",
+    "sha256": "5c741c965ea857519dfb5d4896e593dfc4bac15652d8595dbf7c3b13fef24cd6",
+    "bytes": 326166,
+    "baixado_em": "2026-10-09T02:16:06Z"
+  },
+  {
+    "nome": "senado-votacoes-2025-06.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2025-06-01&dataFim=2025-06-30",
+    "sha256": "6a2037e83bf4d9810272981fbb03cca3801d5dac06803f31815402aea85200ee",
+    "bytes": 204437,
+    "baixado_em": "2026-10-09T02:16:07Z"
+  },
+  {
+    "nome": "senado-votacoes-2025-07.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2025-07-01&dataFim=2025-07-31",
+    "sha256": "792e9213b2ca7d93623e5173492c7381666fd425e8a4b80bf508833f6537deed",
+    "bytes": 242778,
+    "baixado_em": "2026-10-09T02:16:07Z"
+  },
+  {
+    "nome": "senado-votacoes-2025-08.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2025-08-01&dataFim=2025-08-31",
+    "sha256": "a544d8f3cfd2899a7908667d7acfd28392668fca42da14d32e3fe1502c2502e0",
+    "bytes": 820558,
+    "baixado_em": "2026-10-09T02:16:07Z"
+  },
+  {
+    "nome": "senado-votacoes-2025-09.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2025-09-01&dataFim=2025-09-30",
+    "sha256": "c1e9bc289db4d177447de6f419f5bca12715d240143613c2cd19547b0114de9f",
+    "bytes": 171456,
+    "baixado_em": "2026-10-09T02:16:08Z"
+  },
+  {
+    "nome": "senado-votacoes-2025-10.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2025-10-01&dataFim=2025-10-31",
+    "sha256": "dbf73110b17c196c3f833c75f0ea42d9fec74a4a017c68025316b782dee765e7",
+    "bytes": 61260,
+    "baixado_em": "2026-10-09T02:16:08Z"
+  },
+  {
+    "nome": "senado-votacoes-2025-11.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2025-11-01&dataFim=2025-11-30",
+    "sha256": "7d5ee16c533581efa9630622806a03031f7fe213dd5bc8d3c42595cc71104055",
+    "bytes": 237700,
+    "baixado_em": "2026-10-09T02:16:08Z"
+  },
+  {
+    "nome": "senado-votacoes-2025-12.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2025-12-01&dataFim=2025-12-31",
+    "sha256": "22be0f44add968d649f255903526598942882bd4d41c63a4ab4d3cbdaa547e60",
+    "bytes": 322031,
+    "baixado_em": "2026-10-09T02:16:09Z"
+  },
+  {
+    "nome": "senado-votacoes-2026-01.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2026-01-01&dataFim=2026-01-31",
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "bytes": 2,
+    "baixado_em": "2026-10-09T02:16:09Z"
+  },
+  {
+    "nome": "senado-votacoes-2026-02.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2026-02-01&dataFim=2026-02-28",
+    "sha256": "84e4f3a3ebb4b604b716c22dcf8e75511f859a6ef6b8fb1006d56d3bea47e6da",
+    "bytes": 60551,
+    "baixado_em": "2026-10-09T02:16:09Z"
+  },
+  {
+    "nome": "senado-votacoes-2026-03.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2026-03-01&dataFim=2026-03-31",
+    "sha256": "dd5191c1a0642a3dcbf89039619f4808cb2bec3d8250e1223ec38c91d360125d",
+    "bytes": 61013,
+    "baixado_em": "2026-10-09T02:16:10Z"
+  },
+  {
+    "nome": "senado-votacoes-2026-04.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2026-04-01&dataFim=2026-04-30",
+    "sha256": "cf80df8a66dc6506f70267fc71ea2c6ee4f80e75120e504e1e7ae9481924bc9b",
+    "bytes": 584410,
+    "baixado_em": "2026-10-09T02:16:10Z"
+  },
+  {
+    "nome": "senado-votacoes-2026-05.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2026-05-01&dataFim=2026-05-31",
+    "sha256": "814159009e734afa4584ae03475475b91bdf968daab5db0e3ceeef3cf1e615a4",
+    "bytes": 203269,
+    "baixado_em": "2026-10-09T02:16:10Z"
+  },
+  {
+    "nome": "senado-votacoes-2026-06.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2026-06-01&dataFim=2026-06-30",
+    "sha256": "27d64bbebc232f2a70374aebe20d224c0b635e3f17397a9cbae5b7ce10f05bfc",
+    "bytes": 79167,
+    "baixado_em": "2026-10-09T02:16:11Z"
+  },
+  {
+    "nome": "senado-votacoes-2026-07.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2026-07-01&dataFim=2026-07-31",
+    "sha256": "ccba8d750c5780ef15274ad8d2b8f45352b5dc78193e3ffcd2578594dc973ccf",
+    "bytes": 102456,
+    "baixado_em": "2026-10-09T02:16:11Z"
+  },
+  {
+    "nome": "senado-votacoes-2026-08.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2026-08-01&dataFim=2026-08-31",
+    "sha256": "fa7d4180d952a44d4dba5b1e07c2e7aa9b9029db7215baaec4313dc26aa164ea",
+    "bytes": 61781,
+    "baixado_em": "2026-10-10T15:40:28Z"
+  },
+  {
+    "nome": "senado-votacoes-2026-09.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2026-09-01&dataFim=2026-09-30",
+    "sha256": "80679a60de95a129f2cd683af88e210f5f9b23476f43f4ac1b012b2f35ed00ff",
+    "bytes": 40446,
+    "baixado_em": "2026-10-10T15:40:28Z"
+  },
+  {
+    "nome": "senado-votacoes-2026-10.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2026-10-01&dataFim=2026-10-31",
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "bytes": 2,
+    "baixado_em": "2026-10-10T15:40:29Z"
+  },
+  {
+    "nome": "senadores-cargos.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/senador/{codigo}/cargos",
+    "sha256": "dd28958e247d56fc99445aea30960f2d969e5ad67dbd3b1e87531ca10a6f2c12",
+    "bytes": 448097,
+    "baixado_em": "2026-10-10T15:40:28Z"
+  },
+  {
+    "nome": "senadores-detalhe.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/senador/{codigo}",
+    "sha256": "f4df4f9f94bafc37e857eaedfb54843e307e195447b0c885137b5bea81663261",
+    "bytes": 1110714,
+    "baixado_em": "2026-10-10T15:40:28Z"
+  },
+  {
+    "nome": "senadores-leg56.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/senador/lista/legislatura/56",
+    "sha256": "88cb038a248dc7a21ffc050c2f8ce08f21e66a73a9cd2a4d63231ebf7d6e8a89",
+    "bytes": 278750,
+    "baixado_em": "2026-10-10T15:33:37Z"
+  },
+  {
+    "nome": "senadores-leg57.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/senador/lista/legislatura/57",
+    "sha256": "2bf1e0bd1be9dff73d2184723cea56deb562e060c9a23f0230643a2c5e809b8b",
+    "bytes": 272135,
+    "baixado_em": "2026-10-10T15:33:38Z"
+  },
+  {
+    "nome": "senadores-mandatos.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/senador/{codigo}/mandatos",
+    "sha256": "dcf04fee2e9448c13b3f3bdb88632726256cffa88dc86823541b0b4fea36d41b",
+    "bytes": 457235,
+    "baixado_em": "2026-10-10T15:40:28Z"
+  },
+  {
+    "nome": "senadores-processos.json",
+    "url": "https://legis.senado.leg.br/dadosabertos/processo?codigoParlamentarAutor={codigo}",
+    "sha256": "cba297554a44d0b58397c019883e3a0482894ba65fb133296e43f3639a42c2be",
+    "bytes": 27132664,
+    "baixado_em": "2026-10-10T15:40:28Z"
+  },
+  {
+    "nome": "votacoes-2023.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoes/csv/votacoes-2023.csv",
+    "sha256": "3ccbabab8a2aeea6cc6448649aece2869b370720bacafdb4dd76d5ea2aa941f6",
+    "bytes": 6706788,
+    "baixado_em": "2026-10-08T21:06:52Z"
+  },
+  {
+    "nome": "votacoes-2024.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoes/csv/votacoes-2024.csv",
+    "sha256": "27a95b64057eb75624e59fc68a179097fb4d433b6cb265ff84ced88dc1ebd5ba",
+    "bytes": 6270723,
+    "baixado_em": "2026-10-08T21:06:56Z"
+  },
+  {
+    "nome": "votacoes-2025.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoes/csv/votacoes-2025.csv",
+    "sha256": "52e571531b9fb1918811a6cee7d9c63983383bc453d48311983e9f6b26ee16f9",
+    "bytes": 8765235,
+    "baixado_em": "2026-10-08T21:07:00Z"
+  },
+  {
+    "nome": "votacoes-2026.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoes/csv/votacoes-2026.csv",
+    "sha256": "c1c5236558255347171e364fbfaca2e70b8057308874aefe4967f437a06d9d43",
+    "bytes": 4492702,
+    "baixado_em": "2026-10-10T15:22:28Z"
+  },
+  {
+    "nome": "votacoesOrientacoes-2023.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoesOrientacoes/csv/votacoesOrientacoes-2023.csv",
+    "sha256": "dff0e5c79e7c9ef18b853ac3870dcb72968711ffd01fa97804b11c49708dc041",
+    "bytes": 1052068,
+    "baixado_em": "2026-10-08T21:06:54Z"
+  },
+  {
+    "nome": "votacoesOrientacoes-2024.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoesOrientacoes/csv/votacoesOrientacoes-2024.csv",
+    "sha256": "10ea98903a94f44e9c67d9cdb0cf10e72073a083f7b4fe7f4c6ecd99feba58d0",
+    "bytes": 1023616,
+    "baixado_em": "2026-10-08T21:06:58Z"
+  },
+  {
+    "nome": "votacoesOrientacoes-2025.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoesOrientacoes/csv/votacoesOrientacoes-2025.csv",
+    "sha256": "75eae7028c521db02037f55fedf1abb1908df193149638fb4201e84d54ba9552",
+    "bytes": 1095383,
+    "baixado_em": "2026-10-08T21:07:03Z"
+  },
+  {
+    "nome": "votacoesOrientacoes-2026.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoesOrientacoes/csv/votacoesOrientacoes-2026.csv",
+    "sha256": "be85a3a64e4a3028c924264daea8f8be47cf52315bf23b4fff31e4e2c6351c4c",
+    "bytes": 434168,
+    "baixado_em": "2026-10-10T15:22:29Z"
+  },
+  {
+    "nome": "votacoesProposicoes-2023.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoesProposicoes/csv/votacoesProposicoes-2023.csv",
+    "sha256": "836763ba2cdd08d983b956180231fe3bd494ffdc81f3d3bce57c4508f0699e0a",
+    "bytes": 4730444,
+    "baixado_em": "2026-10-08T21:06:54Z"
+  },
+  {
+    "nome": "votacoesProposicoes-2024.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoesProposicoes/csv/votacoesProposicoes-2024.csv",
+    "sha256": "f758822b1dfb496b981e747eb758304011e5f56e4d42e2bd47b523448d82bdda",
+    "bytes": 3870560,
+    "baixado_em": "2026-10-08T21:06:58Z"
+  },
+  {
+    "nome": "votacoesProposicoes-2025.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoesProposicoes/csv/votacoesProposicoes-2025.csv",
+    "sha256": "409dcff9763b5b622ac1341547891e9b7e0a9efc9538c32b33be0b5c32690448",
+    "bytes": 4997496,
+    "baixado_em": "2026-10-08T21:07:03Z"
+  },
+  {
+    "nome": "votacoesProposicoes-2026.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoesProposicoes/csv/votacoesProposicoes-2026.csv",
+    "sha256": "fd1c432b8ed87b785e427751fd787e57d5bb141127115df75478e7314a510eeb",
+    "bytes": 2855963,
+    "baixado_em": "2026-10-10T15:22:29Z"
+  },
+  {
+    "nome": "votacoesVotos-2023.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoesVotos/csv/votacoesVotos-2023.csv",
+    "sha256": "1a8573a51bb7edaeb8c2970babe4f3afc3f64ea101aa068a904e0cce90f08cb6",
+    "bytes": 42793597,
+    "baixado_em": "2026-10-08T21:06:54Z"
+  },
+  {
+    "nome": "votacoesVotos-2024.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoesVotos/csv/votacoesVotos-2024.csv",
+    "sha256": "8636ad0b9a94757ef34129ef1c05cfe7586a9e58cb80ebc4b0992a1c09b410ec",
+    "bytes": 38680746,
+    "baixado_em": "2026-10-08T21:06:58Z"
+  },
+  {
+    "nome": "votacoesVotos-2025.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoesVotos/csv/votacoesVotos-2025.csv",
+    "sha256": "3947bbacff2efc91f0d11b0796a6c6b61cca0783bb7688401c97aaec888789cb",
+    "bytes": 58233239,
+    "baixado_em": "2026-10-08T21:07:03Z"
+  },
+  {
+    "nome": "votacoesVotos-2026.csv",
+    "url": "https://dadosabertos.camara.leg.br/arquivos/votacoesVotos/csv/votacoesVotos-2026.csv",
+    "sha256": "7490fdb43c889c7424992df6e724a72bd02f5347c233c31a9d8c8d45b34be786",
+    "bytes": 17218786,
+    "baixado_em": "2026-10-10T15:22:29Z"
+  }
+]

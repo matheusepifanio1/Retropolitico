@@ -1,0 +1,604 @@
+============================== SENADO ==============================
+
+### GET https://legis.senado.leg.br/dadosabertos/senador/lista/legislatura/57 -> 200 application/json 257146 bytes
+ListaParlamentarLegislatura: dict
+  noNamespaceSchemaLocation = 'https://legis.senado.leg.br/dadosabertos/dados/ListaParlamentarLegislaturav4.xsd'
+  Metadados: dict
+    Versao = '10/10/2026 12:33:38'
+    VersaoServico = '4'
+    DataVersaoServico = '2021-09-09'
+    DescricaoDataSet = 'Retorna a lista de Senadores de uma Legislatura.'
+  Parlamentares: dict
+    Parlamentar: list[245]
+      IdentificacaoParlamentar: dict
+        CodigoParlamentar = '5918'
+        NomeParlamentar = 'Adilson Gomes'
+        NomeCompletoParlamentar = 'Adilson Gomes Silva'
+        SexoParlamentar = 'Masculino'
+        FormaTratamento = 'Senador '
+      Mandatos: dict
+        Mandato: list[1]
+          CodigoMandato = '526'
+          UfParlamentar = 'PE'
+          PrimeiraLegislaturaDoMandato: dict
+            NumeroLegislatura = '56'
+            DataInicio = '2019-02-01'
+            DataFim = '2023-01-31'
+          SegundaLegislaturaDoMandato: dict
+            NumeroLegislatura = '57'
+            DataInicio = '2023-02-01'
+            DataFim = '2027-01-31'
+          DescricaoParticipacao = '2º Suplente'
+          Titular: dict
+            DescricaoParticipacao = 'Titular'
+            CodigoParlamentar = '4545'
+            NomeParlamentar = 'Jarbas Vasconcelos'
+          Suplentes: dict
+            Suplente: list[1]
+              DescricaoParticipacao = '1º Suplente'
+              CodigoParlamentar = '5917'
+              NomeParlamentar = 'Fernando Dueire'
+              --
+          --
+      --
+
+senadores na legislatura 57: 245
+código de exemplo: 345
+
+### GET https://legis.senado.leg.br/dadosabertos/senador/345 -> 200 application/json 3659 bytes
+DetalheParlamentar: dict
+  noNamespaceSchemaLocation = 'https://legis.senado.leg.br/dadosabertos/dados/DetalheParlamentarv6.xsd'
+  Metadados: dict
+    Versao = '10/10/2026 12:33:50'
+    VersaoServico = '6'
+    DataVersaoServico = '2021-09-09'
+    DescricaoDataSet = 'Retorna os detalhes de um Senador informado no parâmetro.'
+  Parlamentar: dict
+    IdentificacaoParlamentar: dict
+      CodigoParlamentar = '345'
+      CodigoPublicoNaLegAtual = '856'
+      NomeParlamentar = 'Flávio Arns'
+      NomeCompletoParlamentar = 'Flávio José Arns'
+      SexoParlamentar = 'Masculino'
+      UrlFotoParlamentar = 'http://www.senado.leg.br/senadores/img/fotos-oficiais/senador345.jpg'
+      UrlPaginaParlamentar = 'http://www25.senado.leg.br/web/senadores/senador/-/perfil/345'
+      UrlPaginaParticular = 'http://www.flavioarns.com.br'
+      EmailParlamentar = 'sen.flavioarns@senado.leg.br'
+      SiglaPartidoParlamentar = 'PSB'
+      UfParlamentar = 'PR'
+    DadosBasicosParlamentar: dict
+      DataNascimento = '1950-11-09'
+      Naturalidade = 'Curitiba'
+      UfNaturalidade = 'PR'
+      EnderecoParlamentar = 'Senado Federal Edifício Principal   Ala Dinarte Mariz Gabinete 02'
+    Telefones: dict
+      Telefone: list[1]
+        NumeroTelefone = '33036301'
+        OrdemPublicacao = '1'
+        IndicadorFax = 'Não'
+        --
+    OutrasInformacoes: dict
+      Servico: list[13]
+        NomeServico = 'ApartesParlamentar'
+        DescricaoServico = 'Apartes do parlamentar'
+        UrlServico = 'https://legis.senado.leg.br/dadosabertos/senador/345/apartes?v=5'
+        --
+        NomeServico = 'CargoParlamentar'
+        DescricaoServico = 'Cargos do parlamentar ao longo do(s) mandato(s).'
+        UrlServico = 'https://legis.senado.leg.br/dadosabertos/senador/345/cargos?v=5'
+        --
+
+### GET https://legis.senado.leg.br/dadosabertos/senador/345/mandatos -> 200 application/json 2512 bytes
+MandatoParlamentar: dict
+  noNamespaceSchemaLocation = 'https://legis.senado.leg.br/dadosabertos/dados/MandatoParlamentarv5.xsd'
+  Metadados: dict
+    Versao = '10/10/2026 12:33:50'
+    VersaoServico = '5'
+    DataVersaoServico = '2021-09-09'
+    DescricaoDataSet = 'Retorna a relação dos Mandatos do Senador informado no parâmetro.'
+  Parlamentar: dict
+    Codigo = '345'
+    Nome = 'Flávio Arns'
+    Mandatos: dict
+      Mandato: list[2]
+        CodigoMandato = '540'
+        UfParlamentar = 'PR'
+        PrimeiraLegislaturaDoMandato: dict
+          NumeroLegislatura = '56'
+          DataInicio = '2019-02-01'
+          DataFim = '2023-01-31'
+        SegundaLegislaturaDoMandato: dict
+          NumeroLegislatura = '57'
+          DataInicio = '2023-02-01'
+          DataFim = '2027-01-31'
+        DescricaoParticipacao = 'Titular'
+        Suplentes: dict
+          Suplente: list[2]
+            DescricaoParticipacao = '1º Suplente'
+            CodigoParlamentar = '5919'
+            NomeParlamentar = 'Vilson Basso'
+            --
+            DescricaoParticipacao = '2º Suplente'
+            CodigoParlamentar = '5920'
+            NomeParlamentar = 'Flavio Vicente'
+            --
+        Exercicios: dict
+          Exercicio: list[1]
+            CodigoExercicio = '2903'
+            DataInicio = '2019-02-01'
+            --
+        Partidos: dict
+          Partido: list[3]
+            CodigoPartido = '63'
+            Sigla = 'PSB'
+            Nome = 'Partido Socialista Brasileiro'
+            DataFiliacao = '2023-01-31'
+            --
+            CodigoPartido = '577'
+            Sigla = 'PODE'
+            Nome = 'Podemos'
+            DataFiliacao = '2020-08-31'
+            DataDesfiliacao = '2023-01-30'
+            --
+        --
+        CodigoMandato = '304'
+        UfParlamentar = 'PR'
+        PrimeiraLegislaturaDoMandato: dict
+          NumeroLegislatura = '52'
+          DataInicio = '2003-02-01'
+          DataFim = '2007-01-31'
+        SegundaLegislaturaDoMandato: dict
+          NumeroLegislatura = '53'
+          DataInicio = '2007-02-01'
+          DataFim = '2011-01-31'
+        DescricaoParticipacao = 'Titular'
+        Suplentes: dict
+          Suplente: list[2]
+            DescricaoParticipacao = '1º Suplente'
+            CodigoParlamentar = '3637'
+            NomeParlamentar = 'Danimar Cristina'
+            --
+            DescricaoParticipacao = '2º Suplente'
+            CodigoParlamentar = '3638'
+            NomeParlamentar = 'Márcio Tadeu Vieira Pessatti'
+            --
+        Exercicios: dict
+          Exercicio: list[1]
+            CodigoExercicio = '1737'
+            DataInicio = '2003-02-01'
+            DataFim = '2010-12-31'
+            SiglaCausaAfastamento = 'REN'
+            DescricaoCausaAfastamento = 'Renúncia'
+            --
+        Partidos: dict
+          Partido: list[3]
+            CodigoPartido = '66'
+            Sigla = 'PSDB'
+            Nome = 'Partido da Social Democracia Brasileira'
+            DataFiliacao = '2009-10-08'
+            DataDesfiliacao = '2018-12-31'
+            --
+            CodigoPartido = '163'
+            Sigla = 'S/Partido'
+            Nome = 'Sem Partido'
+            DataFiliacao = '2009-09-11'
+            DataDesfiliacao = '2009-10-07'
+            --
+        --
+
+### GET https://legis.senado.leg.br/dadosabertos/senador/345/licencas -> 200 application/json 27330 bytes
+LicencaParlamentar: dict
+  noNamespaceSchemaLocation = 'https://legis.senado.leg.br/dadosabertos/dados/LicencaParlamentarv6.xsd'
+  Metadados: dict
+    Versao = '10/10/2026 12:42:59'
+    VersaoServico = '6'
+    DataVersaoServico = '2021-09-09'
+    DescricaoDataSet = 'Retorna a relação de Licenças do Senador informado no parâmetro.'
+  Parlamentar: dict
+    Codigo = '345'
+    Nome = 'Flávio Arns'
+    Licencas: dict
+      Licenca: list[104]
+        Codigo = '26725'
+        DataInicio = '2026-06-09'
+        DataInicioPrevista = '2026-06-09'
+        DataFim = '2026-06-10'
+        DataFimPrevista = '2026-06-10'
+        SiglaTipoAfastamento = 'LICENCA_SAUDE_ATE_120D'
+        DescricaoTipoAfastamento = 'Licença Saúde (até a 120 dias)'
+        --
+        Codigo = '26124'
+        DataInicio = '2026-03-30'
+        DataInicioPrevista = '2026-03-30'
+        DataFim = '2026-04-19'
+        DataFimPrevista = '2026-04-19'
+        SiglaTipoAfastamento = 'LICENCA_SAUDE_ATE_120D'
+        DescricaoTipoAfastamento = 'Licença Saúde (até a 120 dias)'
+        --
+
+### GET https://legis.senado.leg.br/dadosabertos/senador/345/cargos -> 200 application/json 5218 bytes
+CargoParlamentar: dict
+  noNamespaceSchemaLocation = 'https://legis.senado.leg.br/dadosabertos/dados/CargoParlamentarv5.xsd'
+  Metadados: dict
+    Versao = '10/10/2026 12:33:50'
+    VersaoServico = '5'
+    DataVersaoServico = '2021-09-09'
+    DescricaoDataSet = 'Retorna a relação de Cargos do Senador informado no parâmetro.'
+  Parlamentar: dict
+    Codigo = '345'
+    Nome = 'Flávio Arns'
+    Cargos: dict
+      Cargo: list[18]
+        IdentificacaoComissao: dict
+          CodigoComissao = '1323'
+          SiglaComissao = 'CASDEF'
+          NomeComissao = 'Subcomissão Permanente de Assuntos Sociais das Pessoas com Deficiência'
+          SiglaCasaComissao = 'SF'
+        CodigoCargo = '2'
+        DescricaoCargo = 'VICE-PRESIDENTE'
+        DataInicio = '2005-06-16'
+        DataFim = '2007-01-31'
+        --
+        IdentificacaoComissao: dict
+          CodigoComissao = '1323'
+          SiglaComissao = 'CASDEF'
+          NomeComissao = 'Subcomissão Permanente de Assuntos Sociais das Pessoas com Deficiência'
+          SiglaCasaComissao = 'SF'
+        CodigoCargo = '2'
+        DescricaoCargo = 'VICE-PRESIDENTE'
+        DataInicio = '2007-02-28'
+        DataFim = '2009-02-12'
+        --
+
+### GET https://legis.senado.leg.br/dadosabertos/senador/345/comissoes -> 200 application/json 39298 bytes
+MembroComissaoParlamentar: dict
+  noNamespaceSchemaLocation = 'https://legis.senado.leg.br/dadosabertos/dados/MembroComissaoParlamentarv5.xsd'
+  Metadados: dict
+    Versao = '10/10/2026 12:15:20'
+    VersaoServico = '5'
+    DataVersaoServico = '2021-09-09'
+    DescricaoDataSet = 'Retorna a relação das Comissões das quais um Senador é membro.'
+  Parlamentar: dict
+    Codigo = '345'
+    Nome = 'Flávio Arns'
+    MembroComissoes: dict
+      Comissao: list[158]
+        IdentificacaoComissao: dict
+          CodigoComissao = '2175'
+          SiglaComissao = 'GPARABIASAUDITA'
+          NomeComissao = 'Grupo Parlamentar Brasil - Reino da Arábia Saudita'
+          SiglaCasaComissao = 'CN'
+        DescricaoParticipacao = 'Titular'
+        DataInicio = '2019-11-07'
+        DataFim = '2023-01-31'
+        --
+        IdentificacaoComissao: dict
+          CodigoComissao = '2175'
+          SiglaComissao = 'GPARABIASAUDITA'
+          NomeComissao = 'Grupo Parlamentar Brasil - Reino da Arábia Saudita'
+          SiglaCasaComissao = 'CN'
+        DescricaoParticipacao = 'Titular'
+        DataInicio = '2023-07-04'
+        --
+
+### GET https://legis.senado.leg.br/dadosabertos/processo?codigoParlamentarAutor=345 -> 200 application/json 1413010 bytes
+tipo=list tamanho=1269
+autoria = 'Senador Flávio Arns (PT/PR)'
+casaIdentificadora = 'SF'
+codigoMateria = '58213'
+dataApresentacao = '2003-05-28'
+dataDeliberacao = '2003-08-29'
+dataSituacaoAtual = '2007-11-29'
+ementa = 'Institui a data de 5 de dezembro como o "Dia Nacional da Pastoral da Criança".'
+enteIdentificador = 'SF'
+id = '678247'
+identificacao = 'PLS 211/2003'
+normaGerada = 'Lei nº 11.583 de 28/11/2007'
+objetivo = 'Iniciadora'
+siglaTipoDeliberacao = 'APROVADA_EM_COMISSAO_TERMINATIVA'
+situacaoAtual = 'TRANSFORMADA EM NORMA JURÍDICA'
+tipoConteudo = 'Norma Geral'
+tipoDocumento = 'Projeto de Lei Ordinária'
+tramitando = 'Não'
+--
+autoria = 'Senador Flávio Arns (PT/PR)'
+casaIdentificadora = 'SF'
+codigoMateria = '58214'
+dataApresentacao = '2003-05-28'
+dataDeliberacao = '2003-10-03'
+dataSituacaoAtual = '2007-07-23'
+ementa = 'Institui a data de 16 de novembro, como o "Dia Nacional dos Ostomizados".'
+enteIdentificador = 'SF'
+id = '678225'
+identificacao = 'PLS 212/2003'
+normaGerada = 'Lei nº 11.506 de 19/07/2007'
+objetivo = 'Iniciadora'
+siglaTipoDeliberacao = 'APROVADA_EM_COMISSAO_TERMINATIVA'
+situacaoAtual = 'TRANSFORMADA EM NORMA JURÍDICA'
+tipoConteudo = 'Norma Geral'
+tipoDocumento = 'Projeto de Lei Ordinária'
+tramitando = 'Não'
+--
+processos com norma: 47
+autoria = 'Senador Flávio Arns (PT/PR)'
+casaIdentificadora = 'SF'
+codigoMateria = '58213'
+dataApresentacao = '2003-05-28'
+dataDeliberacao = '2003-08-29'
+dataSituacaoAtual = '2007-11-29'
+ementa = 'Institui a data de 5 de dezembro como o "Dia Nacional da Pastoral da Criança".'
+enteIdentificador = 'SF'
+id = '678247'
+identificacao = 'PLS 211/2003'
+normaGerada = 'Lei nº 11.583 de 28/11/2007'
+objetivo = 'Iniciadora'
+siglaTipoDeliberacao = 'APROVADA_EM_COMISSAO_TERMINATIVA'
+situacaoAtual = 'TRANSFORMADA EM NORMA JURÍDICA'
+tipoConteudo = 'Norma Geral'
+tipoDocumento = 'Projeto de Lei Ordinária'
+tramitando = 'Não'
+
+### GET https://legis.senado.leg.br/dadosabertos/votacao?dataInicio=2025-05-01&dataFim=2025-05-31 -> 200 application/json 306839 bytes
+tipo=list tamanho=16
+ano = '2015'
+casaSessao = 'SF'
+codigoMateria = '121883'
+codigoSessao = '464922'
+codigoSessaoLegislativa = '873'
+codigoSessaoVotacao = '6928'
+dataApresentacao = '2015-06-19'
+dataSessao = '2025-05-20'
+descricaoVotacao = 'Votação nominal da Proposta de Emenda à Constituição nº 81, de 2015, nos termos do parecer'
+ementa = 'Altera o art. 24 da Constituição Federal, para incluir no rol das competências da União, d'
+idProcesso = '1399166'
+identificacao = 'PEC 81/2015'
+informeLegislativo: dict
+  casaColegiado = 'SF'
+  casaEnteAdm = 'SF'
+  codigoColegiado = '1998'
+  data = '2025-05-20'
+  id = '2239152'
+  idEnteAdm = '13594'
+  idEvento = '11063595'
+  nomeColegiado = 'Plenário do Senado Federal'
+  nomeEnteAdm = 'Secretaria de Atas e Diários'
+  numeroAutuacao = '1'
+  siglaColegiado = 'PLEN'
+  siglaEnteAdm = 'SEADI'
+  texto = '(Sessão Deliberativa Ordinária – realizada em 20/05/2025) \r\nAprovada, em primeiro turno, c'
+numero = '81'
+numeroSessao = '45'
+resultadoVotacao = 'A'
+sequencialSessao = '1'
+sequencialVotacao = '4245'
+sigla = 'PEC'
+siglaTipoSessao = 'DOR'
+totalVotosAbstencao = 'None'
+totalVotosNao = 'None'
+totalVotosSim = 'None'
+votacaoSecreta = 'N'
+votos: list[81]
+  codigoParlamentar = '5672'
+  descricaoVotoParlamentar = 'None'
+  nomeParlamentar = 'Alan Rick'
+  sexoParlamentar = 'M'
+  siglaPartidoParlamentar = 'UNIÃO'
+  siglaUFParlamentar = 'AC'
+  siglaVotoParlamentar = 'Sim'
+  --
+--
+siglas de voto: [('Votou', 384), ('Sim', 360), ('P-NRV', 249), ('AP', 132), ('Não', 55), ('LS', 40), ('MIS', 28), ('LP', 24), ('Presidente (art. 51 RISF)', 8), ('NCom', 8), ('NA', 8)]
+
+### GET https://legis.senado.leg.br/dadosabertos/dados/ListaTiposComparecimento.json -> 200 application/json 3473 bytes
+ListaTiposComparecimento: dict
+  noNamespaceSchemaLocation = 'https://legis.senado.leg.br/dadosabertos/dados/ListaTiposComparecimentov1.xsd'
+  Metadados: dict
+    Versao = '09/10/2026 14:21:02'
+    VersaoServico = '1'
+    DataVersaoServico = '2017-02-01'
+    DescricaoDataSet = 'Retorna a lista de tipos de comparecimento em Votação.'
+  TiposComparecimento: dict
+    TipoComparecimento: list[55]
+      Sigla = 'AFO'
+      Descricao = 'Afastamento do exercício'
+      --
+      Sigla = 'AP'
+      Descricao = 'Atividade parlamentar'
+      --
+
+### GET https://legis.senado.leg.br/dadosabertos/dados/ListaVetosAnoCN2025.json -> 200 application/json 125683 bytes
+ListaVetosAnoCN: dict
+  noNamespaceSchemaLocation = 'https://legis.senado.leg.br/dadosabertos/dados/cn/ListaVetosAnoCNv7.xsd'
+  Metadados: dict
+    Versao = '07/10/2026 14:20:26'
+    VersaoServico = '7'
+    DataVersaoServico = '2018-08-06'
+    DescricaoDataSet = 'Lista dos vetos ocorridos em determinado ano'
+  Vetos: dict
+    Veto: list[51]
+      Codigo = '17909'
+      Materia: dict
+        Codigo = '172335'
+        SiglaCasa = 'CN'
+        NomeCasa = 'Congresso Nacional'
+        Sigla = 'VET'
+        Numero = '51'
+        Ano = '2025'
+        EmTramitacao = 'Sim'
+        Ementa = 'Veto parcial aposto ao Projeto de Lei do Congresso Nacional nº 2, de 2025, que "Dispõe sob'
+        UrlMovimentacoes = 'https://legis.senado.leg.br/dadosabertos/materia/movimentacoes/172335'
+      MateriaVetada: dict
+        Codigo = '168120'
+        SiglaCasa = 'CN'
+        NomeCasa = 'Congresso Nacional'
+        Sigla = 'PLN'
+        Numero = '2'
+        Ano = '2025'
+        EmTramitacao = 'Sim'
+        Ementa = 'Dispõe sobre as diretrizes para a elaboração e a execução da Lei Orçamentária de 2026 e dá'
+        UrlMovimentacoes = 'https://legis.senado.leg.br/dadosabertos/materia/movimentacoes/168120'
+        UrlRelatorias = 'https://legis.senado.leg.br/dadosabertos/materia/relatorias/168120'
+        NormaGerada: dict
+          NomeNorma = 'Lei nº 15.321 de 31/12/2025'
+          UrlNorma = 'https://legis.senado.leg.br/norma/41912067'
+          CodigoNorma = '41912067'
+          SiglaTipoNorma = 'LEI-n'
+          DescricaoTipoNorma = 'Lei Numerada'
+          NumeroNorma = '15321'
+          AnoNorma = '2025'
+          DataAssinatura = '2025-12-31'
+          DataPublicacao = '2025-12-31'
+          SiglaVeiculoPublicacao = 'DOUE'
+          DescricaoVeiculoPublicacao = '[Diário Oficial da União - Edição Extra  de 31/12/2025 - nº 249-D] (p. 1, col. 1)'
+      Mensagem: dict
+        Sigla = 'MSG'
+        Numero = '1912'
+        Ano = '2025'
+        UrlPlanalto = 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/Msg/Vep/VEP-1912-25.htm'
+      Total = 'Não'
+      Assunto = 'PLDO 2026'
+      Comentario = 'O veto incide sobre 44 dispositivos da LDO 2026, fundamentado, em geral, em inconstitucion'
+      DataRecebimentoCongresso = '2026-01-02'
+      DataPublicacao = '2025-12-31'
+      DataSobrestacaoPauta = '2026-03-04'
+      SobrestandoPauta = 'Sim'
+      QuantidadeDispositivos = '44'
+      UrlDispositivos = 'https://www.congressonacional.leg.br/dados/plenario/resultado/veto/materia/172335'
+      --
+      Codigo = '17890'
+      Materia: dict
+        Codigo = '172329'
+        SiglaCasa = 'CN'
+        NomeCasa = 'Congresso Nacional'
+        Sigla = 'VET'
+        Numero = '50'
+        Ano = '2025'
+        EmTramitacao = 'Sim'
+        Ementa = 'Veto total aposto ao Projeto de Lei nº 1.791, de 2019, que "Altera a Lei nº 12.783, de 11 '
+        UrlMovimentacoes = 'https://legis.senado.leg.br/dadosabertos/materia/movimentacoes/172329'
+      MateriaVetada: dict
+        Codigo = '162327'
+        SiglaCasa = 'CN'
+        NomeCasa = 'Congresso Nacional'
+        Sigla = 'PL'
+        Numero = '1791'
+        Ano = '2019'
+        DescricaoObjetivoProcesso = 'Revisora'
+        EmTramitacao = 'Sim'
+        Ementa = 'Altera a Lei nº 12.783, de 11 de janeiro de 2013, para dispor sobre o aproveitamento de em'
+        UrlMovimentacoes = 'https://legis.senado.leg.br/dadosabertos/materia/movimentacoes/162327'
+        UrlRelatorias = 'https://legis.senado.leg.br/dadosabertos/materia/relatorias/162327'
+      Mensagem: dict
+        Sigla = 'MSG'
+        Numero = '1910'
+        Ano = '2025'
+        UrlPlanalto = 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/Msg/Vet/VET-1910-25.htm'
+      Total = 'Sim'
+      Assunto = 'Aproveitamento de empregados de estatais elétricas desestatizadas'
+      Comentario = 'O projeto de lei, vetado em sua integralidade, trata do aproveitamento dos empregados das '
+      DataRecebimentoCongresso = '2025-12-30'
+      DataPublicacao = '2025-12-29'
+      DataSobrestacaoPauta = '2026-03-04'
+      SobrestandoPauta = 'Sim'
+      QuantidadeDispositivos = '0'
+      UrlDispositivos = 'https://www.congressonacional.leg.br/dados/plenario/resultado/veto/materia/172329'
+      --
+
+### GET https://legis.senado.leg.br/dadosabertos/senador/lista/legislatura/56 -> 200 application/json 263447 bytes
+legislatura 56: 245
+
+============================== TSE ==============================
+HEAD https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2018.zip -> 200 395 MB
+HEAD https://cdn.tse.jus.br/estatistica/sead/odsele/prestacao_contas/prestacao_de_contas_eleitorais_candidatos_2018.zip -> 200 303 MB
+HEAD https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2018.zip -> 200 5 MB
+HEAD https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2022.zip -> 200 596 MB
+HEAD https://cdn.tse.jus.br/estatistica/sead/odsele/prestacao_contas/prestacao_de_contas_eleitorais_candidatos_2022.zip -> 200 475 MB
+HEAD https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2022.zip -> 200 4 MB
+HEAD https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2026.zip -> 200 292 MB
+HEAD https://cdn.tse.jus.br/estatistica/sead/odsele/prestacao_contas/prestacao_de_contas_eleitorais_candidatos_2026.zip -> 200 178 MB
+HEAD https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2026.zip -> 200 3 MB
+HEAD https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/bem_candidato_2026.zip -> 404 0 MB
+HEAD https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/rede_social_candidato_2026.zip -> 200 3 MB
+HEAD https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_coligacao/consulta_coligacao_2026.zip -> 200 0 MB
+colunas consulta_cand 2026: ['DT_GERACAO', 'HH_GERACAO', 'ANO_ELEICAO', 'CD_TIPO_ELEICAO', 'NM_TIPO_ELEICAO', 'NR_TURNO', 'CD_ELEICAO', 'DS_ELEICAO', 'DT_ELEICAO', 'TP_ABRANGENCIA', 'SG_UF', 'SG_UE', 'NM_UE', 'CD_CARGO', 'DS_CARGO', 'SQ_CANDIDATO', 'NR_CANDIDATO', 'NM_CANDIDATO', 'NM_URNA_CANDIDATO', 'NM_SOCIAL_CANDIDATO', 'NR_CPF_CANDIDATO', 'DS_EMAIL', 'CD_SITUACAO_CANDIDATURA', 'DS_SITUACAO_CANDIDATURA', 'TP_AGREMIACAO', 'NR_PARTIDO', 'SG_PARTIDO', 'NM_PARTIDO', 'NR_FEDERACAO', 'NM_FEDERACAO', 'SG_FEDERACAO', 'DS_COMPOSICAO_FEDERACAO', 'SQ_COLIGACAO', 'NM_COLIGACAO', 'DS_COMPOSICAO_COLIGACAO', 'SG_UF_NASCIMENTO', 'DT_NASCIMENTO', 'NR_TITULO_ELEITORAL_CANDIDATO', 'CD_GENERO', 'DS_GENERO', 'CD_GRAU_INSTRUCAO', 'DS_GRAU_INSTRUCAO', 'CD_ESTADO_CIVIL', 'DS_ESTADO_CIVIL', 'CD_COR_RACA', 'DS_COR_RACA', 'CD_OCUPACAO', 'DS_OCUPACAO', 'CD_SIT_TOT_TURNO', 'DS_SIT_TOT_TURNO']
+{
+ "GOVERNADOR": {
+  "CD_ELEICAO": "6259",
+  "SG_UE": "DF",
+  "SQ_CANDIDATO": "70002552586",
+  "NM_URNA_CANDIDATO": "ARRUDA",
+  "NR_TURNO": "1",
+  "DS_SIT_TOT_TURNO": "NÃO ELEITO"
+ },
+ "SENADOR": {
+  "CD_ELEICAO": "6259",
+  "SG_UE": "SE",
+  "SQ_CANDIDATO": "260002533084",
+  "NM_URNA_CANDIDATO": "DELEGADO ALESSANDRO",
+  "NR_TURNO": "1",
+  "DS_SIT_TOT_TURNO": "ELEITO"
+ },
+ "PRESIDENTE": {
+  "CD_ELEICAO": "6257",
+  "SG_UE": "BR",
+  "SQ_CANDIDATO": "280002554479",
+  "NM_URNA_CANDIDATO": "LEONARDO AVALANCHE",
+  "NR_TURNO": "1",
+  "DS_SIT_TOT_TURNO": "NÃO ELEITO"
+ },
+ "DOUGLAS RUAS 1": {
+  "CD_ELEICAO": "6259",
+  "SG_UE": "RJ",
+  "SQ_CANDIDATO": "190002542887"
+ }
+}
+
+### GET https://divulgacandcontas.tse.jus.br/divulga/rest/v1/candidatura/buscar/2026/DF/6259/candidato/70002552586 -> 403 text/html 491 bytes
+<HTML><HEAD>
+<TITLE>Access Denied</TITLE>
+</HEAD><BODY>
+<H1>Access Denied</H1>
+ 
+You don't have permission to access "http&#58;&#47;&#47;divulgacandcontas&#46;tse&#46;jus&#46;br&#47;divulga&#47;rest&#47;v1&#47;candidatura&#47;buscar&#47;2026&#47;DF&#47;6259&#47;candidato&#47;70002552586" on this server.<P>
+Reference&#32;&#35;18&#46;11622c17&#46;1791646986&#46;250e1b8a
+<P>https&#58;&#47;&#47;errors
+
+### GET https://divulgacandcontas.tse.jus.br/divulga/rest/v1/candidatura/buscar/2026/SE/6259/candidato/260002533084 -> 403 text/html 490 bytes
+<HTML><HEAD>
+<TITLE>Access Denied</TITLE>
+</HEAD><BODY>
+<H1>Access Denied</H1>
+ 
+You don't have permission to access "http&#58;&#47;&#47;divulgacandcontas&#46;tse&#46;jus&#46;br&#47;divulga&#47;rest&#47;v1&#47;candidatura&#47;buscar&#47;2026&#47;SE&#47;6259&#47;candidato&#47;260002533084" on this server.<P>
+Reference&#32;&#35;18&#46;4622c17&#46;1791646986&#46;5849d2c5
+<P>https&#58;&#47;&#47;errors
+
+### GET https://divulgacandcontas.tse.jus.br/divulga/rest/v1/candidatura/buscar/2026/BR/6257/candidato/280002554479 -> 403 text/html 490 bytes
+<HTML><HEAD>
+<TITLE>Access Denied</TITLE>
+</HEAD><BODY>
+<H1>Access Denied</H1>
+ 
+You don't have permission to access "http&#58;&#47;&#47;divulgacandcontas&#46;tse&#46;jus&#46;br&#47;divulga&#47;rest&#47;v1&#47;candidatura&#47;buscar&#47;2026&#47;BR&#47;6257&#47;candidato&#47;280002554479" on this server.<P>
+Reference&#32;&#35;18&#46;4622c17&#46;1791646986&#46;5849d48e
+<P>https&#58;&#47;&#47;errors
+
+### GET https://divulgacandcontas.tse.jus.br/divulga/rest/v1/candidatura/buscar/2026/RJ/6259/candidato/190002542887 -> 403 text/html 490 bytes
+<HTML><HEAD>
+<TITLE>Access Denied</TITLE>
+</HEAD><BODY>
+<H1>Access Denied</H1>
+ 
+You don't have permission to access "http&#58;&#47;&#47;divulgacandcontas&#46;tse&#46;jus&#46;br&#47;divulga&#47;rest&#47;v1&#47;candidatura&#47;buscar&#47;2026&#47;RJ&#47;6259&#47;candidato&#47;190002542887" on this server.<P>
+Reference&#32;&#35;18&#46;4622c17&#46;1791646986&#46;5849d62c
+<P>https&#58;&#47;&#47;errors
+
+### GET https://divulgacandcontas.tse.jus.br/divulga/rest/v1/eleicao/ordinarias -> 403 text/html 436 bytes
+<HTML><HEAD>
+<TITLE>Access Denied</TITLE>
+</HEAD><BODY>
+<H1>Access Denied</H1>
+ 
+You don't have permission to access "http&#58;&#47;&#47;divulgacandcontas&#46;tse&#46;jus&#46;br&#47;divulga&#47;rest&#47;v1&#47;eleicao&#47;ordinarias" on this server.<P>
+Reference&#32;&#35;18&#46;11622c17&#46;1791646986&#46;250e228a
+<P>https&#58;&#47;&#47;errors&#46;edgesuite&#46;net&#47;18&#46;11622c17&#46;17916469

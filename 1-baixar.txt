@@ -1,0 +1,77 @@
+Baixando arquivos da Câmara…
+  ok votacoes-2023.csv
+  ok votacoesVotos-2023.csv
+  ok votacoesOrientacoes-2023.csv
+  ok votacoesProposicoes-2023.csv
+  ok eventos-2023.json
+  ok eventosOrgaos-2023.json
+  ok eventosPresencaDeputados-2023.json
+  ok votacoes-2024.csv
+  ok votacoesVotos-2024.csv
+  ok votacoesOrientacoes-2024.csv
+  ok votacoesProposicoes-2024.csv
+  ok eventos-2024.json
+  ok eventosOrgaos-2024.json
+  ok eventosPresencaDeputados-2024.json
+  ok votacoes-2025.csv
+  ok votacoesVotos-2025.csv
+  ok votacoesOrientacoes-2025.csv
+  ok votacoesProposicoes-2025.csv
+  ok eventos-2025.json
+  ok eventosOrgaos-2025.json
+  ok eventosPresencaDeputados-2025.json
+  ok votacoes-2026.csv
+  ok votacoesVotos-2026.csv
+  ok votacoesOrientacoes-2026.csv
+  ok votacoesProposicoes-2026.csv
+  ok eventos-2026.json
+  ok eventosOrgaos-2026.json
+  ok eventosPresencaDeputados-2026.json
+  ok proposicoes-2019.csv
+  ok proposicoesAutores-2019.csv
+  ok proposicoes-2020.csv
+  ok proposicoesAutores-2020.csv
+  ok proposicoes-2021.csv
+  ok proposicoesAutores-2021.csv
+  ok proposicoes-2022.csv
+  ok proposicoesAutores-2022.csv
+  ok proposicoes-2023.csv
+  ok proposicoesAutores-2023.csv
+  ok proposicoes-2024.csv
+  ok proposicoesAutores-2024.csv
+  ok proposicoes-2025.csv
+  ok proposicoesAutores-2025.csv
+  ok proposicoes-2026.csv
+  ok proposicoesAutores-2026.csv
+  ok deputados.csv
+  ok 882 deputados na legislatura 57
+  histórico e órgãos 100/648
+  histórico e órgãos 200/648
+  histórico e órgãos 300/648
+  histórico e órgãos 400/648
+  histórico e órgãos 500/648
+  histórico e órgãos 600/648
+Baixando páginas de presença do site da Câmara…
+  páginas de presença: 200
+  páginas de presença: 400
+  páginas de presença: 600
+  ok páginas de presença do site: 2444/2444 (novas: 648, erros de rede: 0)
+Baixando candidaturas do TSE…
+  ok consulta_cand_2014.zip
+  ok consulta_cand_2016.zip
+  ok consulta_cand_2018.zip
+  ok consulta_cand_2020.zip
+  ok consulta_cand_2022.zip
+  ok consulta_cand_2024.zip
+  ok consulta_cand_2026.zip
+Baixando dados do Senado e do Congresso…
+  ok 318 senadores nas legislaturas [56, 57]
+  senadores 50/318
+  senadores 100/318
+  senadores 150/318
+  senadores 200/318
+  senadores 250/318
+  senadores 300/318
+  ok mandatos, cargos e processos
+  ok votações (3 meses atualizados)
+  ok vetos
