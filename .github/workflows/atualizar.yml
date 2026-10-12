@@ -71,6 +71,10 @@ jobs:
         env:
           RETRO_URL_BASE: ${{ steps.pages.outputs.base_path }}
 
+      - name: Conferir o site gerado
+        if: always()
+        run: python -u -m retro conferir > relatorio/8-conferencia.txt 2>&1 || true
+
       - uses: actions/upload-pages-artifact@v3
         with: { path: _site }
 

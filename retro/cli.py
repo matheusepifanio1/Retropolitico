@@ -65,6 +65,37 @@ def inspecionar(pasta: Path) -> None:
             print(f"    exemplo={json.dumps(first, ensure_ascii=False)[:600]}")
 
 
+def conferir(out: Path) -> None:
+    """Confere o site gerado: o que foi publicado, para o relatório da execução."""
+    import json
+    import re
+    frag = {t: len(list((out / "frag" / t).glob("*.html"))) for t in ("dep", "sen", "pres") if (out / "frag" / t).exists()}
+    print(f"fragmentos de mandato: {frag}")
+    redirec = sum(1 for f in out.glob("*/*/index.html") if "http-equiv=\"refresh\"" in f.read_text(encoding="utf-8")[:600])
+    print(f"páginas antigas que redirecionam para o perfil: {redirec}")
+    com_m = com_f = total = 0
+    for f in (out / "pessoas").glob("*.json"):
+        d = json.loads(f.read_text(encoding="utf-8"))
+        total += len(d)
+        com_m += sum(1 for r in d.values() if r.get("m"))
+        com_f += sum(1 for r in d.values() if r.get("f"))
+    print(f"pessoas: {total}, com mandato com dados: {com_m}, com foto: {com_f}")
+    f = out / "pessoas" / f"{190001596741 % 4096}.json"
+    if f.exists():
+        print("exemplo 190001596741:", json.dumps(json.loads(f.read_text(encoding="utf-8")).get("190001596741"), ensure_ascii=False)[:600])
+    cards = ia = rev = 0
+    for f in list((out / "frag").rglob("*.html")):
+        t = f.read_text(encoding="utf-8")
+        cards += t.count('class="voto-card"')
+        ia += t.count("Resumo automático, feito com IA")
+        rev += len(re.findall(r"Resumo escrito e revisado por", t))
+    print(f"cards de votação nos fragmentos: {cards}; com resumo automático: {ia}; com resumo revisado: {rev}")
+    exemplo = next(iter(sorted((out / "frag" / "dep").glob("*.html"))), None) if (out / "frag" / "dep").exists() else None
+    if exemplo:
+        t = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", exemplo.read_text(encoding="utf-8")))
+        print(f"trecho de {exemplo.name}: {t[:900]}")
+
+
 def ementas(conn) -> None:
     """Propostas com votação nominal e sua ementa oficial (base dos resumos em linguagem simples)."""
     import csv
@@ -229,7 +260,7 @@ def candidatas(conn) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="retro", description="Retrospectiva Política")
-    p.add_argument("etapa", choices=["baixar", "carregar", "site", "tudo", "inspecionar", "candidatas", "sondar", "ementas"])
+    p.add_argument("etapa", choices=["baixar", "carregar", "site", "tudo", "inspecionar", "candidatas", "sondar", "ementas", "conferir"])
     p.add_argument("--raw", type=Path, default=ROOT / "data" / "raw")
     p.add_argument("--db", type=Path, default=ROOT / "data" / "retrospectiva.sqlite")
     p.add_argument("--out", type=Path, default=ROOT / "_site")
@@ -240,6 +271,9 @@ def main(argv: list[str] | None = None) -> int:
     if "RETRO_URL_BASE" in os.environ:
         settings["site"]["url_base"] = os.environ["RETRO_URL_BASE"]
     store = RawStore(args.raw, "camara")
+    if args.etapa == "conferir":
+        conferir(args.out)
+        return 0
     if args.etapa == "ementas":
         ementas(db.connect(args.db))
         return 0
