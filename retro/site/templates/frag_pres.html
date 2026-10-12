@@ -1,0 +1,51 @@
+{% from "_macros.html" import info %}
+{% set k = 'pres' ~ m.p.ano %}
+<div class="mandato">
+  <div class="m-topo">
+    <div>
+      <span class="m-rotulo">Mandato selecionado</span>
+      <h2>Presidência da República</h2>
+      <p class="m-sub">Mandato de {{ m.p.inicio|br }} a {{ m.p.fim|br }} · eleito(a) em {{ m.p.ano }} pelo {{ m.p.partido }}</p>
+    </div>
+  </div>
+  {% if m.atos %}
+  <p class="nota">Atos publicados de {{ m.p.inicio|br }} a {{ m.atos.ate|br }}.</p>
+  <div class="fatos">
+    <div class="fato">
+      <div class="fato-topo"><span class="numero">{{ m.atos.mpvs|length }}</span><span class="fato-rotulo">medidas provisórias</span>{{ info('i-' ~ k ~ '-1', 'O que é medida provisória?') }}</div>
+      <div class="detalhe"><strong>{{ m.atos.mpv_viraram_lei }}</strong> {{ 'virou' if m.atos.mpv_viraram_lei == 1 else 'viraram' }} lei depois de votadas no Congresso.</div>
+      <div id="i-{{ k }}-1" class="info" hidden>A <strong>medida provisória</strong> é uma regra que o presidente cria e que vale na hora, em casos de urgência. O Congresso tem até 120 dias para aprovar (e ela vira lei) ou deixar perder a validade.</div>
+    </div>
+    <div class="fato">
+      <div class="fato-topo"><span class="numero">{{ m.atos.vetos|length }}</span><span class="fato-rotulo">vetos a projetos aprovados pelo Congresso</span>{{ info('i-' ~ k ~ '-2', 'O que é veto?') }}</div>
+      <div class="detalhe"><strong>{{ m.atos.vetos_totais }}</strong> {{ 'total' if m.atos.vetos_totais == 1 else 'totais' }} (o projeto inteiro) e <strong>{{ m.atos.vetos_parciais }}</strong> {{ 'parcial' if m.atos.vetos_parciais == 1 else 'parciais' }} (só alguns trechos).</div>
+      <div id="i-{{ k }}-2" class="info" hidden>Depois que o Congresso aprova um projeto, o presidente pode sancionar (virar lei) ou vetar, no todo ou em parte. O Congresso pode derrubar o veto.</div>
+    </div>
+  </div>
+  {% if m.atos.mpv_situacoes %}
+  <section class="m-sec">
+    <h3>O que aconteceu com as medidas provisórias</h3>
+    <div class="table-box"><table><tbody>
+      {% for s, n in m.atos.mpv_situacoes %}<tr><td class="small">{{ s }}</td><td class="mono">{{ n }}</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  {% endif %}
+  <section class="m-sec">
+    <details><summary>Ver os {{ m.atos.vetos|length }} vetos</summary>
+      <div class="table-box"><table>
+        <thead><tr><th>Publicação</th><th>Veto</th><th>Tipo</th><th>Assunto</th></tr></thead>
+        <tbody>{% for v in m.atos.vetos %}<tr><td class="mono small">{{ v.data_publicacao|br }}</td><td class="small"><a href="{{ v.url_planalto or v.url }}">{{ v.identificacao }}</a></td><td class="small">{{ 'Total' if v.total else 'Parcial' }}</td><td class="small">{{ v.assunto or v.ementa }}</td></tr>{% endfor %}</tbody>
+      </table></div>
+    </details>
+    <details><summary>Ver as {{ m.atos.mpvs|length }} medidas provisórias</summary>
+      <div class="table-box"><table>
+        <thead><tr><th>Data</th><th>MP</th><th>Ementa</th><th>Situação</th></tr></thead>
+        <tbody>{% for x in m.atos.mpvs %}<tr><td class="mono small">{{ x.data_apresentacao|br }}</td><td class="small"><a href="https://www.camara.leg.br/propostas-legislativas/{{ x.id }}">MPV {{ x.numero }}/{{ x.ano }}</a></td><td class="small">{{ x.ementa }}</td><td class="small">{{ x.situacao or '—' }}</td></tr>{% endfor %}</tbody>
+      </table></div>
+    </details>
+    <p class="nota">Vetos: Congresso Nacional, com link para a mensagem no Planalto. MPs: arquivos de proposições da Câmara. Decretos e programas de governo ainda não entram: não há base oficial padronizada.</p>
+  </section>
+  {% else %}
+  <div class="vazio">O mandato começa em {{ m.p.inicio|br }}.</div>
+  {% endif %}
+</div>

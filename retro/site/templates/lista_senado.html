@@ -8,7 +8,7 @@
   <h2 id="{{ uf }}" style="margin:16px 0 0;font-size:22px">{{ uf }}</h2>
   <div class="resultados">
     {% for d in sens %}
-    <a class="resultado" href="{{ base }}/senador/{{ d.codigo }}/">
+    <a class="resultado" href="{% if d.pessoa_id %}{{ base }}/pessoa/?id={{ d.pessoa_id }}#m-sen-{{ d.codigo }}{% else %}{{ base }}/senador/{{ d.codigo }}/{% endif %}">
       <span><span class="nome">{{ d.nome }}</span><br><span class="small muted">{{ d.partido or 'sem partido' }}{% if not d.em_exercicio %} · fora de exercício{% endif %}</span></span>
       <span class="ir">Ver perfil →</span>
     </a>

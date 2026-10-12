@@ -1,32 +1,41 @@
 {% extends "base.html" %}
-{% block title %}Candidaturas · {{ site.titulo }}{% endblock %}
-{% block description %}Todas as candidaturas registradas no TSE, com cargo, ano, partido e resultado.{% endblock %}
+{% block title %}Perfil · {{ site.titulo }}{% endblock %}
+{% block description %}Trajetória completa: eleições, mandatos, votos, presença e leis, com dados oficiais.{% endblock %}
 
 {% block antes %}
 <section class="perfil-hero">
   <div class="wrap">
-    <div class="foto" aria-hidden="true"></div>
+    <div class="foto" id="p-foto"></div>
     <div class="perfil-id">
       <h1 id="p-nome">Carregando…</h1>
       <p class="frase" id="p-frase"></p>
       <div class="chips" id="p-chips"></div>
     </div>
-    <div class="cobertura" id="p-cobertura"></div>
   </div>
 </section>
 {% endblock %}
 
 {% block main %}
 <div id="p-erro" class="vazio" hidden>Não encontramos essa pessoa. Confira o endereço ou <a href="{{ base }}/">faça uma nova busca</a>.</div>
-<section id="p-candidaturas" aria-labelledby="h-cand" hidden>
-  <div class="title-row"><h2 id="h-cand">Candidaturas</h2>
-    <button type="button" class="info-btn" aria-expanded="false" aria-controls="i-cand" aria-label="De onde vêm as candidaturas"><span aria-hidden="true">i</span></button></div>
-  <div id="i-cand" class="info" hidden>
-    <p>Todas as candidaturas registradas no TSE desde {{ tse_anos[0] }}, ligadas pelo próprio TSE à mesma pessoa. O resultado é o do último turno disputado.</p>
-    <p><strong>Suplente</strong>: não ficou com a vaga na eleição, mas pode assumir se alguém da mesma coligação ou partido sair. <strong>Candidatura não apta</strong>: o registro foi indeferido, cancelado ou houve renúncia.</p>
+<section id="p-trajetoria" class="card trajetoria" aria-labelledby="h-traj" hidden>
+  <div class="sec-topo">
+    <div class="title-row"><h2 id="h-traj">Trajetória</h2>
+      <button type="button" class="info-btn" aria-expanded="false" aria-controls="i-traj" aria-label="Como ler a trajetória"><span aria-hidden="true">i</span></button></div>
+    <span class="small muted">Toque num ponto ou numa barra para ver os detalhes</span>
   </div>
-  <div class="lista-votos" id="p-lista"></div>
-  <p class="nota">Fonte: dados abertos do TSE, arquivos de candidatos de cada eleição. <a href="https://dadosabertos.tse.jus.br/dataset/?q=candidatos">Ver no TSE</a></p>
+  <div id="i-traj" class="info" hidden>
+    <p><strong>Eleições</strong>: cada ponto é uma candidatura registrada no TSE desde {{ tse_anos[0] }}. <strong>Mandatos</strong>: barras em cor forte têm votos, presença e leis (deputados federais desde 2023, senadores desde 2019, presidentes desde 2019). Barras cinza são mandatos de cargos que ainda não publicam esses dados de forma padronizada; o período é o previsto a partir do resultado da eleição.</p>
+  </div>
+  <div class="tl-rolagem" id="tl-rolagem"><div class="tl" id="tl"></div></div>
+  <div class="tl-legenda">
+    <span><i class="lg-bola eleito"></i>Eleito(a)</span>
+    <span><i class="lg-bola suplente"></i>Suplente</span>
+    <span><i class="lg-bola nao"></i>Não eleito(a)</span>
+    <span><i class="lg-bola turno"></i>2º turno</span>
+    <span><i class="lg-barra com-dados"></i>Mandato com votos e presença</span>
+    <span><i class="lg-barra sem-dados"></i>Mandato sem dados abertos</span>
+  </div>
 </section>
+<section id="p-detalhe" class="painel" aria-live="polite" tabindex="-1" hidden></section>
 <script type="application/json" id="config-pessoa">{"anos": {{ tse_anos|tojson }}}</script>
 {% endblock %}

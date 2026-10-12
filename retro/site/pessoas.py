@@ -50,8 +50,8 @@ def rotulo_resultado(resultado: str | None, situacao: str | None, ano: int, ano_
 
 
 def gerar(conn: sqlite3.Connection, out: Path, ano_atual: int, presidentes: set | None = None,
-          planos: dict | None = None) -> dict:
-    presidentes, planos = presidentes or set(), planos or {}
+          planos: dict | None = None, mandatos: dict | None = None, fotos: dict | None = None) -> dict:
+    presidentes, planos, mandatos, fotos = presidentes or set(), planos or {}, mandatos or {}, fotos or {}
     deputado_de = {r["pessoa_id"]: r["id"] for r in conn.execute(
         "SELECT id, pessoa_id FROM parlamentar WHERE pessoa_id IS NOT NULL")}
     try:
@@ -87,6 +87,11 @@ def gerar(conn: sqlite3.Connection, out: Path, ano_atual: int, presidentes: set 
             rec["s"] = sen
         if pid in presidentes:
             rec["e"] = 1
+        if mandatos.get(pid):
+            # mandatos com dados: [tipo, referência, início, fim (None = em exercício), rótulo, UF]
+            rec["m"] = sorted(mandatos[pid], key=lambda m: m[2] or "")
+        if fotos.get(pid):
+            rec["f"] = fotos[pid]
         baldes[int(pid) % BALDES][pid] = rec
         # relevância: tem perfil completo, já foi eleito, candidatura mais recente
         score = (5 if (dep or sen or pid in presidentes) else 0) * 100000 + min(eleito, 9) * 10000 + ultimo["ano"]

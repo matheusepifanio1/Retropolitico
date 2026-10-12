@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ nome }} · {{ site.titulo }}</title>
+<meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0; url={{ destino }}">
+<link rel="canonical" href="{{ destino }}">
+</head>
+<body>
+<p>O perfil de {{ nome }} agora fica numa página só, com toda a trajetória. <a href="{{ destino }}">Abrir o perfil</a>.</p>
+<script>location.replace({{ destino|tojson }});</script>
+</body>
+</html>

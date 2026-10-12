@@ -1,0 +1,125 @@
+{% from "_macros.html" import info, card_voto_senado %}
+{% set k = 'sen' ~ sen.codigo %}
+{% set ela = sen.sexo == 'F' %}
+<div class="mandato">
+  <div class="m-topo">
+    <div>
+      <span class="m-rotulo">Mandato selecionado</span>
+      <h2>{{ 'Senadora' if ela else ('Senador' if sen.sexo == 'M' else 'Senador(a)') }} por {{ sen.uf }}</h2>
+      <p class="m-sub">{{ periodo }}{% if sen.partido %} · {{ sen.partido }}{% endif %}</p>
+    </div>
+    <a class="small" href="https://www25.senado.leg.br/web/senadores/senador/-/perfil/{{ sen.codigo }}">Página oficial no Senado</a>
+  </div>
+
+  <div class="fatos">
+    <div class="fato">
+      {% if presenca %}
+      <div class="fato-topo"><span class="numero">{{ presenca.pct }}%</span><span class="fato-rotulo">de presença nas votações</span>{{ info('i-' ~ k ~ '-1', 'Como a presença é medida?') }}</div>
+      <div class="barra" role="img" aria-label="Presença, faltas com motivo e sem comparecimento">
+        <span class="p" style="width:{{ presenca.pct }}%"></span><span class="j" style="width:{{ presenca.pct_j }}%"></span><span class="s" style="width:{{ presenca.pct_n }}%"></span>
+      </div>
+      <div class="detalhe">Esteve em {{ presenca.presentes }} de {{ presenca.total }} votações. {{ presenca.justificadas }} faltas com motivo oficial, <strong>{{ presenca.nao_justificadas }}</strong> sem comparecimento{% if presenca.sem_informacao %}, {{ presenca.sem_informacao }} sem informação{% endif %}.</div>
+      {% else %}
+      <div class="fato-topo"><span class="numero">—</span><span class="fato-rotulo">presença indisponível</span>{{ info('i-' ~ k ~ '-1', 'Como a presença é medida?') }}</div>
+      {% endif %}
+      <div id="i-{{ k }}-1" class="info" hidden>O Senado não publica a presença por sessão em dados abertos. Por isso contamos a presença <strong>nas votações nominais</strong>: em cada uma, o Senado registra se o senador votou ou o motivo de não ter votado (licença, missão, "não compareceu"). Não é comparável diretamente com a presença dos deputados.</div>
+    </div>
+    <div class="fato">
+      {% if votos.total %}
+      <div class="fato-topo"><span class="numero">{{ '{:,}'.format(votos.com_voto).replace(',', '.') }}</span><span class="fato-rotulo">votos em {{ '{:,}'.format(votos.total).replace(',', '.') }} votações</span></div>
+      <div class="barra"><span class="p" style="width:{{ (100 * votos.com_voto / votos.total)|round|int }}%"></span></div>
+      <div class="detalhe">{{ votos.sim }} SIM, {{ votos.nao }} NÃO, {{ votos.abstencao }} abstenções, {{ votos.secreta }} secretos. <a href="{{ base }}/senador/{{ sen.codigo }}/votos/">Ver todas</a></div>
+      {% else %}
+      <div class="fato-topo"><span class="numero">—</span><span class="fato-rotulo">votações indisponíveis</span></div>
+      {% endif %}
+    </div>
+    <div class="fato">
+      <div class="fato-topo"><span class="numero">{{ leis.principal|length }}</span><span class="fato-rotulo">{{ 'projeto virou lei' if leis.principal|length == 1 else 'projetos viraram lei' }}</span>{{ info('i-' ~ k ~ '-3', 'O que conta como lei de autoria?') }}</div>
+      <div class="detalhe">Também foi coautor(a) de {{ leis.coautor|length }}, autor(a) de {{ leis.homenagem|length }} de homenagem e de {{ leis.resolucoes|length }} {{ 'resolução interna' if leis.resolucoes|length == 1 else 'resoluções internas' }} do Senado.</div>
+      <div id="i-{{ k }}-3" class="info" hidden>Projetos apresentados desde {{ prop_desde|br }} em que {{ 'ela' if ela else 'ele' }} aparece como {{ 'primeira autora' if ela else 'primeiro autor' }} e que viraram lei. Homenagens e resoluções sobre o funcionamento interno do Senado ficam à parte.</div>
+    </div>
+  </div>
+
+  <nav class="m-abas" aria-label="Partes do mandato">
+    <a href="#{{ k }}-votos">Como votou</a><a href="#{{ k }}-presenca">Presença</a><a href="#{{ k }}-leis">Leis</a><a href="#{{ k }}-cargos">Cargos</a><a href="#{{ k }}-exercicio">Exercício</a>
+  </nav>
+
+  <section id="{{ k }}-votos" class="m-sec">
+    <div class="sec-topo">
+      <h3>Votações recentes</h3>
+      {% if temas|length > 1 %}
+      <label class="small">Tema
+        <select class="filtro-tema">
+          <option value="">Todos</option>
+          {% for t, rot in temas %}<option value="{{ t }}">{{ rot }}</option>{% endfor %}
+        </select>
+      </label>
+      {% endif %}
+    </div>
+    <div class="lista-votos">
+      {% for v in recentes %}{{ card_voto_senado(v, base) }}{% else %}<div class="vazio">Nenhuma votação nominal aberta no período de exercício.</div>{% endfor %}
+      <div class="vazio sem-tema" hidden>Nenhuma votação deste tema entre as mostradas aqui. <a href="{{ base }}/senador/{{ sen.codigo }}/votos/">Ver todas</a>.</div>
+    </div>
+    {% if votos.total %}<a class="botao-sec" href="{{ base }}/senador/{{ sen.codigo }}/votos/">Ver todas as {{ '{:,}'.format(votos.total).replace(',', '.') }} votações do mandato</a>{% endif %}
+  </section>
+
+  <section id="{{ k }}-presenca" class="m-sec">
+    <h3>Presença nas votações, ano a ano</h3>
+    {% if presenca %}
+    <div class="anos">
+      {% for a in presenca.por_ano %}
+      <div class="ano">
+        <div class="ano-topo"><span>{{ a.ano }}</span><span>{{ a.pct }}%</span></div>
+        <div class="barra fina" role="img" aria-label="{{ a.pct }}% presença"><span class="p" style="width:{{ a.pct }}%"></span><span class="j" style="width:{{ a.pct_j }}%"></span><span class="s" style="width:{{ a.pct_n }}%"></span></div>
+        <span class="small">{{ a.presentes }} de {{ a.total }} votações. {{ a.justificadas }} com motivo, {{ a.nao_justificadas }} sem comparecimento{% if a.sem_informacao %}, {{ a.sem_informacao }} sem informação{% endif %}.</span>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="legenda"><span><span class="sw p"></span>Presença</span><span><span class="sw j"></span>Falta com motivo oficial</span><span><span class="sw s"></span>Não compareceu ou sem informação</span></div>
+    {% if presenca.motivos %}<p class="nota">Motivos registrados pelo Senado: {% for m, n in presenca.motivos %}{{ m|lower }} ({{ n }}){{ ', ' if not loop.last }}{% endfor %}.</p>{% endif %}
+    {% else %}<div class="vazio">Não há votações nominais no período de exercício nos dados coletados.</div>{% endif %}
+  </section>
+
+  <section id="{{ k }}-leis" class="m-sec">
+    <h3>Projetos que viraram lei</h3>
+    <div class="grid-wide">
+      <div class="card claro">
+        <h4>Como {{ 'autora' if ela else 'autor' }} principal</h4>
+        <div class="lista-leis">
+          {% for p in leis.principal %}
+          <div><a class="num" href="https://www25.senado.leg.br/web/atividade/materias/-/materia/{{ p.codigo_materia }}">{{ p.identificacao }}</a><div>{{ p.ementa }} <span class="small muted">{{ p.norma or '' }}</span></div></div>
+          {% else %}<div class="muted">Nenhum projeto como {{ 'autora' if ela else 'autor' }} principal virou lei nos dados coletados.</div>{% endfor %}
+        </div>
+      </div>
+      <div class="card claro">
+        <h4>Outras atuações</h4>
+        <div class="linha"><span>Coautor(a) de leis aprovadas</span><strong>{{ leis.coautor|length }}</strong></div>
+        <div class="linha"><span>Leis de homenagem</span><strong>{{ leis.homenagem|length }}</strong></div>
+        <div class="linha"><span>Resoluções internas do Senado</span><strong>{{ leis.resolucoes|length }}</strong></div>
+        <div class="linha"><span>Outros projetos apresentados como {{ 'autora' if ela else 'autor' }} principal</span><strong>{{ leis.apresentadas_principal_nao_lei }}</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="{{ k }}-cargos" class="m-sec">
+    <h3>Cargos em comissões</h3>
+    {% if cargos.direcao %}
+    <div class="table-box"><table>
+      <thead><tr><th>Cargo</th><th>Comissão</th><th>Período</th></tr></thead>
+      <tbody>{% for c in cargos.direcao %}<tr><td><strong>{{ c.cargo|title }}</strong></td><td>{{ c.nome_comissao or c.sigla_comissao }}</td><td class="mono small">{{ c.inicio|br }} a {{ c.fim|br if c.fim else 'hoje' }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    {% else %}<div class="vazio">Nenhum cargo de direção em comissões no período.</div>{% endif %}
+  </section>
+
+  <section id="{{ k }}-exercicio" class="m-sec">
+    <details>
+      <summary>Períodos em exercício e partidos ({{ exercicios|length }} {{ 'período' if exercicios|length == 1 else 'períodos' }})</summary>
+      <div class="table-box"><table>
+        <thead><tr><th>Em exercício de</th><th>até</th><th>Motivo do fim</th></tr></thead>
+        <tbody>{% for e in exercicios %}<tr><td class="mono small">{{ e.inicio|br }}</td><td class="mono small">{{ e.fim|br if e.fim else 'hoje' }}</td><td class="small">{{ e.causa or '—' }}</td></tr>{% endfor %}</tbody>
+      </table></div>
+      {% if partidos %}<p class="nota">Partidos no Senado: {% for p in partidos %}{{ p.sigla }} (desde {{ p.inicio|br }}{% if p.fim %}, até {{ p.fim|br }}{% endif %}){{ '; ' if not loop.last }}{% endfor %}.</p>{% endif %}
+      <p class="nota"><a href="https://legis.senado.leg.br/dadosabertos/senador/{{ sen.codigo }}/mandatos">Fonte: mandatos no Senado</a></p>
+    </details>
+  </section>
+</div>

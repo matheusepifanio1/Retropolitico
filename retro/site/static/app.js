@@ -24,13 +24,26 @@ const RETRO = (() => {
   };
   const BALDES = 4096;
   const pessoa = async (id) => (await json(`${base}/pessoas/${Number(BigInt(id) % BigInt(BALDES))}.json`))[id];
-  // Perfis completos ligados à pessoa (deputado federal, senador, presidente).
-  const perfis = (p, id) => [
-    p.s && { href: `${base}/senador/${p.s}/`, rotulo: "Ver votos, presença e leis no Senado" },
-    p.d && { href: `${base}/deputado/${p.d}/`, rotulo: "Ver votos, presença e leis na Câmara" },
-    p.e && { href: `${base}/presidente/${id}/`, rotulo: "Ver medidas provisórias e vetos na Presidência" },
-  ].filter(Boolean);
-  return { base, norm, esc, titulo, json, pessoa, perfis };
+  // Uma linha que diz quem é a pessoa, a partir dos dados oficiais.
+  const cargoTxt = (c) => `${titulo(c[1]).toLowerCase()}${c[3] ? ` em ${titulo(c[3])}` : ""} (${c[2]})`;
+  const quemE = (p) => {
+    const atual = (p.m || []).find((m) => !m[3]);
+    const ultima = p.c[0];
+    const anoAtual = new Date().getFullYear();
+    const linhas = [];
+    if (atual) linhas.push(`${atual[4]}${atual[0] === "pres" ? "" : ` (${atual[5]})`} · em exercício`);
+    if (ultima && ultima[0] >= anoAtual - 1 && ultima !== undefined) {
+      const r = ultima[6];
+      if (r === "Disputa o 2º turno") linhas.push(`Disputa o 2º turno para ${cargoTxt(ultima)}`);
+      else if (!atual) linhas.push(`${r === "Eleito(a)" ? "Eleito(a)" : "Candidato(a) a"} ${cargoTxt(ultima)}, ${ultima[0]}${r !== "Eleito(a)" ? ` · ${r}` : ""}`);
+    }
+    if (!linhas.length && ultima) {
+      const eleito = p.c.find((c) => c[6] === "Eleito(a)");
+      linhas.push(eleito ? `Eleito(a) ${cargoTxt(eleito)} em ${eleito[0]}` : `Candidato(a) a ${cargoTxt(ultima)} em ${ultima[0]} · ${ultima[6]}`);
+    }
+    return linhas;
+  };
+  return { base, norm, esc, titulo, json, pessoa, quemE, cargoTxt };
 })();
 
 // Busca da página inicial: índice dividido pelas 3 primeiras letras de cada palavra do nome.
@@ -42,7 +55,8 @@ const RETRO = (() => {
   const ufSel = document.getElementById("uf");
   const vazio = document.getElementById("sem-resultados");
   const dica = document.getElementById("busca-dica");
-  let cargo = "Todos";
+  const cargoSel = document.getElementById("cargo");
+  const contagem = document.getElementById("busca-contagem");
   let versao = 0;
 
   async function idsPara(token) {
@@ -61,7 +75,7 @@ const RETRO = (() => {
     const minha = ++versao;
     const palavras = norm(campo.value).split(/[^a-z0-9]+/).filter((p) => p.length >= 3 && !["das", "dos"].includes(p));
     dica.hidden = palavras.length > 0;
-    if (!palavras.length) { lista.innerHTML = ""; vazio.hidden = true; return; }
+    if (!palavras.length) { lista.innerHTML = ""; vazio.hidden = true; if (contagem) contagem.textContent = ""; return; }
     const listas = await Promise.all(palavras.map(idsPara));
     if (minha !== versao) return;
     listas.sort((a, b) => a.length - b.length);
@@ -81,24 +95,26 @@ const RETRO = (() => {
       if (minha !== versao) return;
       for (const [id, p] of recs) {
         if (!p) continue;
-        const okCargo = cargo === "Todos" || p.c.some((c) => norm(c[1]) === norm(cargo));
+        const cargo = cargoSel ? cargoSel.value : "";
+        const okCargo = !cargo || p.c.some((c) => norm(c[1]) === norm(cargo));
         const okUf = !uf || p.c.some((c) => c[2] === uf);
         if (okCargo && okUf) achados.push([id, p]);
       }
     }
     lista.innerHTML = achados.slice(0, 25).map(([id, p]) => {
-      const perfis = RETRO.perfis(p, id);
-      const href = perfis.length === 1 ? perfis[0].href : `${base}/pessoa/?id=${id}`;
-      const selo = (p.d || p.s) ? '<span class="selo-res completo">Votos e presença</span>'
-        : p.e ? '<span class="selo-res completo">Vetos e MPs</span>' : '<span class="selo-res eleitoral">Candidaturas</span>';
-      const eleito = p.c.find((c) => c[6] === "Eleito(a)");
-      const linha = eleito ? `Eleito(a) ${titulo(eleito[1]).toLowerCase()} em ${eleito[0]}${eleito[3] ? `, ${titulo(eleito[3])}` : ""} (${eleito[2]})` : `Candidato(a) a ${rotuloCand(p.c[0]).replace(/^(.)/, (m) => m.toLowerCase())}`;
-      return `<a class="resultado" href="${href}">
-        <span class="ini" aria-hidden="true"></span>
-        <span class="txt"><span class="nome">${esc(titulo(p.u || p.n))}</span>
-        <span class="sub">${esc(titulo(p.n))}. ${esc(linha)}. ${p.c.length} ${p.c.length === 1 ? "candidatura" : "candidaturas"}.</span></span>
-        ${selo}</a>`;
+      const nome = titulo(p.u || p.n);
+      const ini = nome.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+      const foto = p.f ? `<img class="ini" src="${esc(p.f)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'ini',textContent:'${esc(ini)}'}))">` : `<span class="ini" aria-hidden="true">${esc(ini)}</span>`;
+      const linhas = RETRO.quemE(p);
+      const extra = (p.d || p.s) ? '<span class="selo-res completo">Votos e presença</span>' : p.e ? '<span class="selo-res completo">Vetos e MPs</span>' : "";
+      const civil = norm(p.n) !== norm(p.u) ? `<span class="civil">${esc(titulo(p.n))}</span>` : "";
+      return `<a class="resultado" href="${base}/pessoa/?id=${id}">
+        ${foto}
+        <span class="txt"><span class="nome">${esc(nome)}</span>
+        <span class="sub">${esc(linhas[0] || "")}</span>${linhas[1] ? `<span class="sub2">${esc(linhas[1])}</span>` : ""}${civil}${extra}</span>
+        <svg class="seta" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>`;
     }).join("");
+    if (contagem) contagem.textContent = achados.length ? `${achados.length >= 25 ? "Mais de 25" : achados.length} ${achados.length === 1 ? "pessoa encontrada" : "pessoas encontradas"}` : "";
     vazio.hidden = achados.length > 0;
   }
 
@@ -108,19 +124,15 @@ const RETRO = (() => {
   if (inicial) campo.value = inicial;
   campo.addEventListener("input", agendar);
   ufSel.addEventListener("change", render);
-  document.querySelectorAll("[data-cargo]").forEach((b) => b.addEventListener("click", () => {
-    cargo = b.dataset.cargo;
-    document.querySelectorAll("[data-cargo]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-    render();
-  }));
+  if (cargoSel) cargoSel.addEventListener("change", render);
   render();
 })();
 
-// Página de pessoa (candidaturas do TSE), montada no navegador.
+// Perfil único: linha do tempo horizontal (eleições e mandatos) e painel de detalhes.
 (async function paginaPessoa() {
   const cfgEl = document.getElementById("config-pessoa");
   if (!cfgEl) return;
-  const { base, esc, titulo, pessoa } = RETRO;
+  const { base, esc, titulo, pessoa, cargoTxt } = RETRO;
   const id = new URLSearchParams(location.search).get("id");
   const p = id && /^\d+$/.test(id) ? await pessoa(id) : null;
   if (!p) {
@@ -128,36 +140,220 @@ const RETRO = (() => {
     document.getElementById("p-erro").hidden = false;
     return;
   }
+  const hoje = new Date().toISOString().slice(0, 10);
+  const anoHoje = Number(hoje.slice(0, 4));
+  const br = (iso) => (iso ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}/${iso.slice(0, 4)}` : "");
+  const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+  const mesAno = (iso) => `${MESES[Number(iso.slice(5, 7)) - 1]} de ${iso.slice(0, 4)}`;
+
+  // ---------- dados
   const nome = titulo(p.u || p.n);
+  const eleicoes = p.c.map((c) => ({
+    id: `e-${c[7]}`, ano: c[0], cargo: c[1], uf: c[2], local: c[3], partido: c[4], numero: c[5], res: c[6],
+    sq: c[7], suplementar: c[8], plano: c[9] || "", data: `${c[0]}-10-05`,
+  })).sort((a, b) => a.data.localeCompare(b.data));
+
+  const TIPO_CARGO = { "DEPUTADO FEDERAL": "dep", "SENADOR": "sen", "PRESIDENTE": "pres" };
+  const mandatos = (p.m || []).map(([tipo, ref, ini, fim, rot, uf]) => ({
+    id: `m-${tipo}-${ref}`, tipo, ref, ini, fim, rot, uf, dados: true,
+  }));
+  const sobrepoe = (a, b) => a.ini < (b.fim || hoje) && (a.fim || hoje) > b.ini;
+
+  // Mandatos de quem foi eleito em cargos sem dados abertos: período previsto pela Constituição.
+  const previsto = (e) => {
+    const c = e.cargo, a = e.ano;
+    if (/SUPLENTE/.test(c)) return null;
+    if (/PREFEITO|VEREADOR/.test(c)) return [`${a + 1}-01-01`, `${a + 4}-12-31`];
+    if (/DEPUTADO/.test(c)) return [`${a + 1}-02-01`, `${a + 5}-01-31`];
+    if (c === "SENADOR") return [`${a + 1}-02-01`, `${a + 9}-01-31`];
+    if (/GOVERNADOR|PRESIDENTE/.test(c)) return [`${a + 1}-01-01`, `${a + 4}-12-31`];
+    return null;
+  };
+  eleicoes.filter((e) => e.res === "Eleito(a)" && !e.suplementar).forEach((e) => {
+    const per = previsto(e);
+    if (!per || per[0] > hoje) return;
+    const m = { id: `m-tse-${e.sq}`, tipo: "tse", ref: e.sq, ini: per[0], fim: per[1], dados: false, eleicao: e,
+      rot: `${titulo(e.cargo)}${e.local ? ` em ${titulo(e.local)}` : ` (${e.uf})`}` };
+    const tipo = TIPO_CARGO[e.cargo];
+    if (tipo && mandatos.some((x) => x.dados && x.tipo === tipo && sobrepoe(x, m))) return;
+    mandatos.push(m);
+  });
+  mandatos.sort((a, b) => a.ini.localeCompare(b.ini));
+
+  // ---------- topo
   document.title = `${nome} · Retrospectiva`;
   document.getElementById("p-nome").textContent = nome;
-  const eleicoes = p.c.length;
-  const eleito = p.c.filter((c) => c[6] === "Eleito(a)").length;
-  const anos = p.c.map((c) => c[0]);
-  document.getElementById("p-frase").textContent =
-    `${titulo(p.n)}. ${eleicoes} ${eleicoes === 1 ? "candidatura" : "candidaturas"} registradas no TSE entre ${Math.min(...anos)} e ${Math.max(...anos)}` +
-    (eleito ? `. Eleito(a) ${eleito} ${eleito === 1 ? "vez" : "vezes"}.` : ".");
-  const perfis = RETRO.perfis(p, id);
-  document.getElementById("p-chips").innerHTML = perfis
-    .map((x) => `<a class="chip forte" href="${x.href}">${esc(x.rotulo)}</a>`).join("");
-  const segs = (p.d || p.s) ? 3 : p.e ? 2 : 1;
-  const mandatos = [p.d && "deputado federal", p.s && "senador", p.e && "presidente"].filter(Boolean);
-  document.getElementById("p-cobertura").innerHTML =
-    `<div class="segs" aria-hidden="true">${[0, 1, 2, 3, 4].map((i) => `<i class="${i < segs ? "on" : ""}"></i>`).join("")}</div>
-     <span><strong>${mandatos.length ? `Dados em ${segs} de 5 áreas.` : "Só dados eleitorais."}</strong> ${mandatos.length ? `Candidaturas e mandato de ${mandatos.join(", ")}.` : "Para este cargo ainda não há votos ou presença em formato aberto."}</span>`;
-  const classe = (r) => r === "Eleito(a)" ? "sim" : r === "Não eleito(a)" ? "nao" : r.includes("turno") ? "outro" : "ausente";
-  document.getElementById("p-lista").innerHTML = p.c.map((c) => {
-    const [ano, cargo, uf, local, partido, numero, resultado, , suplementar, plano] = c;
-    return `<article class="voto-card">
-      <div class="voto-lado"><span class="voto ${classe(resultado)}">${esc(resultado)}</span><span class="xsmall muted">${ano}</span></div>
-      <div class="voto-corpo">
-        <div class="etiquetas"><span class="etiqueta">${esc(partido)}</span><span class="etiqueta">Número ${esc(numero)}</span>${suplementar ? '<span class="etiqueta">Eleição suplementar</span>' : ""}</div>
-        <h3>${esc(titulo(cargo))}${local ? ` em ${esc(titulo(local))}` : ""} (${esc(uf)})</h3>
-        ${plano ? `<p><a class="chip" href="${esc(plano)}">Plano de governo entregue ao TSE (PDF)</a></p>` : ""}
-        <p class="oficial"><a href="https://dadosabertos.tse.jus.br/dataset/candidatos-${ano}">Arquivo de candidatos ${ano} no TSE</a></p>
-      </div></article>`;
+  const fotoEl = document.getElementById("p-foto");
+  const iniciais = nome.split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+  fotoEl.textContent = iniciais;
+  if (p.f) {
+    const img = new Image();
+    img.alt = `Foto oficial de ${nome}`;
+    img.onload = () => { fotoEl.textContent = ""; fotoEl.appendChild(img); };
+    img.src = p.f;
+  }
+  const linhas = RETRO.quemE(p);
+  document.getElementById("p-frase").textContent = linhas.join(". ") + ".";
+  const anos = eleicoes.map((e) => e.ano);
+  const partido = p.c[0] ? p.c[0][4] : "";
+  document.getElementById("p-chips").innerHTML = [
+    partido && `<span class="chip">${esc(partido)}</span>`,
+    `<span class="chip">${eleicoes.length} ${eleicoes.length === 1 ? "eleição" : "eleições"} desde ${Math.min(...anos)}</span>`,
+    mandatos.length && `<span class="chip">${mandatos.length} ${mandatos.length === 1 ? "mandato" : "mandatos"}</span>`,
+    p.n && p.u && p.n !== p.u && `<span class="chip">Nome completo: ${esc(titulo(p.n))}</span>`,
+  ].filter(Boolean).join("");
+
+  // ---------- linha do tempo
+  const t0 = `${Math.min(...anos, ...mandatos.map((m) => Number(m.ini.slice(0, 4))))}-01-01`;
+  const anoFim = Math.max(anoHoje, ...anos);
+  const t1 = `${anoFim + 1}-01-01`;
+  const ms = (iso) => Date.parse(iso + "T00:00:00Z");
+  const span = ms(t1) - ms(t0);
+  const pos = (iso) => Math.max(0, Math.min(100, (100 * (ms(iso) - ms(t0))) / span));
+  const nAnos = anoFim + 1 - Number(t0.slice(0, 4));
+  const tl = document.getElementById("tl");
+  tl.style.minWidth = `${Math.max(nAnos * 72, 320)}px`;
+
+  let marcas = "";
+  for (let a = Number(t0.slice(0, 4)); a <= anoFim; a++) {
+    const x = pos(`${a}-01-01`);
+    marcas += `<span class="tl-ano" style="left:${x}%">${a}</span>`;
+  }
+  const grade = Array.from({ length: nAnos }, (_, i) => `<span class="tl-grade" style="left:${pos(`${Number(t0.slice(0, 4)) + i}-01-01`)}%"></span>`).join("");
+  const hojeX = pos(hoje);
+
+  const classeRes = (r) => (r === "Eleito(a)" ? "eleito" : r === "Disputa o 2º turno" || r === "Foi ao 2º turno" ? "turno" : r === "Suplente" ? "suplente" : "nao");
+  const pontos = eleicoes.map((e) => `<button type="button" class="tl-ponto ${classeRes(e.res)}" data-sel="${e.id}" style="left:${pos(e.data)}%"
+      aria-label="Eleição de ${e.ano}: ${esc(titulo(e.cargo))}${e.local ? ` em ${esc(titulo(e.local))}` : ""}, ${esc(e.res)}" aria-pressed="false">
+      <span class="tl-bola"></span><span class="tl-rot">${e.ano}</span></button>`).join("");
+
+  // mandatos que se sobrepõem vão para linhas diferentes
+  const fimLinha = [];
+  const barras = mandatos.map((m) => {
+    let linha = fimLinha.findIndex((f) => f <= m.ini);
+    if (linha < 0) { fimLinha.push(m.fim || "9999"); linha = fimLinha.length - 1; } else fimLinha[linha] = m.fim || "9999";
+    const fimDesenho = m.fim && m.fim < hoje ? m.fim : (m.fim && m.fim > hoje && !m.dados ? m.fim : hoje);
+    const left = pos(m.ini), width = Math.max(pos(fimDesenho) - left, 1.2);
+    const per = m.fim ? `de ${br(m.ini)} a ${br(m.fim)}` : `desde ${br(m.ini)}`;
+    return `<button type="button" class="tl-barra ${m.dados ? "com-dados" : "sem-dados"}" data-sel="${m.id}"
+      style="left:${left}%;width:${width}%;top:${8 + linha * 48}px" aria-pressed="false"
+      aria-label="Mandato: ${esc(m.rot)}, ${per}${m.dados ? "" : ", sem dados abertos"}"><span>${esc(m.rot)}</span></button>`;
   }).join("");
-  document.getElementById("p-candidaturas").hidden = false;
+  const alturaM = 16 + Math.max(fimLinha.length, 1) * 48;
+
+  tl.innerHTML = `
+    <div class="tl-eixo">${marcas}</div>
+    <div class="tl-faixa"><span class="tl-nome">Eleições</span><div class="tl-trilho tl-eleicoes">${grade}<span class="tl-hoje" style="left:${hojeX}%"></span>${pontos}</div></div>
+    <div class="tl-faixa"><span class="tl-nome">Mandatos</span><div class="tl-trilho" style="height:${alturaM}px">${grade}<span class="tl-hoje" style="left:${hojeX}%"><span>hoje</span></span>${barras || '<span class="tl-vazio">Nenhum mandato registrado</span>'}</div></div>`;
+
+  // ---------- painel de detalhes
+  const painel = document.getElementById("p-detalhe");
+  const botao = (href, txt, forte) => `<a class="${forte ? "botao" : "botao-sec"}" href="${href}">${txt}</a>`;
+
+  function htmlEleicao(e) {
+    const mand = mandatos.find((m) => (m.eleicao && m.eleicao.sq === e.sq) ||
+      (m.dados && TIPO_CARGO[e.cargo] === m.tipo && e.res === "Eleito(a)" && m.ini.slice(0, 4) === String(e.ano + 1)));
+    const notas = {
+      "Eleito(a)": mand ? "O mandato que veio desta eleição aparece na faixa Mandatos." : "",
+      "Suplente": "Não ficou com a vaga, mas pode assumir se alguém do mesmo partido ou coligação sair.",
+      "Disputa o 2º turno": "O 2º turno acontece no último domingo de outubro.",
+      "Candidatura não apta": "O registro foi indeferido, cancelado ou houve renúncia.",
+    };
+    return `<div class="mandato">
+      <div class="m-topo"><div><span class="m-rotulo">Eleição selecionada</span>
+        <h2>${esc(titulo(e.cargo))}${e.local ? ` em ${esc(titulo(e.local))}` : ""} <span class="m-uf">(${esc(e.uf)})</span></h2>
+        <p class="m-sub">Eleições de ${e.ano}${e.suplementar ? " · eleição suplementar" : ""}</p></div>
+        <span class="res ${classeRes(e.res)}">${esc(e.res)}</span></div>
+      <div class="mini-fatos">
+        <div><span>Partido</span><strong>${esc(e.partido)}</strong></div>
+        <div><span>Número na urna</span><strong>${esc(e.numero)}</strong></div>
+      </div>
+      ${notas[e.res] ? `<p>${notas[e.res]}</p>` : ""}
+      <div class="acoes">
+        ${e.plano ? botao(esc(e.plano), "Plano de governo entregue ao TSE (PDF)", true) : ""}
+        ${mand ? `<button type="button" class="botao-sec" data-sel="${mand.id}">Ver o mandato</button>` : ""}
+        ${botao(`https://dadosabertos.tse.jus.br/dataset/candidatos-${e.ano}`, "Arquivo oficial do TSE")}
+      </div></div>`;
+  }
+
+  function htmlSemDados(m) {
+    const e = m.eleicao;
+    const c = e.cargo;
+    const motivo = /PREFEITO|VEREADOR/.test(c) ? "As câmaras municipais e as prefeituras não publicam votos, presença e atos num formato padronizado."
+      : /ESTADUAL|DISTRITAL|GOVERNADOR/.test(c) ? "As assembleias legislativas e os governos estaduais não publicam esses dados num formato padronizado."
+      : c === "DEPUTADO FEDERAL" ? "Os dados da Câmara neste site começam em fevereiro de 2023."
+      : c === "SENADOR" ? "Os dados do Senado neste site começam em fevereiro de 2019."
+      : "Os atos deste mandato ainda não estão no site.";
+    return `<div class="mandato">
+      <div class="m-topo"><div><span class="m-rotulo">Mandato selecionado</span>
+        <h2>${esc(m.rot)}</h2>
+        <p class="m-sub">Período previsto: ${m.ini.slice(0, 4)} a ${m.fim.slice(0, 4)} · eleito(a) em ${e.ano} pelo ${esc(e.partido)}</p></div></div>
+      <div class="aviso-claro"><strong>Ainda não temos votos e presença deste mandato.</strong> ${motivo}</div>
+      <p class="nota">O período é o previsto em lei a partir do resultado da eleição no TSE. Ele não mostra renúncia, cassação ou licença.</p>
+      <div class="acoes"><button type="button" class="botao-sec" data-sel="${e.id}">Ver a eleição de ${e.ano}</button></div></div>`;
+  }
+
+  const fragmentos = new Map();
+  async function htmlMandato(m) {
+    const url = `${base}/frag/${m.tipo}/${m.ref}.html`;
+    if (!fragmentos.has(url)) fragmentos.set(url, fetch(url).then((r) => (r.ok ? r.text() : "")).catch(() => ""));
+    const html = await fragmentos.get(url);
+    return html || `<div class="vazio">Não foi possível carregar os detalhes deste mandato. Tente de novo.</div>`;
+  }
+
+  function prepararPainel() {
+    painel.querySelectorAll(".filtro-tema").forEach((sel) => sel.addEventListener("change", () => {
+      const lista = sel.closest(".m-sec").querySelector(".lista-votos");
+      let n = 0;
+      lista.querySelectorAll(".voto-card").forEach((card) => {
+        const ok = !sel.value || card.dataset.tema === sel.value;
+        card.hidden = !ok;
+        n += ok;
+      });
+      const aviso = lista.querySelector(".sem-tema");
+      if (aviso) aviso.hidden = n > 0;
+    }));
+  }
+
+  let versao = 0;
+  async function selecionar(sel, { rolar = false, focar = false } = {}) {
+    const minha = ++versao;
+    document.querySelectorAll(".tl [data-sel]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.sel === sel)));
+    const m = mandatos.find((x) => x.id === sel);
+    const e = eleicoes.find((x) => x.id === sel);
+    if (!m && !e) return;
+    history.replaceState(null, "", `#${sel}`);
+    painel.hidden = false;
+    let html;
+    if (e) html = htmlEleicao(e);
+    else if (!m.dados) html = htmlSemDados(m);
+    else { painel.innerHTML = '<div class="carregando">Carregando o mandato…</div>'; html = await htmlMandato(m); }
+    if (minha !== versao) return;
+    painel.innerHTML = html;
+    prepararPainel();
+    const btn = document.querySelector(`.tl [data-sel="${sel}"]`);
+    if (btn && rolar) {
+      const caixa = document.getElementById("tl-rolagem");
+      caixa.scrollLeft = Math.max(0, btn.offsetLeft - caixa.clientWidth / 2);
+    }
+    if (focar) painel.focus({ preventScroll: false });
+  }
+
+  document.addEventListener("click", (ev) => {
+    const alvo = ev.target.closest("[data-sel]");
+    if (!alvo) return;
+    const deFora = !alvo.closest(".tl");
+    selecionar(alvo.dataset.sel, { rolar: deFora, focar: !deFora ? false : true });
+    if (!deFora) painel.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  const inicial = location.hash.slice(1);
+  const padrao = (mandatos.find((m) => m.dados && !m.fim) || [...mandatos].reverse().find((m) => m.dados) ||
+    eleicoes[eleicoes.length - 1]).id;
+  document.getElementById("p-trajetoria").hidden = false;
+  const caixa = document.getElementById("tl-rolagem");
+  caixa.scrollLeft = caixa.scrollWidth;
+  selecionar([...mandatos, ...eleicoes].some((x) => x.id === inicial) ? inicial : padrao, { rolar: true });
 })();
 
 // Linha do tempo: filtra o perfil pelo período clicado.

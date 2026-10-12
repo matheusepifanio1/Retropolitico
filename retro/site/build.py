@@ -14,7 +14,7 @@ import yaml
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 
 from .. import compute, compute_senado
-from . import pessoas
+from . import linguagem, pessoas
 
 HERE = Path(__file__).parent
 VOTO_LABEL = {"Sim": "SIM", "Não": "NÃO", "Abstenção": "ABSTENÇÃO", "Obstrução": "OBSTRUÇÃO",
@@ -65,7 +65,8 @@ def load_chave(path: Path, conn: sqlite3.Connection) -> list[dict]:
 
 
 CAMPOS_CARD = {"titulo": None, "ementa": None, "proposicao": None, "resumo": None, "etapa": None,
-               "sentido_sim": None, "revisado_por": None, "revisado_em": None, "orientacao": None}
+               "sentido_sim": None, "revisado_por": None, "revisado_em": None, "orientacao": None,
+               "simples": None, "sentido_auto": None}
 
 
 def para_card(v: dict) -> dict:
@@ -162,50 +163,77 @@ def frase_senador(sen, exercicios: list[dict]) -> str:
 RANK_SEN = ["presidente", "vice-presidente", "relator", "relator-geral", "relatora"]
 
 
-def build_senado(conn, render, settings: dict, ate: str) -> list[dict]:
+def periodo_txt(ini: str | None, fim: str | None, aberto: bool) -> str:
+    if not ini:
+        return ""
+    if aberto or not fim:
+        return f"De {mes_ano(ini)} até hoje"
+    return f"De {mes_ano(ini)} a {mes_ano(fim)}"
+
+
+def temas_de(cards: list[dict]) -> list[tuple[str, str]]:
+    vistos = {}
+    for c in cards:
+        if c.get("simples"):
+            vistos[c["simples"]["tema"]] = c["simples"]["tema_rotulo"]
+    return sorted(vistos.items(), key=lambda kv: kv[1])
+
+
+def build_senado(conn, render, settings: dict, ate: str, base: str, simples: dict, reg: dict) -> list[dict]:
     cfg = settings.get("senado")
     if not cfg or not conn.execute("SELECT 1 FROM senador LIMIT 1").fetchone():
         return []
     tipos = compute_senado.tipos_comparecimento(conn)
-    deputado_de = {r["pessoa_id"]: r["id"] for r in conn.execute("SELECT id, pessoa_id FROM parlamentar WHERE pessoa_id IS NOT NULL")}
     senadores = conn.execute("SELECT * FROM senador ORDER BY nome COLLATE NOCASE").fetchall()
     for sen in senadores:
         ps = compute_senado.periodos(conn, sen["codigo"], cfg["inicio"], ate)
         regs = compute_senado.registros(conn, sen["codigo"], ps, tipos)
         for r in regs:
             r["rotulo"] = compute_senado.rotulo(r, tipos)
+            r["resumo"] = None
+            r["simples"] = simples.get(f"senado:{r['codigo_materia']}") if r.get("codigo_materia") else None
+            r["sentido_auto"] = linguagem.sentido(r["descricao"])
         pres = compute_senado.presenca(regs)
         votos = compute_senado.resumo_votos(regs)
         leis = compute_senado.leis(conn, sen["codigo"])
         cargos = compute_senado.cargos(conn, sen["codigo"])
-        direcao = sorted(cargos["direcao"], key=lambda c: (
-            RANK_SEN.index(compute.norm(c["cargo"])) if compute.norm(c["cargo"]) in RANK_SEN else 9,
-            "".join(chr(255 - ord(ch)) for ch in (c["inicio"] or ""))))
         exercicios = [dict(e) for e in conn.execute("SELECT * FROM sen_exercicio WHERE codigo=? ORDER BY inicio DESC", (sen["codigo"],))]
-        recentes = [r for r in reversed(regs) if not r["secreta"]][:8]
-        cob = [
-            {"nome": "Presença em votações", "ok": pres is not None},
-            {"nome": "Votações nominais", "ok": bool(votos["total"])},
-            {"nome": "Leis e proposições", "ok": True},
-            {"nome": "Emendas orçamentárias", "ok": False},
-            {"nome": "Promessas de campanha", "ok": False},
-        ]
-        render(f"senador/{sen['codigo']}/index.html", "senador.html", pagina="perfil", sen=sen, presenca=pres,
-               votos=votos, leis=leis, cargos=cargos, destaque=direcao[0] if direcao else None,
-               n_comissoes=len({c["sigla_comissao"] for c in cargos["membro"]}), recentes=recentes,
-               exercicios=exercicios, mandatos=[dict(m) for m in conn.execute(
-                   "SELECT * FROM sen_mandato WHERE codigo=? ORDER BY inicio DESC", (sen["codigo"],))],
+        recentes = [r for r in reversed(regs) if not r["secreta"]][:12]
+        ini = min((e["inicio"] for e in exercicios), default=None)
+        fim = max(((e["fim"] or "") for e in exercicios), default="") or None
+        aberto = bool(sen["em_exercicio"])
+        render(f"frag/sen/{sen['codigo']}.html", "frag_sen.html", sen=sen, presenca=pres, votos=votos, leis=leis,
+               cargos=cargos, recentes=recentes, temas=temas_de(recentes), exercicios=exercicios,
                partidos=[dict(p) for p in conn.execute(
                    "SELECT * FROM sen_partido WHERE codigo=? AND (fim IS NULL OR fim>=?) ORDER BY inicio DESC",
                    (sen["codigo"], cfg["inicio"]))],
-               frase=frase_senador(sen, exercicios), cobertura=cob, janela=cfg["inicio"],
-               prop_desde=cfg["proposicoes_desde"], deputado_id=deputado_de.get(sen["pessoa_id"]))
+               periodo=periodo_txt(ini, fim, aberto), prop_desde=cfg["proposicoes_desde"])
         render(f"senador/{sen['codigo']}/votos/index.html", "senador_votos.html", pagina="perfil", sen=sen,
                regs=list(reversed(regs)))
+        if sen["pessoa_id"]:
+            render(f"senador/{sen['codigo']}/index.html", "redirect.html",
+                   destino=f"{base}/pessoa/?id={sen['pessoa_id']}#m-sen-{sen['codigo']}", nome=sen["nome"])
+            reg["mandatos"][sen["pessoa_id"]].append(
+                ["sen", str(sen["codigo"]), ini, None if aberto else fim,
+                 {"F": "Senadora", "M": "Senador"}.get(sen["sexo"] or "", "Senador(a)"), sen["uf"]])
+            if sen["url_foto"]:
+                reg["fotos"].setdefault(sen["pessoa_id"], sen["url_foto"].replace("http://", "https://"))
+        else:
+            # sem ligação com o TSE: mantém a página completa antiga
+            render(f"senador/{sen['codigo']}/index.html", "senador.html", pagina="perfil", sen=sen, presenca=pres,
+                   votos=votos, leis=leis, cargos=cargos, destaque=None,
+                   n_comissoes=len({c["sigla_comissao"] for c in cargos["membro"]}), recentes=recentes[:8],
+                   exercicios=exercicios, mandatos=[dict(m) for m in conn.execute(
+                       "SELECT * FROM sen_mandato WHERE codigo=? ORDER BY inicio DESC", (sen["codigo"],))],
+                   partidos=[], frase=frase_senador(sen, exercicios),
+                   cobertura=[{"nome": "Presença em votações", "ok": pres is not None},
+                              {"nome": "Votações nominais", "ok": bool(votos["total"])},
+                              {"nome": "Leis e proposições", "ok": True}],
+                   janela=cfg["inicio"], prop_desde=cfg["proposicoes_desde"], deputado_id=None)
     return [dict(s) for s in senadores]
 
 
-def build_presidencia(conn, render, settings: dict, ate: str) -> dict[str, list]:
+def build_presidencia(conn, render, settings: dict, ate: str, base: str, reg: dict) -> dict[str, list]:
     cfg = settings.get("presidencia")
     if not cfg:
         return {}
@@ -213,15 +241,15 @@ def build_presidencia(conn, render, settings: dict, ate: str) -> dict[str, list]
     for p in compute_senado.presidentes(conn, cfg["eleicoes_desde"]):
         por_pessoa.setdefault(p["pessoa_id"], []).append({"p": p, "atos": compute_senado.atos_presidente(conn, p, ate[:10])})
     for pid, mandatos in por_pessoa.items():
-        outros = []
-        d = conn.execute("SELECT id FROM parlamentar WHERE pessoa_id=?", (pid,)).fetchone()
-        if d:
-            outros.append({"href": f"deputado/{d['id']}/", "rotulo": "Mandato de deputado federal"})
-        s = conn.execute("SELECT codigo FROM senador WHERE pessoa_id=?", (pid,)).fetchone()
-        if s:
-            outros.append({"href": f"senador/{s['codigo']}/", "rotulo": "Mandato de senador"})
-        render(f"presidente/{pid}/index.html", "presidente.html", pagina="perfil", p=mandatos[-1]["p"],
-               mandatos=list(reversed(mandatos)), outros_perfis=outros)
+        for m in mandatos:
+            ref = f"{pid}-{m['p']['ano']}"
+            render(f"frag/pres/{ref}.html", "frag_pres.html", m=m)
+            if m["atos"]:  # mandato já começou
+                fim = None if m["p"]["fim"] >= ate[:10] else m["p"]["fim"]
+                reg["mandatos"][pid].append(["pres", ref, m["p"]["inicio"], fim, "Presidente da República", "BR"])
+        ultimo = f"{pid}-{mandatos[-1]['p']['ano']}"
+        render(f"presidente/{pid}/index.html", "redirect.html", destino=f"{base}/pessoa/?id={pid}#m-pres-{ultimo}",
+               nome=mandatos[-1]["p"]["nome_urna"].title())
     return por_pessoa
 
 
@@ -262,6 +290,9 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
         dest.write_text(env.get_template(template).render(**ctx, **kw), encoding="utf-8")
 
     chave = load_chave(chave_path, conn)
+    simples = linguagem.carregar(chave_path.with_name("linguagem_simples.yaml"))
+    from collections import defaultdict
+    reg = {"mandatos": defaultdict(list), "fotos": {}}
     ate = agora.strftime("%Y-%m-%dT%H:%M:%S")
     deputados = conn.execute("SELECT * FROM parlamentar ORDER BY nome COLLATE NOCASE").fetchall()
     orient = {}
@@ -293,7 +324,7 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
 
         recentes = []
         for v in todas_votacoes:
-            if len(recentes) >= 6:
+            if len(recentes) >= 12:
                 break
             if not compute.is_merito(v["descricao"]) or not any(p.contem(v["data_hora"] or v["data"]) for p in periodos):
                 continue
@@ -305,13 +336,36 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
 
         cargos = compute.cargos(conn, d["id"])
         linha = compute.linha_do_tempo(hist, cargos["direcao"], cam["inicio_mandato"], ate)
-        serie = compute.serie_periodo(conn, d["id"], periodos, leis)
-        render(f"deputado/{d['id']}/index.html", "deputado.html", pagina="perfil", dep=d, presenca=pres,
-               resumo=resumo, leis=leis, chave=chave_dep, cobertura=blocos, nivel=nivel,
-               trajetoria=compute.trajetoria(hist), cargos=cargos, linha=linha, recentes=recentes,
-               frase=frase_perfil(d, linha), destaque=cargo_destaque(cargos["direcao"]),
-               n_cobertura=sum(b["ok"] for b in blocos), n_comissoes=len({c["id_orgao"] for c in cargos["membro"]}),
-               serie_json=json.dumps(serie, separators=(",", ":")))
+        for c in chave_dep + recentes:
+            pid_prop = (c["proposicao"] or {}).get("proposicao_id") if c.get("proposicao") else c.get("proposicao_id")
+            c["simples"] = simples.get(f"camara:{pid_prop}") if pid_prop else None
+            c["sentido_auto"] = None if c.get("sentido_sim") else linguagem.sentido(c.get("descricao"))
+        exerc = [x for x in linha["situacao"] if x["exercicio"]]
+        ini_m = exerc[0]["inicio"] if exerc else None
+        fim_m = exerc[-1]["fim"] if exerc else None
+        aberto = bool(d["em_exercicio"])
+        ids_chave = {c["id"] for c in chave_dep}
+        votos_frag = chave_dep + [c for c in recentes if c["id"] not in ids_chave]
+        render(f"frag/dep/{d['id']}.html", "frag_dep.html", dep=d, presenca=pres, resumo=resumo, leis=leis,
+               votos=votos_frag, temas=temas_de(votos_frag), cargos=cargos, trajetoria=compute.trajetoria(hist),
+               n_comissoes=len({c["id_orgao"] for c in cargos["membro"]}), periodo=periodo_txt(ini_m, fim_m, aberto))
+        if d["pessoa_id"]:
+            render(f"deputado/{d['id']}/index.html", "redirect.html",
+                   destino=f"{base}/pessoa/?id={d['pessoa_id']}#m-dep-{d['id']}", nome=d["nome"])
+            if ini_m:
+                reg["mandatos"][d["pessoa_id"]].append(
+                    ["dep", str(d["id"]), ini_m, None if aberto else fim_m,
+                     {"F": "Deputada federal", "M": "Deputado federal"}.get(d["sexo"] or "", "Deputado(a) federal"), d["uf"]])
+            if d["url_foto"]:
+                reg["fotos"].setdefault(d["pessoa_id"], d["url_foto"])
+        else:
+            serie = compute.serie_periodo(conn, d["id"], periodos, leis)
+            render(f"deputado/{d['id']}/index.html", "deputado.html", pagina="perfil", dep=d, presenca=pres,
+                   resumo=resumo, leis=leis, chave=chave_dep, cobertura=blocos, nivel=nivel,
+                   trajetoria=compute.trajetoria(hist), cargos=cargos, linha=linha, recentes=recentes[:6],
+                   frase=frase_perfil(d, linha), destaque=cargo_destaque(cargos["direcao"]),
+                   n_cobertura=sum(b["ok"] for b in blocos), n_comissoes=len({c["id_orgao"] for c in cargos["membro"]}),
+                   serie_json=json.dumps(serie, separators=(",", ":")))
 
         lista = []
         for v in todas_votacoes:
@@ -340,13 +394,13 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
         contagem = Counter(r["voto_label"] for r in rows).most_common()
         render(f"votacao/{v['id']}/index.html", "votacao.html", pagina="votacoes", v=v, votos=rows, contagem=contagem)
 
-    senadores = build_senado(conn, render, settings, ate)
-    presid = build_presidencia(conn, render, settings, ate)
+    senadores = build_senado(conn, render, settings, ate, base, simples, reg)
+    presid = build_presidencia(conn, render, settings, ate, base, reg)
     planos = load_planos(chave_path.with_name("planos_governo.yaml"))
 
     tse_anos = settings.get("tse", {}).get("anos", [])
     info_pessoas = pessoas.gerar(conn, out, max(tse_anos) if tse_anos else agora.year,
-                                 presidentes=set(presid), planos=planos)
+                                 presidentes=set(presid), planos=planos, mandatos=reg["mandatos"], fotos=reg["fotos"])
     render("pessoa/index.html", "pessoa.html", pagina="pessoa", tse_anos=tse_anos or [agora.year])
 
     ufs = sorted({d["uf"] for d in deputados if d["uf"]})

@@ -202,6 +202,9 @@ class TestSite(unittest.TestCase):
         self.tmp = Path(self._tmp.name)
         self.conn = carregar(self.tmp)
         self.chave = self.tmp / "chave.yaml"
+        (self.tmp / "linguagem_simples.yaml").write_text(
+            'resumos:\n  "camara:5001": {titulo: "Fila de cirurgias com transparência", '
+            'resumo: "Hospitais passam a mostrar a fila de cirurgias.", tema: saude}\n', encoding="utf-8")
 
     def tearDown(self):
         self.conn.close()
@@ -212,23 +215,32 @@ class TestSite(unittest.TestCase):
         out = self.tmp / "site"
         info = build(self.conn, out, fixtures.settings(), self.chave)
         self.assertEqual(info, {"deputados": 3, "votacoes_chave": 1, "pessoas": 4})
-        perfil = (out / "deputado/101/index.html").read_text(encoding="utf-8")
-        self.assertIn("Ana Ribeiro", perfil)
-        self.assertIn("<strong>2</strong> presenças em 3 sessões", perfil)
-        self.assertIn("Em exercício desde fevereiro de 2023", perfil)
+        # Página antiga leva ao perfil único
+        redirec = (out / "deputado/101/index.html").read_text(encoding="utf-8")
+        self.assertIn("/pessoa/?id=250000000001#m-dep-101", redirec)
+        # Detalhe do mandato (abre dentro do perfil único)
+        perfil = (out / "frag/dep/101.html").read_text(encoding="utf-8")
+        self.assertIn("Deputada federal por SP", perfil)
+        self.assertIn("Faltou a <strong>1</strong> de 3 sessões", perfil)
+        self.assertIn("De fevereiro de 2023 até hoje", perfil)
         self.assertIn("missão autorizada (1)", perfil)
         self.assertIn("revisado por Pessoa Revisora", perfil)
         self.assertIn("Partido orientou <strong>Sim</strong>", perfil)
-        self.assertIn("Presidente da Comissão de Constituição", perfil)
-        self.assertIn("Linha do tempo", perfil)
-        recentes = perfil.split('id="lista-recentes"')[1].split('id="presenca"')[0]
-        self.assertIn("Aprovado o Substitutivo", recentes)
-        self.assertNotIn("Votação secreta de autoridade", recentes, "não é votação de mérito")
+        self.assertIn("Presidente</strong></td><td>Comissão de Constituição", perfil)
+        self.assertIn("Aprovado o Substitutivo", perfil)
+        self.assertNotIn("Votação secreta de autoridade", perfil, "não é votação de mérito")
         self.assertIn("Alteração de partido", perfil)
-        self.assertIn("Comissão de Constituição e Justiça e de Cidadania", perfil)
-        self.assertIn("Membro de 1 órgão como", perfil)
-        perfil_c = (out / "deputado/102/index.html").read_text(encoding="utf-8")
+        self.assertIn("Também foi membro de 1 órgão", perfil)
+        self.assertIn("Fila de cirurgias com transparência", perfil, "título simples")
+        self.assertNotIn("Resumo automático", perfil, "votação-chave usa o resumo revisado por pessoas")
+        self.assertIn('data-tema="saude"', perfil)
+        ana = json.loads((out / f"pessoas/{250000000001 % 4096}.json").read_text(encoding="utf-8"))["250000000001"]
+        self.assertEqual(ana["m"][0][:2], ["dep", "101"])
+        self.assertEqual(ana["f"], "https://x/101.jpg")
+        perfil_c = (out / "frag/dep/102.html").read_text(encoding="utf-8")
         self.assertIn("SEM REGISTRO", perfil_c, "Bruno estava licenciado na votação-chave")
+        antiga = (out / "deputado/103/index.html").read_text(encoding="utf-8")
+        self.assertIn("Carla Dias", antiga, "sem ligação com o TSE: mantém a página completa")
         votacao = (out / "votacao/900-1/index.html").read_text(encoding="utf-8")
         self.assertIn("Carla Dias", votacao)
         busca = json.loads((out / "busca.json").read_text(encoding="utf-8"))
@@ -240,9 +252,12 @@ class TestSite(unittest.TestCase):
     def test_sem_votacoes_chave(self):
         self.chave.write_text("votacoes: []\n", encoding="utf-8")
         build(self.conn, self.tmp / "site", fixtures.settings(), self.chave)
-        perfil = (self.tmp / "site/deputado/101/index.html").read_text(encoding="utf-8")
-        self.assertIn('aria-pressed="false" disabled>Votações-chave (0)', perfil)
-        self.assertIn('id="lista-recentes" class="lista-votos" >', perfil, "recentes visíveis quando não há votações-chave")
+        perfil = (self.tmp / "site/frag/dep/101.html").read_text(encoding="utf-8")
+        self.assertNotIn("Votação-chave</span>", perfil)
+        self.assertIn("Aprovado o Substitutivo", perfil, "recentes aparecem quando não há votações-chave")
+        self.assertIn("Resumo automático, feito com IA", perfil)
+        self.assertIn("Hospitais passam a mostrar a fila de cirurgias.", perfil)
+        self.assertIn("SIM era a favor do texto em votação", perfil)
 
     def test_curadoria_invalida(self):
         self.chave.write_text(fixtures.CHAVE_OK.replace("900-1", "999-9"), encoding="utf-8")

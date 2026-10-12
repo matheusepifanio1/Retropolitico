@@ -10,7 +10,7 @@
     <li><strong>Fonte oficial sempre.</strong> Cada arquivo bruto é guardado com URL, data de coleta e hash SHA-256 (<a href="{{ base }}/dados/">ver arquivos</a>).</li>
     <li><strong>Mesmo critério para todos.</strong> Todos os perfis são gerados pelo mesmo código, sem exceção.</li>
     <li><strong>Sem opinião.</strong> Não há notas, rankings, adjetivos ou índices ideológicos.</li>
-    <li><strong>Sem IA no conteúdo publicado.</strong> Resumos de votações são escritos e revisados por pessoas, com nome e data.</li>
+    <li><strong>IA só com aviso.</strong> Os resumos das votações-chave são escritos e revisados por pessoas, com nome e data. Os demais resumos em linguagem simples são feitos automaticamente com IA a partir da ementa oficial, levam aviso e ficam sempre ao lado do texto oficial.</li>
     <li><strong>Quando falta dado, dizemos.</strong> Um bloco sem dado aparece como "indisponível", nunca como zero.</li>
   </ul>
 
@@ -82,6 +82,21 @@
     <li><strong>Vetos</strong>: lista de vetos por ano do Congresso Nacional, pela data de publicação (quando o Congresso não a informa, pela data de recebimento no Congresso), com link para a mensagem de veto no Planalto.</li>
     <li><strong>Planos de governo</strong>: link para o documento que o próprio candidato entregou ao TSE. Não resumimos nem avaliamos o conteúdo.</li>
     <li>Governadores e prefeitos ainda não têm dados de mandato: não há base oficial nacional padronizada sobre atos dos governos estaduais e municipais.</li>
+  </ul>
+
+  <h2 id="linguagem-simples">Resumos em linguagem simples</h2>
+  <ul>
+    <li>Cada proposta votada pode ter um título simples, um resumo "Em poucas palavras" e um tema. Eles são gerados com IA a partir da <strong>ementa oficial</strong> (o resumo que o próprio Congresso escreve) e não acrescentam fatos que não estejam nela.</li>
+    <li>Esses textos aparecem com o aviso "Resumo automático, feito com IA" e com o texto oficial logo abaixo. Podem conter imprecisões: em caso de dúvida, vale o texto oficial.</li>
+    <li>A frase "SIM era a favor do texto em votação" só aparece em votações de texto principal. Em destaques e emendas, SIM pode significar manter ou retirar um trecho, e por isso não há frase automática.</li>
+    <li>Os resumos ficam no arquivo público <code>config/linguagem_simples.yaml</code>. Qualquer pessoa pode apontar um erro.</li>
+  </ul>
+
+  <h2 id="trajetoria">Trajetória</h2>
+  <ul>
+    <li>Cada pessoa tem um perfil só. A linha do tempo junta as candidaturas do TSE e os mandatos.</li>
+    <li>Mandatos de deputado federal, senador e presidente vêm dos dados da Câmara, do Senado e do TSE, com as datas reais de exercício.</li>
+    <li>Para os demais cargos, mostramos o período previsto em lei a partir do resultado da eleição (por exemplo, quatro anos a partir de 1º de janeiro para prefeitos e vereadores). Esse período não registra renúncia, cassação ou licença.</li>
   </ul>
 
   <h2 id="cobertura">Cobertura</h2>

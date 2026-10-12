@@ -3,27 +3,32 @@
 <section class="inicio-hero">
   <div class="wrap">
     <h1>Antes de votar, veja o que cada político fez.</h1>
-    <p>Candidaturas de {{ '{:,}'.format(n_pessoas).replace(',', '.') }} pessoas que disputaram eleições desde 2014, e votos, presença e leis de cada deputado federal. Tudo com link para a fonte oficial.</p>
+    <p>A trajetória de {{ '{:,}'.format(n_pessoas).replace(',', '.') }} pessoas que disputaram eleições desde 2014, com votos, presença e leis de deputados federais, senadores e presidentes. Tudo com link para a fonte oficial.</p>
     <div class="busca-box">
       <label class="sr" for="busca">Nome do político</label>
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5B6675" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
       <input id="busca" class="busca" type="search" placeholder="Digite um nome, como aparece na urna ou o nome completo" autocomplete="off">
     </div>
-    <div class="filtros" role="group" aria-label="Filtros da busca">
-      {% for c in ['Todos', 'Deputado federal', 'Senador', 'Deputado estadual', 'Governador', 'Prefeito', 'Vereador', 'Presidente'] %}
-      <button type="button" class="filtro" data-cargo="{{ c }}" aria-pressed="{{ 'true' if loop.first else 'false' }}">{{ c }}</button>
-      {% endfor %}
-      <label class="sr" for="uf">Estado</label>
-      <select id="uf" class="filtro">
-        <option value="">Todos os estados</option>
-        {% for uf in ufs %}<option value="{{ uf }}">{{ uf }}</option>{% endfor %}
-      </select>
+    <div class="filtros-busca">
+      <label>Cargo
+        <select id="cargo">
+          <option value="">Qualquer cargo</option>
+          {% for c in ['Presidente', 'Governador', 'Senador', 'Deputado federal', 'Deputado estadual', 'Prefeito', 'Vereador'] %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>Estado
+        <select id="uf">
+          <option value="">Todos</option>
+          {% for uf in ufs %}<option value="{{ uf }}">{{ uf }}</option>{% endfor %}
+        </select>
+      </label>
     </div>
+    <p id="busca-contagem" class="small muted" aria-live="polite"></p>
     <div id="resultados" class="resultados" aria-live="polite"></div>
     <div id="sem-resultados" class="vazio" hidden>Ninguém encontrado com esse nome. Confira a grafia, tente só o sobrenome ou tire os filtros.</div>
     <p class="nota" id="busca-dica">Digite pelo menos 3 letras de um nome.</p>
     <noscript><div class="vazio">A busca precisa de JavaScript. Use a <a href="{{ base }}/deputados/">lista completa por estado</a>.</div></noscript>
-    <a href="{{ base }}/deputados/" class="small">Ver todos os deputados federais por estado</a>{% if tem_senado %} · <a href="{{ base }}/senadores/" class="small">Ver todos os senadores por estado</a>{% endif %}
+    <p class="small" style="margin:0;display:flex;flex-wrap:wrap;gap:4px 20px"><a href="{{ base }}/deputados/">Todos os deputados federais por estado</a>{% if tem_senado %}<a href="{{ base }}/senadores/">Todos os senadores por estado</a>{% endif %}</p>
   </div>
 </section>
 {% endblock %}
@@ -50,6 +55,6 @@
 <section class="principios" aria-label="Como o site funciona">
   <div><h3>Só dados oficiais</h3><p>Câmara dos Deputados, Senado, Congresso Nacional e TSE. Cada número leva à página de origem, para você conferir.</p></div>
   <div><h3>Mesma régua para todos</h3><p>Todos os perfis seguem as mesmas regras, em ordem alfabética, sem notas, rankings ou adjetivos.</p></div>
-  <div><h3>Nem todo cargo tem tudo</h3><p>Deputados federais têm votos, presença e leis. Para os demais, mostramos as candidaturas registradas no TSE. O selo de cada resultado indica o que existe.</p></div>
+  <div><h3>Nem todo cargo tem tudo</h3><p>Deputados federais, senadores e presidentes têm votos, presença, leis ou atos. Para os demais cargos, mostramos as eleições e o período dos mandatos, porque câmaras municipais, assembleias e governos não publicam esses dados de forma padronizada.</p></div>
 </section>
 {% endblock %}

@@ -12,22 +12,34 @@
 {%- endif -%}
 {%- endmacro -%}
 
+{%- macro bloco_simples(v, casa) -%}
+{% if v.resumo %}
+    <p class="resumo"><strong>Em poucas palavras:</strong> {{ v.resumo }}</p>
+    {% if v.sentido_sim %}<p class="sentido"><strong>Votar SIM</strong> significava: {{ v.sentido_sim }}</p>{% endif %}
+    <p class="xsmall muted">Resumo escrito e revisado por {{ v.revisado_por }} em {{ v.revisado_em }}.</p>
+{% elif v.simples %}
+    <p class="resumo"><strong>Em poucas palavras:</strong> {{ v.simples.resumo }}</p>
+    {% if v.sentido_auto %}<p class="sentido">{{ v.sentido_auto }}</p>{% endif %}
+    <p class="aviso-ia"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg>Resumo automático, feito com IA a partir da ementa oficial. Pode conter imprecisões: confira o texto oficial abaixo.</p>
+{% elif v.sentido_auto %}
+    <p class="sentido">{{ v.sentido_auto }}</p>
+{% endif %}
+{%- endmacro -%}
+
 {%- macro card_voto(v, dep, base) -%}
-<article class="voto-card" data-data="{{ v.data }}">
+<article class="voto-card" data-data="{{ v.data }}" data-tema="{{ v.simples.tema if v.simples else 'outros' }}">
   <div class="voto-lado">
     <span class="voto {{ classe_voto(v.voto) }}">{{ icone_voto(v.voto) }}{{ v.voto_label }}</span>
     <span class="xsmall muted">{{ v.data_br }}</span>
   </div>
   <div class="voto-corpo">
     <div class="etiquetas">
-      {% if v.titulo or v.proposicao %}<span class="etiqueta">{{ v.titulo or v.proposicao.titulo }}</span>{% endif %}
+      {% if v.simples %}<span class="etiqueta tema">{{ v.simples.tema_rotulo }}</span>{% endif %}
       {% if v.resumo %}<span class="etiqueta chave">Votação-chave</span>{% endif %}
-      {% if v.etapa %}<span class="etiqueta">{{ v.etapa }}</span>{% endif %}
+      {% if v.titulo or v.proposicao %}<span class="etiqueta">{{ v.titulo or v.proposicao.titulo }}</span>{% endif %}
     </div>
-    <h3>{{ v.ementa or (v.proposicao.ementa if v.proposicao else '') or v.descricao }}</h3>
-    {% if v.resumo %}<p class="resumo">{{ v.resumo }} <span class="xsmall muted">Resumo revisado por {{ v.revisado_por }} em {{ v.revisado_em }}.</span></p>{% endif %}
-    {% if v.sentido_sim %}<p class="oficial">Votar SIM significava: {{ v.sentido_sim }}</p>{% endif %}
-    <p class="oficial">Texto oficial da Câmara: “{{ v.descricao }}”</p>
+    <h3>{{ (v.simples.titulo if v.simples and v.simples.titulo) or v.ementa or (v.proposicao.ementa if v.proposicao else '') or v.descricao }}</h3>
+    {{ bloco_simples(v, 'camara') }}
     <div class="voto-rodape">
       {% set total = (v.votos_sim or 0) + (v.votos_nao or 0) %}
       <span class="placar">Resultado
@@ -40,28 +52,39 @@
         <a href="https://dadosabertos.camara.leg.br/api/v2/votacoes/{{ v.id }}/votos">Ver na Câmara</a>
       </span>
     </div>
+    <details class="oficial-det">
+      <summary>Texto oficial</summary>
+      {% if v.simples or v.resumo %}<p><strong>Ementa:</strong> {{ v.ementa or (v.proposicao.ementa if v.proposicao else '—') }}</p>{% endif %}
+      <p><strong>O que foi votado, segundo a Câmara:</strong> “{{ v.descricao }}”</p>
+    </details>
   </div>
 </article>
 {%- endmacro -%}
 
 {%- macro card_voto_senado(v, base) -%}
-<article class="voto-card" data-data="{{ v.data }}">
+<article class="voto-card" data-data="{{ v.data }}" data-tema="{{ v.simples.tema if v.simples else 'outros' }}">
   <div class="voto-lado">
     <span class="voto {{ classe_voto(v.sigla) }}">{{ icone_voto(v.sigla) }}{{ v.rotulo }}</span>
     <span class="xsmall muted">{{ v.data|br }}</span>
+    {% if v.motivo %}<span class="xsmall">{{ v.motivo }}</span>{% endif %}
   </div>
   <div class="voto-corpo">
     <div class="etiquetas">
+      {% if v.simples %}<span class="etiqueta tema">{{ v.simples.tema_rotulo }}</span>{% endif %}
       {% if v.materia %}<span class="etiqueta">{{ v.materia }}</span>{% endif %}
       {% if v.secreta %}<span class="etiqueta">Votação secreta</span>{% endif %}
     </div>
-    <h3>{{ v.ementa or v.descricao }}</h3>
-    {% if v.motivo %}<p class="oficial">Motivo oficial da ausência: {{ v.motivo }}</p>{% endif %}
-    <p class="oficial">Texto oficial do Senado: “{{ v.descricao }}”</p>
+    <h3>{{ (v.simples.titulo if v.simples and v.simples.titulo) or v.ementa or v.descricao }}</h3>
+    {{ bloco_simples(v, 'senado') }}
     <div class="voto-rodape">
       <span class="placar">Resultado: <strong>{{ {'A': 'aprovada', 'R': 'rejeitada'}.get(v.resultado, v.resultado or 'não informado') }}</strong></span>
       <span class="links">{% if v.codigo_materia %}<a href="https://www25.senado.leg.br/web/atividade/materias/-/materia/{{ v.codigo_materia }}">Ver no Senado</a>{% endif %}</span>
     </div>
+    <details class="oficial-det">
+      <summary>Texto oficial</summary>
+      {% if v.simples %}<p><strong>Ementa:</strong> {{ v.ementa or '—' }}</p>{% endif %}
+      <p><strong>O que foi votado, segundo o Senado:</strong> “{{ v.descricao }}”</p>
+    </details>
   </div>
 </article>
 {%- endmacro -%}
