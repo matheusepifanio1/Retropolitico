@@ -20,7 +20,11 @@
 {% elif v.simples %}
     <p class="resumo"><strong>Em poucas palavras:</strong> {{ v.simples.resumo }}</p>
     {% if v.sentido_auto %}<p class="sentido">{{ v.sentido_auto }}</p>{% endif %}
-    <p class="aviso-ia"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg>Resumo automático, feito com IA a partir da ementa oficial. Pode conter imprecisões: confira o texto oficial abaixo.</p>
+    {% if v.simples.revisado %}
+    <p class="xsmall muted">Resumo escrito e revisado por {{ v.simples.revisado }}.</p>
+    {% else %}
+    <p class="aviso-ia"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg>Resumo automático, feito com IA a partir da ementa oficial, que descreve o projeto como foi apresentado: o texto votado pode ter mudado. Confira o texto oficial abaixo.</p>
+    {% endif %}
 {% elif v.sentido_auto %}
     <p class="sentido">{{ v.sentido_auto }}</p>
 {% endif %}

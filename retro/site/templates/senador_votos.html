@@ -2,7 +2,7 @@
 {% block title %}Votações de {{ sen.nome }} · {{ site.titulo }}{% endblock %}
 {% block description %}Todas as votações nominais de {{ sen.nome }} no Senado.{% endblock %}
 {% block main %}
-<p><a href="{{ base }}/senador/{{ sen.codigo }}/">← {{ sen.nome }}</a></p>
+<p><a href="{% if sen.pessoa_id %}{{ base }}/pessoa/?id={{ sen.pessoa_id }}#m-sen-{{ sen.codigo }}{% else %}{{ base }}/senador/{{ sen.codigo }}/{% endif %}">← {{ sen.nome }}</a></p>
 <h1 style="font-size:32px;margin:0 0 8px">Votações nominais de {{ sen.nome }}</h1>
 <p class="muted">{{ regs|length }} votações do Plenário do Senado no período em exercício, da mais recente para a mais antiga.</p>
 <div class="table-box">
@@ -11,7 +11,7 @@
     <tbody>
     {% for v in regs %}
     <tr><td class="mono small" style="white-space:nowrap">{{ v.data|br }}</td>
-      <td class="small">{% if v.codigo_materia %}<a href="https://www25.senado.leg.br/web/atividade/materias/-/materia/{{ v.codigo_materia }}">{{ v.materia or 'Matéria' }}</a>{% else %}{{ v.materia or '—' }}{% endif %}<div class="muted">{{ (v.ementa or v.descricao or '')|truncate(160, True, '…') }}</div></td>
+      <td class="small">{% if v.codigo_materia %}{% if v.simples and v.simples.titulo %}<strong>{{ v.simples.titulo }}</strong> {% endif %}<a href="https://www25.senado.leg.br/web/atividade/materias/-/materia/{{ v.codigo_materia }}">{{ v.materia or 'Matéria' }}</a>{% else %}{{ v.materia or '—' }}{% endif %}<div class="muted">{{ (v.ementa or v.descricao or '')|truncate(160, True, '…') }}</div></td>
       <td class="small"><strong>{{ v.rotulo }}</strong></td>
       <td class="small">{{ {'A': 'Aprovada', 'R': 'Rejeitada'}.get(v.resultado, v.resultado or '—') }}</td></tr>
     {% endfor %}

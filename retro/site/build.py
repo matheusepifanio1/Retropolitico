@@ -373,6 +373,7 @@ def build(conn: sqlite3.Connection, out: Path, settings: dict, chave_path: Path,
                 continue
             meu = votos_dep.get(v["id"])
             lista.append({**dict(v), "data_br": data_br(v["data"]), "voto": meu["voto"] if meu else None,
+                          "simples": simples.get(f"camara:{v['proposicao_id']}") if v["proposicao_id"] else None,
                           "voto_label": voto_label(meu["voto"] if meu else None, bool(v["secreta"]) and meu is not None)})
         if resumo:
             render(f"deputado/{d['id']}/votos/index.html", "votos.html", pagina="perfil", dep=d,

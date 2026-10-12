@@ -51,7 +51,8 @@ def carregar(path: Path) -> dict[str, dict]:
         tema = item.get("tema") or "outros"
         out[str(chave)] = {"titulo": item.get("titulo") or "", "resumo": item["resumo"],
                            "tema": tema if tema in TEMAS else "outros",
-                           "tema_rotulo": TEMAS.get(tema, TEMAS["outros"])}
+                           "tema_rotulo": TEMAS.get(tema, TEMAS["outros"]),
+                           "revisado": item.get("revisado") or ""}
     return out
 
 
