@@ -59,10 +59,9 @@ jobs:
         if: always()
         run: python -u -m retro candidatas > relatorio/5-candidatas.txt 2>&1 || true
 
-      - name: Sondar fontes novas (Senado, TSE)
+      - name: Exportar ementas das propostas votadas
         if: always()
-        timeout-minutes: 10
-        run: python -u -m retro sondar > relatorio/6-sonda.txt 2>&1 || true
+        run: python -u -m retro ementas > relatorio/7-ementas.tsv 2>&1 || true
 
       - id: pages
         uses: actions/configure-pages@v5

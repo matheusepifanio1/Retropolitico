@@ -65,6 +65,24 @@ def inspecionar(pasta: Path) -> None:
             print(f"    exemplo={json.dumps(first, ensure_ascii=False)[:600]}")
 
 
+def ementas(conn) -> None:
+    """Propostas com votação nominal e sua ementa oficial (base dos resumos em linguagem simples)."""
+    import csv
+    w = csv.writer(sys.stdout, delimiter="\t", lineterminator="\n")
+    w.writerow(["chave", "titulo", "ementa", "votacoes", "ultima"])
+    for r in conn.execute("""SELECT vp.proposicao_id, MIN(vp.titulo) t, MIN(vp.ementa) e, COUNT(DISTINCT v.id) n, MAX(v.data) d
+                             FROM votacao_proposicao vp JOIN votacao v ON v.id = vp.votacao_id
+                             GROUP BY vp.proposicao_id ORDER BY d DESC"""):
+        w.writerow([f"camara:{r['proposicao_id']}", r["t"], " ".join((r["e"] or "").split()), r["n"], r["d"]])
+    try:
+        rows = conn.execute("""SELECT codigo_materia, MIN(materia) t, MIN(ementa) e, COUNT(*) n, MAX(data) d
+                               FROM sen_votacao WHERE codigo_materia IS NOT NULL GROUP BY codigo_materia ORDER BY d DESC""").fetchall()
+    except Exception:
+        rows = []
+    for r in rows:
+        w.writerow([f"senado:{r['codigo_materia']}", r["t"], " ".join((r["e"] or "").split()), r["n"], r["d"]])
+
+
 def sanidade(conn) -> None:
     """Estatísticas para conferir se os números fazem sentido (vão para o relatório da execução)."""
     from statistics import median
@@ -211,7 +229,7 @@ def candidatas(conn) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="retro", description="Retrospectiva Política")
-    p.add_argument("etapa", choices=["baixar", "carregar", "site", "tudo", "inspecionar", "candidatas", "sondar"])
+    p.add_argument("etapa", choices=["baixar", "carregar", "site", "tudo", "inspecionar", "candidatas", "sondar", "ementas"])
     p.add_argument("--raw", type=Path, default=ROOT / "data" / "raw")
     p.add_argument("--db", type=Path, default=ROOT / "data" / "retrospectiva.sqlite")
     p.add_argument("--out", type=Path, default=ROOT / "_site")
@@ -222,6 +240,9 @@ def main(argv: list[str] | None = None) -> int:
     if "RETRO_URL_BASE" in os.environ:
         settings["site"]["url_base"] = os.environ["RETRO_URL_BASE"]
     store = RawStore(args.raw, "camara")
+    if args.etapa == "ementas":
+        ementas(db.connect(args.db))
+        return 0
     if args.etapa == "sondar":
         from . import sondar
         sondar.main(args.raw)
