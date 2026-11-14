@@ -1,0 +1,188 @@
+Carregando no banco…
+  deputados: 648
+  votações nominais do Plenário: 1128
+  dias com frequência do site: 206438
+  sessões deliberativas: 399
+  proposições de autoria: 34689
+  TSE 2014: 26195 candidaturas acumuladas
+  TSE 2016: 524358 candidaturas acumuladas
+  TSE 2018: 553585 candidaturas acumuladas
+  TSE 2020: 1112157 candidaturas acumuladas
+  TSE 2022: 1141427 candidaturas acumuladas
+  TSE 2024: 1605100 candidaturas acumuladas
+  TSE 2026: 1626089 candidaturas acumuladas
+  TSE: 1626089 candidaturas de 1181554 pessoas
+  deputados ligados ao TSE: 644 de 648 (CPF 0, nome 644)
+  Senado: 158 senadores com exercício desde 2019-02-01, 1154 votações nominais, 93283 registros de voto, 19421 autorias, 465 vetos
+  senadores ligados ao TSE: 158 de 158
+Checagem de sanidade:
+  votações nominais 2023: 300 (secretas: 0)
+  votações nominais 2024: 273 (secretas: 0)
+  votações nominais 2025: 429 (secretas: 1)
+  votações nominais 2026: 126 (secretas: 1)
+  sessões deliberativas 2023: 113
+  sessões deliberativas 2024: 86
+  sessões deliberativas 2025: 120
+  sessões deliberativas 2026: 80
+  ATENÇÃO presença 43%: id=204450 Doutor Luizinho (143/332, justificadas 189, sem justificativa 0, sem info 0) histórico: 2023-02-01 Exercício; 2023-02-13 Licença; 2023-09-12 Exercício
+  deputados em exercício sem período de exercício no histórico: 0
+  sessões contadas como presença só pelo voto (sem registro de presença): 0
+  ausências: justificadas=11137 sem justificativa=3223 sem informação=42 conflitos (presença/voto em dia 'Ausência')=0
+  votações nominais ligadas a uma sessão deliberativa: 1128
+  presença %: n=513 min=43 mediana=94 max=100 faixas={'<50': 1, '50-79': 21, '80-94': 255, '95+': 236}
+  participação em votações %: n=513 min=28 mediana=81 max=100 faixas={'<50': 19, '50-79': 200, '80-94': 261, '95+': 33}
+  TSE: 1626089 candidaturas, 1181554 pessoas, 319391 com mais de uma candidatura; deputados ligados: 644
+    TSE 2014: 26195 candidaturas
+    TSE 2016: 498163 candidaturas
+    TSE 2018: 29227 candidaturas
+    TSE 2020: 558572 candidaturas
+    TSE 2022: 29270 candidaturas
+    TSE 2024: 463673 candidaturas
+    TSE 2026: 20989 candidaturas
+    exemplo DOUGLAS RUAS: ('190001596741', 2022, 'DEPUTADO ESTADUAL', 'RJ', 'RIO DE JANEIRO', 'PL', 'ELEITO POR QP')
+    exemplo DOUGLAS RUAS: ('190001596741', 2026, 'GOVERNADOR', 'RJ', 'RIO DE JANEIRO', 'PL', 'ELEITO')
+    frequência no site 'Presença': 190494
+    frequência no site 'Missão Autorizada': 6493
+    frequência no site 'Licença para Tratamento de Saúde': 4136
+    frequência no site 'Ausência': 3776
+    frequência no site 'Decisão da Mesa': 836
+    frequência no site 'Licença-Gestante (Maternidade)': 360
+    frequência no site 'Presença (~)': 291
+    frequência no site 'Licença Paternidade': 38
+    frequência no site 'Atendimento a Obrigação Político-Partidária': 14
+  proposições de deputados que viraram lei: 478
+    situação 'Tramitando em Conjunto': 9942
+    situação 'Aguardando Designação de Relator(a)': 7382
+    situação 'Aguardando Parecer': 4349
+    situação 'None': 2833
+    situação 'Arquivada': 2785
+    situação 'Pronta para Pauta': 1796
+    situação 'Retirado pelo(a) Autor(a)': 862
+    situação 'Aguardando Despacho do Presidente da Câmara dos Deputados (Chancela)': 825
+    situação 'Aguardando Apreciação pelo Senado Federal': 751
+    situação 'Devolvida ao(à) Autor(a)': 723
+    situação 'Transformado em Norma Jurídica': 478
+    situação 'Aguardando Despacho do Presidente da Câmara dos Deputados (Autorização)': 426
+    histórico situação 'Exercício': 1194
+    histórico situação 'None': 648
+    histórico situação 'CONVOCADO': 538
+    histórico situação 'SUPLENCIA': 251
+    histórico situação 'Licença': 234
+    histórico situação 'VACANCIA': 24
+    histórico situação 'SUSPENSO': 3
+    histórico descrição [None] 'Nome no início da legislatura / Partido no início da legislatura': 648
+    histórico descrição [Exercício] 'Entrada - Posse de Eleito Titular - Posse na Sessão Preparatória': 512
+    histórico descrição [Exercício] 'Entrada - Reassunção': 315
+    histórico descrição [CONVOCADO] 'DIVERSO - Convocação Eleito ou Suplente - Aguardando Convocação de Suplente': 263
+    histórico descrição [CONVOCADO] 'DIVERSO - Convocação Eleito ou Suplente': 250
+    histórico descrição [SUPLENCIA] 'Saída - Afastamento sem prazo determinado - Afastamento de Suplente (automático)': 205
+    histórico descrição [Exercício] 'Alteração de partido': 203
+    histórico descrição [Exercício] 'Entrada - Posse de Suplente - Posse como Suplente': 114
+    histórico descrição [Licença] 'Saída - Afastamento sem prazo determinado - Secretário de Estado': 77
+    histórico descrição [Licença] 'Saída - Afastamento com prazo determinado - Afastamento Conjunto Consecutivo': 68
+    histórico descrição [Licença] 'Saída - Afastamento sem prazo determinado - Secretário de Prefeitura de Capital': 45
+    histórico descrição [Licença] 'Saída - Afastamento sem prazo determinado - Ministro de Estado': 32
+    histórico descrição [SUPLENCIA] 'DIVERSO - Negativas de Recusa de Convocação - Impossibilidade de Assumir o Mandato': 29
+    histórico descrição [VACANCIA] 'Saída - Afastamento definitivo - Renúncia': 16
+    histórico descrição [Exercício] 'Entrada - Posse de Suplente - Posse como Titular': 13
+    histórico descrição [CONVOCADO] 'DIVERSO - Decisão da Mesa - Convocado para posse como titular por recontagem de votos': 10
+    histórico descrição [Licença] 'Saída - Afastamento com prazo determinado - Licença para Tratamento de Saúde': 10
+    histórico descrição [Exercício] 'Entrada - Posse de Eleito Titular - Posse Individual do Eleito': 8
+    histórico descrição [CONVOCADO] 'Alteração de partido': 7
+    histórico descrição [CONVOCADO] 'DIVERSO - Convocação Eleito ou Suplente - Aguardando Convocação de Suplente / DIVERSO - Convocação Eleito ou Suplente': 7
+    histórico descrição [Exercício] '': 7
+    histórico descrição [SUPLENCIA] 'DIVERSO - Decisão da Mesa - Afastamento de titular  por Recontagem de Votos': 7
+    histórico descrição [VACANCIA] 'Saída - Afastamento definitivo - Perda de Mandato por Ato da Mesa': 7
+    histórico descrição [Exercício] 'Entrada - Reassunção / DIVERSO - Alteração na Situação - Efetivação (Ato da Presidência)': 6
+    histórico descrição [SUPLENCIA] 'DIVERSO - Alteração na Situação - Deixa a Condição de Licenciado (automático)': 6
+    cargo 'Titular': 7335
+    cargo 'Suplente': 6016
+    cargo 'Presidente': 179
+    cargo '1º Vice-Presidente': 129
+    cargo '2º Vice-Presidente': 107
+    cargo '3º Vice-Presidente': 91
+    cargo 'Relator': 75
+    cargo 'Coordenador': 29
+    cargo 'Vice-Presidente': 9
+    cargo 'Relator-Parcial': 5
+    cargo 'Coordenador-Geral': 5
+    cargo 'Subcoordenador': 4
+    cargo 'Secretário de Relações Internacionais': 4
+    cargo 'Coordenadora': 4
+    cargo '3º Coordenador Adjunto': 4
+Senado:
+  votações nominais 2019: 133 (secretas: 72)
+  votações nominais 2020: 193 (secretas: 70)
+  votações nominais 2021: 225 (secretas: 88)
+  votações nominais 2022: 169 (secretas: 87)
+  votações nominais 2023: 141 (secretas: 91)
+  votações nominais 2024: 95 (secretas: 37)
+  votações nominais 2025: 128 (secretas: 72)
+  votações nominais 2026: 70 (secretas: 40)
+    sigla de voto 'Sim': 32910
+    sigla de voto 'Votou': 28986
+    sigla de voto 'P-NRV': 12827
+    sigla de voto 'Não': 7783
+    sigla de voto 'AP': 5402
+    sigla de voto 'LS': 1768
+    sigla de voto 'NCom': 1235
+    sigla de voto 'MIS': 1219
+    sigla de voto 'Presidente (art. 51 RISF)': 686
+    sigla de voto 'LP': 242
+    sigla de voto 'Abstenção': 92
+    sigla de voto 'NA': 64
+    sigla de voto 'LG': 59
+    sigla de voto 'MERC': 5
+    sigla de voto 'P-OD': 4
+    sigla de voto 'LAP': 1
+  siglas fora da tabela oficial: []
+  ATENÇÃO presença 53%: 35 Jader Barbalho (615/1154, motivo 417, NCom 118, sem info 4) motivos=[('Atividade parlamentar', 386), ('Licença saúde', 23), ('Licença Particular', 8)]
+  ATENÇÃO presença 56%: 5207 Renan Filho (55/98, motivo 26, NCom 0, sem info 17) motivos=[('Atividade parlamentar', 26)]
+  ATENÇÃO presença 57%: 5376 Mara Gabrilli (663/1154, motivo 360, NCom 130, sem info 1) motivos=[('Licença saúde', 260), ('Missão da Casa no País/exterior', 64), ('Atividade parlamentar', 36)]
+  presença em votações (em exercício): n=81 min=53 mediana=91 max=100; sem votações: 0
+  senadores: 158, em exercício: 81
+  processos de senadores com norma gerada (desde a janela): 421
+    tipo PDL: 412
+    tipo PEC: 350
+    tipo PL: 6054
+    tipo PLP: 445
+    tipo PRS: 460
+    cargo 'PRESIDENTE': 364
+    cargo 'VICE-PRESIDENTE': 188
+    cargo 'RELATOR': 114
+    cargo 'RELATOR REVISOR': 37
+    cargo '2º VICE-PRESIDENTE': 22
+    cargo '1º VICE-PRESIDENTE': 18
+    cargo '1º SECRETÁRIO': 13
+    cargo '2ª VICE-PRESIDENTE': 12
+    cargo '2º SECRETÁRIO': 11
+    cargo '1ª VICE-PRESIDENTE': 9
+  vetos 2019: 62 (totais 21)
+  vetos 2020: 59 (totais 10)
+  vetos 2021: 73 (totais 15)
+  vetos 2022: 65 (totais 18)
+  vetos 2023: 49 (totais 5)
+  vetos 2024: 50 (totais 5)
+  vetos 2025: 51 (totais 9)
+  vetos 2026: 56 (totais 10)
+  MPs 2019: 48 registros, 48 números distintos (870–917)
+  MPs 2020: 108 registros, 108 números distintos (918–1025)
+  MPs 2021: 70 registros, 70 números distintos (1026–1095)
+  MPs 2022: 58 registros, 58 números distintos (1096–1153)
+  MPs 2023: 52 registros, 52 números distintos (1154–1205)
+  MPs 2024: 81 registros, 81 números distintos (1206–1286)
+  MPs 2025: 46 registros, 46 números distintos (1287–1332)
+  MPs 2026: 68 registros, 68 números distintos (1333–1400)
+    MP situação 'Perdeu a Eficácia': 263
+    MP situação 'Transformado em Norma Jurídica': 189
+    MP situação 'None': 34
+    MP situação 'Aguardando Encaminhamento': 15
+    MP situação 'Enviada ao Congresso Nacional': 7
+    MP situação 'Tramitação Finalizada': 6
+    MP situação 'Aguardando Despacho do Presidente da Câmara dos Deputados': 6
+    MP situação 'Aguardando Autógrafos na Mesa': 6
+    MP situação 'Arquivada': 3
+    MP situação 'Aguardando Envio ao Senado Federal': 1
+  presidente: JAIR BOLSONARO (PSL) 2019-01-01..2022-12-31 pessoa=190000001444
+  presidente: LULA (PT) 2023-01-01..2026-12-31 pessoa=280000625869
+  presidente: LULA (PT) 2027-01-01..2030-12-31 pessoa=280000625869
